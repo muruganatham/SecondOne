@@ -1,0 +1,751 @@
+{
+  "foreign_keys": [],
+  "naming_patterns": [
+    {
+      "pattern": "coding_result",
+      "count": 18,
+      "tables": [
+        "admin_coding_result",
+        "b2c_coding_result",
+        "ciet_2026_1_coding_result",
+        "demolab_2025_2_coding_result",
+        "dotlab_2025_2_coding_result",
+        "dotlab_2026_1_coding_result",
+        "kclas_2026_1_coding_result",
+        "kits_2026_1_coding_result",
+        "link_coding_result",
+        "mcet_2025_2_coding_result",
+        "mcet_2026_1_coding_result",
+        "mec_2026_1_coding_result",
+        "niet_2026_1_coding_result",
+        "nit_2026_1_coding_result",
+        "skacas_2025_2_coding_result",
+        "skcet_2026_1_coding_result",
+        "skct_2025_2_coding_result",
+        "srec_2025_2_coding_result"
+      ]
+    },
+    {
+      "pattern": "mcq_result",
+      "count": 17,
+      "tables": [
+        "admin_mcq_result",
+        "b2c_mcq_result",
+        "ciet_2026_1_mcq_result",
+        "demolab_2025_2_mcq_result",
+        "dotlab_2025_2_mcq_result",
+        "dotlab_2026_1_mcq_result",
+        "kclas_2026_1_mcq_result",
+        "kits_2026_1_mcq_result",
+        "link_mcq_result",
+        "mcet_2025_2_mcq_result",
+        "mcet_2026_1_mcq_result",
+        "mec_2026_1_mcq_result",
+        "niet_2026_1_mcq_result",
+        "nit_2026_1_mcq_result",
+        "skacas_2025_2_mcq_result",
+        "skcet_2026_1_mcq_result",
+        "skct_2025_2_mcq_result"
+      ]
+    },
+    {
+      "pattern": "test_data",
+      "count": 17,
+      "tables": [
+        "admin_test_data",
+        "b2c_test_data",
+        "ciet_2026_1_test_data",
+        "demolab_2025_2_test_data",
+        "dotlab_2025_2_test_data",
+        "dotlab_2026_1_test_data",
+        "kclas_2026_1_test_data",
+        "kits_2026_1_test_data",
+        "link_test_data",
+        "mcet_2025_2_test_data",
+        "mcet_2026_1_test_data",
+        "mec_2026_1_test_data",
+        "niet_2026_1_test_data",
+        "nit_2026_1_test_data",
+        "skacas_2025_2_test_data",
+        "skcet_2026_1_test_data",
+        "skct_2025_2_test_data"
+      ]
+    },
+    {
+      "pattern": "submission_tracks",
+      "count": 2,
+      "tables": [
+        "2025_submission_tracks",
+        "2026_submission_tracks"
+      ]
+    }
+  ],
+  "potential_references": [
+    {
+      "dynamic_table": "2025_submission_tracks",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "2026_submission_tracks",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "admin_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "admin_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "admin_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "admin_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "b2c_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "b2c_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "b2c_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "b2c_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "ciet_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "ciet_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "ciet_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "ciet_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "demolab_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "demolab_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "demolab_2025_2_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "demolab_2025_2_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2025_2_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2025_2_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "dotlab_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kclas_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kclas_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "kclas_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kclas_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kits_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kits_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "kits_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "kits_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "link_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "link_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "link_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "link_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2025_2_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2025_2_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mcet_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mec_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mec_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "mec_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "mec_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "niet_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "niet_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "niet_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "niet_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "nit_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "nit_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "nit_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "nit_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skacas_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skacas_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "skacas_2025_2_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skacas_2025_2_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skcet_2026_1_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skcet_2026_1_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "skcet_2026_1_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skcet_2026_1_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skct_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skct_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    },
+    {
+      "dynamic_table": "skct_2025_2_mcq_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "skct_2025_2_test_data",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "srec_2025_2_coding_result",
+      "column": "user_id",
+      "potential_coderv4_tables": [
+        "user_academics",
+        "user_assignments",
+        "user_course_enrollments",
+        "users"
+      ]
+    },
+    {
+      "dynamic_table": "srec_2025_2_coding_result",
+      "column": "compile_id",
+      "potential_coderv4_tables": [
+        "compilers"
+      ]
+    }
+  ]
+}
