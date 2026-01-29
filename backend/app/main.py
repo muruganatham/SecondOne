@@ -1,11 +1,26 @@
 
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core.db import get_db, engine
 from app.core.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+
+# CORS Configuration
+origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -20,6 +35,9 @@ def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
-# Include AI Router
+# Include Routers
 from app.api.endpoints import ai_query
+from app.api.endpoints import auth
+
 app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
