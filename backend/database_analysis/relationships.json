@@ -1,0 +1,1094 @@
+[
+  {
+    "TABLE_NAME": "2025_submission_tracks",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_2025_submission_tracks_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "2026_submission_tracks",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_2026_submission_tracks_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "a_i_high_lights",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_a_i_high_lights_course_id_implicit"
+  },
+  {
+    "TABLE_NAME": "a_i_high_lights",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "a_i_high_lights_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "a_i_high_lights",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "a_i_high_lights_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_pdf_material_banks",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_academic_pdf_material_banks_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "academic_qb_codings",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_codings_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_codings",
+    "COLUMN_NAME": "l_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_codings_l_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_codings",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_codings_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_mcqs",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_mcqs_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_mcqs",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_mcqs_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_projects",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_projects_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_projects",
+    "COLUMN_NAME": "l_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_projects_l_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_qb_projects",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "academic_qb_projects_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "academic_study_material_banks",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_academic_study_material_banks_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "admin_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_admin_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "admin_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_admin_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "admin_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_admin_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "ai_prompts",
+    "COLUMN_NAME": "prompt_title_id",
+    "REFERENCED_TABLE_NAME": "prompt_titles",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "ai_prompts_prompt_title_id_foreign"
+  },
+  {
+    "TABLE_NAME": "assets",
+    "COLUMN_NAME": "category_id",
+    "REFERENCED_TABLE_NAME": "asset_categories",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "assets_category_id_foreign"
+  },
+  {
+    "TABLE_NAME": "audits",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_audits_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "b2c_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_b2c_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "b2c_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_b2c_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "b2c_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_b2c_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "batches",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "batches_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "ciet_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_ciet_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "ciet_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_ciet_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "ciet_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_ciet_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "college_department_maps",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "college_department_maps_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "college_department_maps",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "college_department_maps_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "college_section_maps",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "college_section_maps_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "college_section_maps",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "college_section_maps_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "colleges",
+    "COLUMN_NAME": "institution_id",
+    "REFERENCED_TABLE_NAME": "institutions",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "colleges_institution_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "batch_id",
+    "REFERENCED_TABLE_NAME": "batches",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_academic_maps_batch_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_academic_maps_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_academic_maps_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_academic_maps_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_academic_maps_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "title_id",
+    "REFERENCED_TABLE_NAME": "titles",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_course_academic_maps_title_id_implicit"
+  },
+  {
+    "TABLE_NAME": "course_academic_maps",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_course_academic_maps_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "course_prepare_timers",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_prepare_timers_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_prepare_timers",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_prepare_timers_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_staff_trainer_allocations",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_staff_trainer_allocations_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_topic_maps",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_topic_maps_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_topic_maps",
+    "COLUMN_NAME": "title_id",
+    "REFERENCED_TABLE_NAME": "titles",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_topic_maps_title_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_topic_maps",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_topic_maps_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "batch_id",
+    "REFERENCED_TABLE_NAME": "batches",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_batch_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "course_wise_segregations",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "course_wise_segregations_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "demolab_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_demolab_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "demolab_2025_2_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_demolab_2025_2_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "demolab_2025_2_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_demolab_2025_2_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "discussion_messages",
+    "COLUMN_NAME": "discussion_id",
+    "REFERENCED_TABLE_NAME": "discussions",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "discussion_messages_discussion_id_foreign"
+  },
+  {
+    "TABLE_NAME": "discussion_messages",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "discussion_messages_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "discussions",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "discussions_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "discussions",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "discussions_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "docker_containers_map_logs",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "docker_containers_map_logs_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "docker_containers_maps",
+    "COLUMN_NAME": "server_id",
+    "REFERENCED_TABLE_NAME": "compilers",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "docker_containers_maps_server_id_foreign"
+  },
+  {
+    "TABLE_NAME": "docker_containers_maps",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "docker_containers_maps_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "dotlab_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "dotlab_2025_2_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2025_2_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "dotlab_2025_2_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2025_2_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "dotlab_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "dotlab_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "dotlab_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_dotlab_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "feedback_allocations",
+    "COLUMN_NAME": "batch_id",
+    "REFERENCED_TABLE_NAME": "batches",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "feedback_allocations_batch_id_foreign"
+  },
+  {
+    "TABLE_NAME": "feedback_allocations",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "feedback_allocations_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "feedback_allocations",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "feedback_allocations_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "feedback_allocations",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "feedback_allocations_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "feedback_questions",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "feedback_questions_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "kclas_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kclas_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "kclas_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kclas_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "kclas_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kclas_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "kits_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kits_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "kits_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kits_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "kits_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_kits_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "languages",
+    "COLUMN_NAME": "language_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_languages_language_id_implicit"
+  },
+  {
+    "TABLE_NAME": "link_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_link_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "link_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_link_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "link_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_link_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "link_test_users",
+    "COLUMN_NAME": "link_id",
+    "REFERENCED_TABLE_NAME": "link_tests",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "link_test_users_link_id_foreign"
+  },
+  {
+    "TABLE_NAME": "link_test_users",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_link_test_users_section_id_implicit"
+  },
+  {
+    "TABLE_NAME": "link_tests",
+    "COLUMN_NAME": "test_id",
+    "REFERENCED_TABLE_NAME": "tests",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_link_tests_test_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2025_2_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2025_2_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2025_2_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2025_2_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mcet_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mcet_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mec_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mec_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mec_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mec_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "mec_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_mec_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "niet_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_niet_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "niet_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_niet_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "niet_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_niet_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "nit_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_nit_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "nit_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_nit_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "nit_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_nit_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "otps",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_otps_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "pdf_banks",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_pdf_banks_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "portal_feedback",
+    "COLUMN_NAME": "question_id",
+    "REFERENCED_TABLE_NAME": "feedback_questions",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "portal_feedback_question_id_foreign"
+  },
+  {
+    "TABLE_NAME": "portal_feedback",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "portal_feedback_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "practice_question_maps",
+    "COLUMN_NAME": "module_id",
+    "REFERENCED_TABLE_NAME": "practice_modules",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "practice_question_maps_module_id_foreign"
+  },
+  {
+    "TABLE_NAME": "practice_question_maps",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "practice_question_maps_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "sessions",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_sessions_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skacas_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skacas_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skacas_2025_2_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skacas_2025_2_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skacas_2025_2_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skacas_2025_2_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skcet_2026_1_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skcet_2026_1_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skcet_2026_1_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skcet_2026_1_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skcet_2026_1_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skcet_2026_1_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skct_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skct_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skct_2025_2_mcq_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skct_2025_2_mcq_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "skct_2025_2_test_data",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_skct_2025_2_test_data_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "srec_2025_2_coding_result",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_srec_2025_2_coding_result_user_id_implicit"
+  },
+  {
+    "TABLE_NAME": "staff_trainer_feedback",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_staff_trainer_feedback_course_id_implicit"
+  },
+  {
+    "TABLE_NAME": "staff_trainer_feedback",
+    "COLUMN_NAME": "question_id",
+    "REFERENCED_TABLE_NAME": "feedback_questions",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "staff_trainer_feedback_question_id_foreign"
+  },
+  {
+    "TABLE_NAME": "staff_trainer_feedback",
+    "COLUMN_NAME": "staff_trainer_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "staff_trainer_feedback_staff_trainer_id_foreign"
+  },
+  {
+    "TABLE_NAME": "staff_trainer_feedback",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "staff_trainer_feedback_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_codings",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "standard_qb_courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_codings_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_codings",
+    "COLUMN_NAME": "l_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_codings_l_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_codings",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "standard_qb_topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_codings_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_courses",
+    "COLUMN_NAME": "language_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_courses_language_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_mcqs",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "standard_qb_courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_mcqs_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_mcqs",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "standard_qb_topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_mcqs_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_projects",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_projects_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_projects",
+    "COLUMN_NAME": "l_id",
+    "REFERENCED_TABLE_NAME": "languages",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_projects_l_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_projects",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_projects_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "standard_qb_topics",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "standard_qb_courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "standard_qb_topics_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "student_side_bar_accesses",
+    "COLUMN_NAME": "batch_id",
+    "REFERENCED_TABLE_NAME": "batches",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "student_side_bar_accesses_batch_id_foreign"
+  },
+  {
+    "TABLE_NAME": "student_side_bar_accesses",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "student_side_bar_accesses_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "student_side_bar_accesses",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "student_side_bar_accesses_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "student_side_bar_accesses",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "student_side_bar_accesses_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "study_material_banks",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_study_material_banks_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "telescope_entries_tags",
+    "COLUMN_NAME": "entry_uuid",
+    "REFERENCED_TABLE_NAME": "telescope_entries",
+    "REFERENCED_COLUMN_NAME": "uuid",
+    "CONSTRAINT_NAME": "telescope_entries_tags_entry_uuid_foreign"
+  },
+  {
+    "TABLE_NAME": "test_modules",
+    "COLUMN_NAME": "test_id",
+    "REFERENCED_TABLE_NAME": "tests",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "test_modules_test_id_foreign"
+  },
+  {
+    "TABLE_NAME": "test_question_maps",
+    "COLUMN_NAME": "module_id",
+    "REFERENCED_TABLE_NAME": "test_modules",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "test_question_maps_module_id_foreign"
+  },
+  {
+    "TABLE_NAME": "test_question_maps",
+    "COLUMN_NAME": "test_id",
+    "REFERENCED_TABLE_NAME": "tests",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "test_question_maps_test_id_foreign"
+  },
+  {
+    "TABLE_NAME": "testpage_user_tracks",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "testpage_user_tracks_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "titles",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "titles_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "topics",
+    "COLUMN_NAME": "tag_id",
+    "REFERENCED_TABLE_NAME": "tags",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_topics_tag_id_implicit"
+  },
+  {
+    "TABLE_NAME": "user_academics",
+    "COLUMN_NAME": "batch_id",
+    "REFERENCED_TABLE_NAME": "batches",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_academics_batch_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_academics",
+    "COLUMN_NAME": "college_id",
+    "REFERENCED_TABLE_NAME": "colleges",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_academics_college_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_academics",
+    "COLUMN_NAME": "department_id",
+    "REFERENCED_TABLE_NAME": "departments",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_academics_department_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_academics",
+    "COLUMN_NAME": "section_id",
+    "REFERENCED_TABLE_NAME": "sections",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_academics_section_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_academics",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_academics_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_assignments",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_assignments_topic_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_assignments",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_assignments_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "user_course_enrollments",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "user_course_enrollments_user_id_foreign"
+  },
+  {
+    "TABLE_NAME": "verify_certificates",
+    "COLUMN_NAME": "user_id",
+    "REFERENCED_TABLE_NAME": "users",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_verify_certificates_user_id"
+  },
+  {
+    "TABLE_NAME": "video_banks",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "fk_video_banks_topic_id_implicit"
+  },
+  {
+    "TABLE_NAME": "viva_question_bank",
+    "COLUMN_NAME": "course_id",
+    "REFERENCED_TABLE_NAME": "courses",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "viva_question_bank_course_id_foreign"
+  },
+  {
+    "TABLE_NAME": "viva_question_bank",
+    "COLUMN_NAME": "topic_id",
+    "REFERENCED_TABLE_NAME": "topics",
+    "REFERENCED_COLUMN_NAME": "id",
+    "CONSTRAINT_NAME": "viva_question_bank_topic_id_foreign"
+  }
+]
