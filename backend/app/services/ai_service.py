@@ -14,8 +14,13 @@ class AIService:
         self.base_url = "https://api.deepseek.com"
         
         # Fallback to env var if not in settings yet
+        # Fallback to env var if not in settings yet
         if not self.api_key:
              self.api_key = os.getenv("DEEPSEEK_API_KEY")
+        
+        print(f"DEBUG: Loaded API Key: {self.api_key}")
+        print(f"DEBUG: Config Settings Key: {settings.DEEPSEEK_API_KEY}")
+        print(f"DEBUG: Env Var Key: {os.getenv('DEEPSEEK_API_KEY')}")
 
         if not self.api_key:
             print("⚠️ WARNING: DEEPSEEK_API_KEY is not set. AI features will be disabled.")

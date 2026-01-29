@@ -6,12 +6,15 @@ from sqlalchemy import text
 from app.core.db import get_db, engine
 from app.core.config import settings
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
 
 # CORS Configuration
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "*", # Allow All Origins for Debugging as requested
 ]
 
 app.add_middleware(

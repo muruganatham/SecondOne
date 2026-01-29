@@ -7,3 +7,7 @@ python-dotenv
 cryptography
 pydantic-settings
 openai
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pydantic[email]

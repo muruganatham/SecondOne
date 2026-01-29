@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
-import logo from '../assets/logo.png'; // Make sure this path is correct based on where you moved it
+import logo from '../assets/logo.png';
 import '../App.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,7 +29,8 @@ const Login = () => {
                 console.log('Login successful:', data);
                 // Store token
                 localStorage.setItem('token', data.access_token);
-                alert('Login Successful!');
+                // Redirect to dashboard
+                navigate('/');
             } else {
                 console.error('Login failed:', data.detail);
                 alert(data.detail || 'Login failed. Please check your credentials.');
