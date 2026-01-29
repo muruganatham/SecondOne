@@ -5,7 +5,18 @@ from sqlalchemy import text
 from app.core.db import get_db, engine
 from app.core.config import settings
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow All Origins for Debugging
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
