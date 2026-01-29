@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     
     # Groq API (for LLM if needed)
     GROQ_API_KEY: Optional[str] = None
+    DEEPSEEK_API_KEY: Optional[str] = None
     
     @property
     def DATABASE_URL(self) -> str:

@@ -19,3 +19,7 @@ def health_check(db: Session = Depends(get_db)):
         return {"status": "healthy", "database": "connected", "result": result.scalar()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
+
+# Include AI Router
+from app.api.endpoints import ai_query
+app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI"])
