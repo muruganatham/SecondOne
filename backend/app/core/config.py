@@ -16,11 +16,12 @@ class Settings(BaseSettings):
     # Groq API (for LLM if needed)
     GROQ_API_KEY: Optional[str] = None
     DEEPSEEK_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: Optional[str] = None
     
     # JWT Configuration
     SECRET_KEY: str = "your-secret-key-for-jwt-generation-should-be-random"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 Hours
     
     @property
     def DATABASE_URL(self) -> str:

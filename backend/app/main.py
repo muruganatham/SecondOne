@@ -41,6 +41,9 @@ def health_check(db: Session = Depends(get_db)):
 # Include Routers
 from app.api.endpoints import ai_query
 from app.api.endpoints import auth
+from app.api.endpoints import conversations
 
 app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(conversations.router, prefix="/api/v1/conversations", tags=["Conversations"])
+

@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, Date, N
 from sqlalchemy.orm import relationship
 from app.core.db import Base
 import app.models.enums as Enums
+from datetime import datetime
 
 # Final Stable Models
 # Using Integer for potential Enums that are missing in the Enums file to prevent crashes.
@@ -22,6 +23,23 @@ class Users(Base):
     stats_words_generated = Column(BigInteger, default=0)
     active_streak = Column(Integer, default=0)
     last_active_date = Column(DateTime, nullable=True)
+    
+    # Relationships
+    conversations = relationship('Conversations', back_populates='user', cascade='all, delete-orphan')
+
+class Conversations(Base):
+    __tablename__ = 'conversations'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
+    title = Column(String(255), nullable=False)
+    messages = Column(JSON, nullable=False)  # Store messages as JSON array
+    message_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationship
+    user = relationship('Users', back_populates='conversations')
 
 class Colleges(Base):
     __tablename__ = 'colleges'
@@ -49,3 +67,4 @@ class UserAcademics(Base):
     college = relationship('Colleges', foreign_keys=[college_id])
     department = relationship('Departments', foreign_keys=[department_id])
     user = relationship('Users', foreign_keys=[user_id])
+

@@ -1,0 +1,89 @@
+/* ============================================
+   SPINNER STYLES
+   ============================================ */
+
+.spinner-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.spinner-circle {
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Sizes */
+.spinner-sm .spinner-circle {
+    width: 6px;
+    height: 6px;
+}
+
+.spinner-md .spinner-circle {
+    width: 10px;
+    height: 10px;
+}
+
+.spinner-lg .spinner-circle {
+    width: 14px;
+    height: 14px;
+}
+
+/* Colors */
+.spinner-primary .spinner-circle {
+    background-color: var(--primary-color);
+}
+
+.spinner-white .spinner-circle {
+    background-color: #ffffff;
+}
+
+.spinner-secondary .spinner-circle {
+    background-color: var(--text-secondary);
+}
+
+/* Animation delays */
+.spinner-circle:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.spinner-circle:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Alternative spinner style - rotating */
+.spinner-rotating {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-tertiary);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

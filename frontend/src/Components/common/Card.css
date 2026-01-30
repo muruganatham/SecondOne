@@ -1,0 +1,83 @@
+/* ============================================
+   CARD COMPONENT STYLES
+   ============================================ */
+
+.card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover Effect */
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+    border-color: var(--primary-color);
+}
+
+/* Clickable */
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:active {
+    transform: translateY(0);
+}
+
+/* Shadows */
+.card-shadow-none {
+    box-shadow: none;
+}
+
+.card-shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.card-shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Padding */
+.card-padding-none {
+    padding: 0;
+}
+
+.card-padding-sm {
+    padding: 12px;
+}
+
+.card-padding-md {
+    padding: 16px;
+}
+
+.card-padding-lg {
+    padding: 24px;
+}
+
+/* Border Radius */
+.card-radius-sm {
+    border-radius: 6px;
+}
+
+.card-radius-md {
+    border-radius: 12px;
+}
+
+.card-radius-lg {
+    border-radius: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-padding-md {
+        padding: 14px;
+    }
+
+    .card-padding-lg {
+        padding: 18px;
+    }
+}

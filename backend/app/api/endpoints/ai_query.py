@@ -16,11 +16,15 @@ router = APIRouter()
 
 class AIQueryRequest(BaseModel):
     question: str
+    model: str = "deepseek-chat"  # Default to DeepSeek
 
 class AIQueryResponse(BaseModel):
     answer: str
     sql: str
     data: list
+    follow_ups: list = []
+    requires_confirmation: bool = False
+    affected_rows: int = 0
 
 @router.post("/ask", response_model=AIQueryResponse)
 async def ask_database(
@@ -32,12 +36,17 @@ async def ask_database(
     Process natural language question -> SQL -> Answer
     """
     question = request.question
+    model = request.model
     
     # 1. Get Schema Context (The Prompt)
     system_prompt = schema_context.get_system_prompt()
     
+    # Add current user context to the prompt
+    user_context = f"\n\nIMPORTANT: The current logged-in user has ID = {current_user.id}. When the user asks about 'me', 'my', 'I', or 'current user', use this ID in WHERE clauses like: WHERE user_id = {current_user.id} or WHERE u.id = {current_user.id}"
+    system_prompt_with_context = system_prompt + user_context
+    
     # 2. Get SQL from AI
-    generated_sql = ai_service.generate_sql(system_prompt, question)
+    generated_sql = ai_service.generate_sql(system_prompt_with_context, question, model)
     
     # 3. Execute SQL
     execution_result = sql_executor.execute_query(generated_sql)
@@ -46,15 +55,23 @@ async def ask_database(
         return {
             "answer": f"I couldn't run that query. Error: {execution_result['error']}",
             "sql": generated_sql,
-            "data": []
+            "data": [],
+            "follow_ups": []
         }
         
     data = execution_result["data"]
     
     # 4. Synthesize Human Answer
-    human_answer = ai_service.synthesize_answer(question, generated_sql, data)
+    human_answer = ai_service.synthesize_answer(question, generated_sql, data, model)
 
-    # 5. Update User Stats
+    # 5. Generate Follow-up Questions
+    follow_ups = ai_service.generate_follow_ups(question, human_answer, generated_sql)
+
+    # 6. Check if query is destructive
+    is_destructive = ai_service.is_destructive_query(generated_sql)
+    affected_rows = len(data) if is_destructive else 0
+
+    # 7. Update User Stats
     try:
         current_user.stats_chat_count = (current_user.stats_chat_count or 0) + 1
         
@@ -69,5 +86,8 @@ async def ask_database(
     return {
         "answer": human_answer,
         "sql": generated_sql,
-        "data": data
+        "data": data,
+        "follow_ups": follow_ups,
+        "requires_confirmation": is_destructive,
+        "affected_rows": affected_rows
     }

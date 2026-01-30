@@ -1,0 +1,60 @@
+const API_BASE = 'http://localhost:8000/api/v1';
+
+export const conversationService = {
+    async getAll() {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/conversations/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch conversations');
+        return response.json();
+    },
+
+    async getById(id) {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/conversations/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch conversation');
+        return response.json();
+    },
+
+    async create(conversation) {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/conversations/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(conversation)
+        });
+        if (!response.ok) throw new Error('Failed to create conversation');
+        return response.json();
+    },
+
+    async update(id, conversation) {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/conversations/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(conversation)
+        });
+        if (!response.ok) throw new Error('Failed to update conversation');
+        return response.json();
+    },
+
+    async delete(id) {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/conversations/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to delete conversation');
+        if (response.status === 204) return true;
+        return response.json();
+    }
+};

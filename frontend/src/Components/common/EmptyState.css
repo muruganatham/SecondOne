@@ -1,0 +1,89 @@
+/* ============================================
+   EMPTY STATE STYLES
+   ============================================ */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+    min-height: 300px;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    margin-bottom: 24px;
+    color: var(--text-light);
+    font-size: 2rem;
+}
+
+.empty-state-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke-width: 1.5;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.empty-state-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+}
+
+.empty-state-action {
+    margin-top: 8px;
+}
+
+/* Variants */
+.empty-state-compact {
+    min-height: 200px;
+    padding: 32px 16px;
+}
+
+.empty-state-compact .empty-state-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+}
+
+.empty-state-compact .empty-state-icon svg {
+    width: 30px;
+    height: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .empty-state {
+        padding: 32px 16px;
+        min-height: 250px;
+    }
+
+    .empty-state-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .empty-state-title {
+        font-size: 1.1rem;
+    }
+
+    .empty-state-description {
+        font-size: 0.85rem;
+    }
+}

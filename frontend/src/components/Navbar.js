@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Sun, Moon, Bell, ChevronDown, LogOut } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Sun, Bell, ChevronDown, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
-import '../App.css';
+
 
 function Navbar() {
     const location = useLocation();
@@ -67,80 +67,91 @@ function Navbar() {
 
     return (
         <motion.nav
-            className="navbar"
+            className="sticky top-0 z-50 h-16 bg-slate-50 border-b border-slate-200 shadow-sm"
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ type: "spring", stiffness: 100 }}
         >
-            <div className="navbar-container">
+            <div className="w-full h-full flex items-center justify-between px-0 gap-4">
                 {/* Left: Logo */}
-                <div className="navbar-logo" onClick={() => setShowUserMenu(!showUserMenu)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-                    <img src="/amypo-logo.jpg" alt="Amypo Logo" className="logo-image" style={{ height: '40px', borderRadius: '8px' }} />
-                    Amypo Assistant
+                <div
+                    className="flex items-center gap-3 text-xl font-bold text-slate-800 cursor-pointer"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                    <img src="/logo.png" alt="Amypo Logo" className="h-12 w-auto" />
+                    <span className="text-slate-800">Amypo Assistant</span>
                 </div>
 
                 {/* Center/Right: Navigation & Actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                <div className="flex items-center gap-8">
                     {/* Main Nav Links */}
-                    <div className="navbar-links" style={{ marginRight: '1rem' }}>
-                        <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+                    <div className="flex items-center gap-8 mr-4">
+                        <Link to="/" className={`relative py-5 text-[15px] font-medium transition-colors hover:text-primary flex items-center gap-2 ${location.pathname === '/' ? 'text-primary' : 'text-slate-500'}`}>
                             <LayoutDashboard size={18} />
                             <span>Dashboard</span>
+                            {location.pathname === '/' && (
+                                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary" />
+                            )}
                         </Link>
-                        <Link to="/chat" className={`nav-link ${location.pathname === '/chat' ? 'active' : ''}`}>
+                        <Link to="/chat" className={`relative py-5 text-[15px] font-medium transition-colors hover:text-primary flex items-center gap-2 ${location.pathname === '/chat' ? 'text-primary' : 'text-slate-500'}`}>
                             <MessageSquare size={18} />
                             <span>Chat</span>
+                            {location.pathname === '/chat' && (
+                                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary" />
+                            )}
                         </Link>
                     </div>
 
                     {/* Right Actions Section */}
-                    <div className="navbar-actions">
-                        <button className="icon-btn">
+                    <div className="flex items-center gap-6">
+                        <button className="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors flex items-center justify-center">
                             <Sun size={20} />
                         </button>
-                        <button className="icon-btn">
+                        <button className="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition-colors flex items-center justify-center">
                             <Bell size={20} />
                         </button>
 
                         {/* User Profile Block */}
-                        {/* User Profile Block */}
-                        <div className="profile-section-wrapper" style={{ position: 'relative' }}>
+                        <div className="relative profile-section-wrapper">
                             <div
-                                className="profile-section"
+                                className="flex items-center gap-3 pl-6 border-l border-slate-200 cursor-pointer hover:opacity-80 transition-opacity"
                                 onClick={() => setShowUserMenu(!showUserMenu)}
                             >
-                                <div className="user-avatar-small">
+                                <div className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                                     {user.initials}
                                 </div>
-                                <div className="user-info-mini">
-                                    <span className="user-name">{user.name}</span>
-                                    <span className="user-role">{user.role}</span>
+                                <div className="flex flex-col items-start">
+                                    <span className="text-sm font-semibold text-slate-800 leading-tight">{user.name}</span>
+                                    <span className="text-xs text-slate-500 leading-tight">{user.role}</span>
                                 </div>
-                                <ChevronDown size={16} color="var(--text-secondary)" />
+                                <ChevronDown size={16} className="text-slate-500" />
                             </div>
 
                             {/* Dropdown Menu */}
                             {showUserMenu && (
                                 <motion.div
-                                    className="user-dropdown-menu"
+                                    className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50"
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
                                 >
-                                    <div className="dropdown-header">
-                                        <div className="user-avatar-small" style={{ width: '32px', height: '32px', fontSize: '0.9rem' }}>
+                                    <div className="px-4 py-3 flex items-center gap-3 border-b border-slate-100">
+                                        <div className="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                                             {user.initials}
                                         </div>
                                         <div>
-                                            <div className="dropdown-name">{user.name}</div>
-                                            <div className="dropdown-email" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.role}</div>
+                                            <div className="font-semibold text-slate-800">{user.name}</div>
+                                            <div className="text-xs text-slate-500">{user.role}</div>
                                         </div>
                                     </div>
-                                    <div className="dropdown-divider"></div>
-                                    <div className="dropdown-divider"></div>
-                                    <button className="dropdown-item logout" onClick={handleLogout}>
-                                        <LogOut size={16} /> Sign out
-                                    </button>
+                                    <div className="py-2">
+                                        <button
+                                            className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut size={16} /> Sign out
+                                        </button>
+                                    </div>
                                 </motion.div>
                             )}
                         </div>

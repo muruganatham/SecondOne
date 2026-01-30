@@ -1,0 +1,179 @@
+/* ============================================
+   DATA VISUALIZATION STYLES
+   ============================================ */
+
+.data-visualization {
+    margin-top: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Chart Controls */
+.chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-primary);
+}
+
+.chart-type-selector {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-tertiary);
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.chart-type-selector button {
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chart-type-selector button:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.chart-type-selector button.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.chart-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auto-badge {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: capitalize;
+}
+
+/* Chart Container */
+.chart-container {
+    padding: 24px 16px;
+    background: var(--bg-primary);
+}
+
+/* Table Styles */
+.data-table-container {
+    max-height: 400px;
+    overflow: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    z-index: 10;
+}
+
+.data-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.data-table tbody tr:hover {
+    background: var(--bg-tertiary);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Data Summary */
+.data-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-tertiary);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    border-top: 1px solid var(--border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chart-controls {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .chart-type-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .chart-type-selector button {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .data-table-container {
+        max-height: 300px;
+    }
+
+    .data-table {
+        font-size: 0.8rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 12px;
+    }
+}
+
+/* Recharts Customization */
+.recharts-wrapper {
+    font-family: var(--font-main);
+}
+
+.recharts-legend-wrapper {
+    padding-top: 16px !important;
+}
+
+.recharts-legend-item-text {
+    color: var(--text-secondary) !important;
+    font-size: 0.85rem !important;
+}
+
+.recharts-tooltip-wrapper {
+    outline: none !important;
+}
