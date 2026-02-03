@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import MainLayout from './components/Layout/MainLayout';
+import MainLayout from './Components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import ChatUI from './pages/ChatUI';
-import Login from './components/Login';
+import SuperAdmin from './pages/SuperAdmin';
+import Login from './Components/Login';
 
 // Helper component to conditionally render layout (e.g. skip for Login)
 const AppLayout = ({ children }) => {
@@ -47,6 +48,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChatUI />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/super-admin"
+            element={
+              <ProtectedRoute>
+                <SuperAdmin />
               </ProtectedRoute>
             }
           />

@@ -8,6 +8,7 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    role_id: int
 
 class UserResponse(BaseModel):
     id: str  # Users.id is String in models.py

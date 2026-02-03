@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Hash, GraduationCap, MessageSquare, Clock, Zap, Search, LayoutDashboard, LogOut, ArrowRight } from 'lucide-react';
 import { conversationService } from '../services/conversationService';
-import PageContainer from '../components/Layout/PageContainer';
+import PageContainer from '../Components/Layout/PageContainer';
+import SuperAdmin from './SuperAdmin';
 
 
 const StatCard = ({ icon: Icon, label, value, trend, color, onClick }) => (
@@ -126,6 +127,12 @@ function Dashboard() {
                 </button>
             </div>
         );
+
+    }
+
+    // Role-based Dashboard Switching
+    if (user.role === 'Super Admin') {
+        return <SuperAdmin />;
     }
 
     return (

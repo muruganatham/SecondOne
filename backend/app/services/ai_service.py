@@ -100,34 +100,38 @@ class AIService:
         except Exception as e:
              return f"Here is the data: {row_data}"
 
-    def generate_follow_ups(self, user_question: str, answer: str, sql_query: str) -> list:
+    def generate_follow_ups(self, user_question: str, sql_query: str, data: list = None, answer: str = None) -> list:
         """
-        Generates 3 contextual follow-up questions based on the conversation
+        Generates 3 contextual follow-up questions independent of the final answer text
         """
         if not self.client:
-            return [
-                "Can you show me more details?",
-                "How does this compare to other records?",
-                "What are the trends over time?"
-            ]
+            return ["Show more details", "Visualization", "Export data"]
 
+        # Context based on data presence
+        context = f"Data Returned: {str(data)[:500]}..." if data else f"SQL: {sql_query}"
+        
         prompt = f"""
         User asked: "{user_question}"
+        AI Answer: "{str(answer)[:300]}..."
+        Data Context: {context}
         
-        We answered: "{answer}"
+        Task: Act as an insightful Analytics Consultant. Generate 3 high-value follow-up questions.
+        Strategy:
+        1. One "Drill Down" (specific detail).
+        2. One "Trend/Comparison" (broader insight).
+        3. One "Visual/Actionable" request.
         
-        SQL used: {sql_query}
-        
-        Task: Generate 3 smart follow-up questions the user might want to ask next.
-        Make them specific to the data and context.
-        Return ONLY the 3 questions, one per line, no numbering or extra text.
+        Rules:
+        - Keep questions concise (under 12 words).
+        - Direct and natural phrasing.
+        - Return ONLY the questions, separated by newlines.
         """
         
         try:
             response = self.client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that suggests relevant follow-up questions."},
+                    {"role": "system", "content": "You are a helpful data analyst assistant."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,
@@ -139,18 +143,11 @@ class AIService:
             follow_ups = [q.strip() for q in follow_ups_text.split('\n') if q.strip()]
             
             # Return first 3 questions
-            return follow_ups[:3] if len(follow_ups) >= 3 else follow_ups + [
-                "Can you show me more details?",
-                "How does this compare to others?"
-            ][:3-len(follow_ups)]
+            return follow_ups[:3] if len(follow_ups) >= 3 else follow_ups
             
         except Exception as e:
             print(f"❌ Follow-up generation error: {e}")
-            return [
-                "Can you show me more details about this?",
-                "How does this compare to other records?",
-                "What are the trends over time?"
-            ]
+            return ["Show details", "Analyze trends", "Compare values"]
 
     def _get_client(self, model: str):
         """Get the appropriate client based on model name"""

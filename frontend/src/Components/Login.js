@@ -28,8 +28,12 @@ const Login = () => {
                 console.log('Login successful:', data);
                 // Store token
                 localStorage.setItem('token', data.access_token);
-                // Redirect to dashboard
-                navigate('/');
+                // Redirect based on role
+                if (data.role_id === 1) {
+                    navigate('/super-admin');
+                } else {
+                    navigate('/');
+                }
             } else {
                 console.error('Login failed:', data.detail);
                 alert(data.detail || 'Login failed. Please check your credentials.');

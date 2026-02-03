@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Lightbulb, Download, Terminal, Brain, Cpu } from 'lucide-react';
-import ChatSidebar from '../components/ChatSidebar';
-import DataVisualization from '../components/DataVisualization';
-import ConfirmationModal from '../components/ConfirmationModal';
+import { Send, Bot, User, Lightbulb, Download, Terminal, Brain, Cpu, Square } from 'lucide-react';
+import ChatSidebar from '../Components/ChatSidebar';
+import DataVisualization from '../Components/DataVisualization';
+import ConfirmationModal from '../Components/ConfirmationModal';
 import { conversationService } from '../services/conversationService';
 import logo from '../assets/logo.png'; // Make sure this path is correct
 import headerLogo from '../assets/header_logo.png';
@@ -129,8 +129,27 @@ function ChatUI() {
         }
     };
 
+    const abortControllerRef = useRef(null);
+
+    const stopGeneration = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            abortControllerRef.current = null;
+            setIsLoading(false);
+        }
+    };
+
     const sendMessage = async () => {
+        if (isLoading) {
+            stopGeneration();
+            return;
+        }
+
         if (!input.trim()) return;
+
+        // Abort previous if any
+        if (abortControllerRef.current) abortControllerRef.current.abort();
+        abortControllerRef.current = new AbortController();
 
         const userMessage = { sender: 'user', text: input };
         const updatedMessages = [...messages, userMessage];
@@ -148,6 +167,7 @@ function ChatUI() {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ question: input }),
+                signal: abortControllerRef.current.signal
             });
 
             const data = await response.json();
@@ -172,6 +192,11 @@ function ChatUI() {
             await saveConversation(finalMessages);
 
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+                setMessages([...updatedMessages, { sender: 'system', text: '🛑 Request cancelled by user.' }]);
+                return;
+            }
             console.error('Error:', error);
             const errorMessage = {
                 sender: 'ai',
@@ -181,6 +206,7 @@ function ChatUI() {
             setMessages(finalMessages);
         } finally {
             setIsLoading(false);
+            abortControllerRef.current = null;
         }
     };
 
@@ -442,8 +468,8 @@ function ChatUI() {
                                                             {msg.text}
                                                         </div>
 
-                                                        {/* SQL Query Block */}
-                                                        {msg.sql && (
+                                                        {/* SQL Query Block - Hide if it's a dummy greeting query */}
+                                                        {msg.sql && !msg.sql.includes("SELECT 'Hello'") && !msg.sql.includes("SELECT 'Knowledge Query'") && (
                                                             <motion.details
                                                                 className="mt-4 border border-emerald-200 rounded-xl overflow-hidden bg-white shadow-sm"
                                                                 initial={{ opacity: 0, y: 10 }}
@@ -460,8 +486,8 @@ function ChatUI() {
                                                             </motion.details>
                                                         )}
 
-                                                        {/* Data Visualization */}
-                                                        {msg.data && Array.isArray(msg.data) && msg.data.length > 0 && (
+                                                        {/* Data Visualization - Hide for general conversation */}
+                                                        {msg.data && Array.isArray(msg.data) && msg.data.length > 0 && (!msg.sql || (!msg.sql.includes("SELECT 'Hello'") && !msg.sql.includes("SELECT 'Knowledge Query'"))) && (
                                                             <motion.div
                                                                 className="mt-4"
                                                                 initial={{ opacity: 0, y: 10 }}
@@ -473,7 +499,7 @@ function ChatUI() {
                                                         )}
 
                                                         {/* Follow-up Questions */}
-                                                        {msg.sender === 'ai' && index === messages.length - 2 && followUpQuestions.length > 0 && (
+                                                        {msg.sender === 'ai' && index === messages.length - 1 && followUpQuestions.length > 0 && (
                                                             <motion.div
                                                                 className="mt-5"
                                                                 initial={{ opacity: 0, y: 10 }}
@@ -552,14 +578,17 @@ function ChatUI() {
                                             disabled={isLoading}
                                         />
                                         <motion.button
-                                            onClick={sendMessage}
-                                            disabled={isLoading || !input.trim()}
-                                            className="px-5 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 font-semibold shadow-lg shadow-emerald-500/30 disabled:shadow-none"
+                                            onClick={isLoading ? stopGeneration : sendMessage}
+                                            disabled={!isLoading && !input.trim()}
+                                            className={`px-5 py-3 rounded-xl transition-all flex items-center gap-2 font-semibold shadow-lg disabled:shadow-none ${isLoading
+                                                ? 'bg-red-500 text-white hover:bg-red-600 shadow-red-500/30'
+                                                : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed'
+                                                }`}
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
                                         >
-                                            <Send size={18} strokeWidth={2.5} />
-                                            <span className="hidden sm:inline">{isLoading ? 'Sending...' : 'Send'}</span>
+                                            {isLoading ? <Square size={18} fill="currentColor" /> : <Send size={18} strokeWidth={2.5} />}
+                                            <span className="hidden sm:inline">{isLoading ? 'Stop' : 'Send'}</span>
                                         </motion.button>
                                     </div>
                                     <p className="text-center mt-3 text-xs text-slate-400">

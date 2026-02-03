@@ -242,4 +242,4 @@ function DataVisualization({ data, sql }) {
     );
 }
 
-export default DataVisualization;
+export default React.memo(DataVisualization);
