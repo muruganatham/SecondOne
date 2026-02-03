@@ -80,12 +80,16 @@ async def ask_database(
            - Interpretation: Treat "Skills" as "Coding Results", "Badges", or "Marks".
            - Note: Tables like `admin_coding_result` ARE ALLOWED if filtered by `user_id`.
            - SQL Rule: MUST include "WHERE user_id = '{current_user.id}'" (or "WHERE id = '{current_user.id}'" for `users` table).
-        2. ALLOWED: **Department & Class Analytics** (Aggregates Only) for '{dept_id}'.
-           - You MAY calculate metrics for specific Classes, Years, Semesters, or Batches WITHIN '{dept_id}'.
-           - SQL Rule: MUST include "WHERE department_id = '{dept_id}'".
-        3. ALLOWED: **General Conversation & Knowledge** (Non-Data).
-           - Example: "Hi", "Hello", "How does this work?", "What skills do I need for project X?", "Explain Python".
-           - SQL Rule: Generate "SELECT 'Knowledge Query'".
+           - **PERFORMANCE ANALYSIS & IMPROVEMENT**:
+             - **Trigger**: "Analyze my result", "How can I improve?", "Weakness?", "Suggestion".
+             - **Action**: You MUST fetch data before giving advice.
+         2. ALLOWED: **Department & Class Analytics** (Aggregates Only) for '{dept_id}'.
+            - You MAY calculate metrics for specific Classes, Years, Semesters, or Batches WITHIN '{dept_id}'.
+            - SQL Rule: MUST include "WHERE department_id = '{dept_id}'".
+         3. ALLOWED: **General Conversation & Knowledge** (Non-Data).
+            - Example: "Hi", "Hello", "How does this work?", "What skills do I need for project X?" (Generic).
+            - **CRITICAL**: If user asks about "My" results/improvement, DO NOT generate "Knowledge Query". Query the DB.
+            - SQL Rule: Generate "SELECT 'Knowledge Query'".
            
         RESTRICTIONS (STRICT):
         1. FORBIDDEN: Do NOT retrieve details of **individual students** OTHER THAN YOURSELF.
@@ -168,9 +172,35 @@ async def ask_database(
            - RESTRICTION: Do not generate global system stats.
            - SQL RULE: Any `COUNT`, `AVG`, `SUM` must have `WHERE college_id = '{college_id}'` (or equivalent JOIN).
            
-        4. **PERSONAL DATA**
+        4. **SMART JOB ROLE MATCHING (Recruitment Intelligence)**
+           - **TRIGGER**: "Who is fit for [Company]?", "Will [Student Name] crack [Company]?", "Review [Student] for [Role]".
+           - **ANALYTICAL TASK**: Behavie like a Recruitment Analyst.
+             1. **Context**: If a specific student is named, analyze THEIR performance. If no name, find top candidates.
+             2. **Inference**: Map Company/Role -> Skills (e.g. Wipro -> Aptitude, Logical, Coding Basics).
+           - **SQL IMPLEMENTATION**:
+             - **Tables**: `users` u, `course_wise_segregations` cws, `courses` c.
+             - **Joins**: `u.id = cws.user_id`, `cws.course_id = c.id`, `u.id = ua.user_id`.
+             - **Logic**: 
+               - If Student Name mentions: `u.name LIKE '%[Name]%'`.
+               - Skills: `c.course_name` matches inferred skills.
+             - **Output**: Select student name, course name, score/rank.
+             - **Constraint**: ALWAYS `WHERE ua.college_id = '{college_id}'`.
+           
+        5. **STUDENT RESULTS & ACADEMIC PERFORMANCE**
+           - **ALLOWED**: Detailed marks, scores, and status for any student.
+           - **TARGET TABLES**: `admin_coding_result`, `admin_mcq_result`, `course_wise_segregations`.
+           - **JOIN STRATEGY**: `result_table` -> `users` -> `user_academics`.
+           - **SCOPE**: You MUST filter by `ua.college_id = '{college_id}'` to access "every student" in your college.
+           - **Example**: "Show results of every student", "List marks of all CSE students".
+
+        6. **PERSONAL DATA**
            - ALLOWED: "Me", "My Profile".
            - SQL: `SELECT * FROM users WHERE id = '{current_user.id}'`
+
+        7. **GENERAL CONVERSATION & KNOWLEDGE** (Non-Data)
+           - **TRIGGER**: Purely educational questions like "What is Python?", "How to prepare for TCS?".
+           - **CRITICAL EXCEPTION**: If the user mentions a **Student Name**, **ID**, or asks to **Predict/Analyze** a person, you MUST generate a SQL query (Use Rule #4 or #5).
+           - **SQL Rule**: Only if NO specific person is mentioned, generate: `SELECT 'Knowledge Query'`
 
         NON-NEGOTIABLE RESTRICTIONS:
         
@@ -263,6 +293,18 @@ async def ask_database(
     # 2. Get SQL from AI
     generated_sql = ai_service.generate_sql(system_prompt_with_context, question, model)
     
+    # 2.4 Intercept Knowledge Queries (General Q&A)
+    if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
+        human_answer = ai_service.answer_general_question(question, model)
+        return {
+            "answer": human_answer,
+            "sql": "-- General Knowledge Query (No DB Access)",
+            "data": [],
+            "follow_ups": [],
+            "requires_confirmation": False,
+            "affected_rows": 0
+        }
+
     # 2.5 Intercept Access Denied
     if "ACCESS_DENIED_VIOLATION" in generated_sql:
         denial_reason = "Access Denied: You do not have permission to view this data."

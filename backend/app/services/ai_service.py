@@ -6,7 +6,6 @@ import os
 from openai import OpenAI
 from app.core.config import settings
 from typing import Optional
-
 class AIService:
     def __init__(self):
         # Initialize DeepSeek client
@@ -107,31 +106,41 @@ class AIService:
         if not self.client:
             return ["Show more details", "Visualization", "Export data"]
 
-        # Context based on data presence
-        context = f"Data Returned: {str(data)[:500]}..." if data else f"SQL: {sql_query}"
+        # Optimize Context
+        data_preview = "No Data"
+        if data:
+            # Create a structured preview of the first few items to help AI pick names/values
+            try:
+                # If data is list of objects/dicts
+                preview_items = data[:3]
+                data_preview = str(preview_items)
+            except:
+                data_preview = str(data)[:500]
         
         prompt = f"""
-        User asked: "{user_question}"
-        AI Answer: "{str(answer)[:300]}..."
-        Data Context: {context}
+        [SCENARIO]
+        User Query: "{user_question}"
+        Data Findings: {data_preview}
         
-        Task: Act as an insightful Analytics Consultant. Generate 3 high-value follow-up questions.
-        Strategy:
-        1. One "Drill Down" (specific detail).
-        2. One "Trend/Comparison" (broader insight).
-        3. One "Visual/Actionable" request.
+        [TASK]
+        As an expert Data Analyst, suggest 3 "Next Logical Questions" the user should ask to dig deeper.
         
-        Rules:
-        - Keep questions concise (under 12 words).
-        - Direct and natural phrasing.
-        - Return ONLY the questions, separated by newlines.
+        [STRATEGY]
+        1. **Drill Down**: specific detail query (e.g., "Show [Student Name]'s marks" if a name appears).
+        2. **Pivot/Compare**: comparative insight (e.g., "How does this compare to class average?").
+        3. **Actionable**: a decision-support query (e.g., "Who needs improvement?").
+        
+        [CONSTRAINTS]
+        - If specific names/roles appear in Data Findings, USE THEM in the questions (e.g. "What about [Name]?").
+        - Keep questions short, natural, and useful.
+        - Output strictly 3 lines. No numbering.
         """
         
         try:
             response = self.client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[
-                    {"role": "system", "content": "You are a helpful data analyst assistant."},
+                    {"role": "system", "content": "You are a helpful data analyst assistant. Generate only the questions, one per line."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,
@@ -142,12 +151,21 @@ class AIService:
             follow_ups_text = response.choices[0].message.content.strip()
             follow_ups = [q.strip() for q in follow_ups_text.split('\n') if q.strip()]
             
-            # Return first 3 questions
-            return follow_ups[:3] if len(follow_ups) >= 3 else follow_ups
+            # Clean up numbering if present (1. , - , etc)
+            cleaned_follow_ups = []
+            for q in follow_ups:
+                # Remove leading numbers or dashes
+                import re
+                clean_q = re.sub(r'^[\d\-\.\)\s]+', '', q)
+                cleaned_follow_ups.append(clean_q)
+            
+            return cleaned_follow_ups[:3] if len(cleaned_follow_ups) >= 3 else cleaned_follow_ups
             
         except Exception as e:
             print(f"❌ Follow-up generation error: {e}")
-            return ["Show details", "Analyze trends", "Compare values"]
+            return ["Analyze further", "Show details", "Visualize result"]
+            
+
 
     def _get_client(self, model: str):
         """Get the appropriate client based on model name"""
@@ -173,5 +191,29 @@ class AIService:
                 return True
         
         return False
+
+    def answer_general_question(self, user_question: str, model: str = "deepseek-chat") -> str:
+        """
+        Answers general knowledge questions using the LLM directly, skipping database context.
+        """
+        client = self._get_client(model)
+        if not client:
+            return "I cannot answer this question as the AI service is unavailable."
+
+        try:
+            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": "You are a helpful IT and Educational Consultant. Answer the user's question accurately based on general knowledge. Do not mention that you cannot access the database. Be helpful, professional, and concise."},
+                    {"role": "user", "content": user_question},
+                ],
+                max_tokens=500,
+                temperature=0.7
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"❌ General Answer Error: {e}")
+            return "I encountered an error while processing your request."
 
 ai_service = AIService()

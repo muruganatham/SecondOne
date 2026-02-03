@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '../config';
+
+const API_BASE = API_BASE_URL;
 
 export const conversationService = {
     async getAll() {

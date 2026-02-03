@@ -1,34 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Hash, GraduationCap, MessageSquare, Clock, Zap, Search, LayoutDashboard, LogOut, ArrowRight } from 'lucide-react';
-import { conversationService } from '../services/conversationService';
+import { Hash, GraduationCap, MessageSquare, Clock, Zap, Search, LayoutDashboard, LogOut, ArrowRight, Terminal } from 'lucide-react';
 import PageContainer from '../Components/Layout/PageContainer';
 import SuperAdmin from './SuperAdmin';
-
+import { API_BASE_URL } from '../config';
 
 const StatCard = ({ icon: Icon, label, value, trend, color, onClick }) => (
     <motion.div
-        whileHover={{ y: -4 }}
-        className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all cursor-pointer group relative overflow-hidden"
+        whileHover={{ y: -4, boxShadow: "0 10px 30px -10px rgba(0, 255, 157, 0.1)" }}
+        className="bg-[#0a0a0a]/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-white/5 hover:border-[#00ff9d]/30 transition-all cursor-pointer group relative overflow-hidden"
         onClick={onClick}
     >
-        <div className={`absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity ${color.replace('bg-', 'text-')}`}>
-            <Icon size={80} />
+        <div className={`absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity text-white`}>
+            <Icon size={120} />
         </div>
         <div className="flex items-start justify-between mb-4">
-            <div className={`p-3 rounded-xl ${color} text-white shadow-md shadow-slate-200`}>
+            <div className={`p-3 rounded-xl bg-white/5 text-[#00ff9d] border border-[#00ff9d]/20 shadow-inner group-hover:text-white group-hover:bg-[#00ff9d] transition-all duration-300`}>
                 <Icon size={24} />
             </div>
             {trend && (
-                <span className="bg-green-100 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                <span className="bg-[#00ff9d]/10 text-[#00ff9d] text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 border border-[#00ff9d]/20 font-mono">
                     {trend}
                 </span>
             )}
         </div>
         <div>
-            <p className="text-slate-500 text-sm font-medium mb-1">{label}</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight">{value}</h3>
+            <p className="text-gray-500 text-xs font-mono font-medium mb-1 uppercase tracking-wider">{label}</p>
+            <h3 className="text-3xl font-bold text-white tracking-tight">{value}</h3>
         </div>
     </motion.div>
 );
@@ -39,17 +38,17 @@ const ActionCard = ({ icon: Icon, title, description, onClick, delay }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay }}
         onClick={onClick}
-        className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-primary/30 hover:bg-slate-50 transition-all cursor-pointer group flex items-start gap-5"
+        className="bg-[#0a0a0a]/80 p-6 rounded-2xl border border-white/5 shadow-sm hover:shadow-[0_0_20px_rgba(0,255,157,0.1)] hover:border-[#00ff9d]/40 transition-all cursor-pointer group flex items-start gap-5"
     >
-        <div className="p-4 rounded-xl bg-slate-100 text-slate-500 group-hover:bg-primary group-hover:text-white transition-all duration-300 shrink-0">
+        <div className="p-4 rounded-xl bg-white/5 text-gray-400 group-hover:bg-[#00ff9d] group-hover:text-black transition-all duration-300 shrink-0">
             <Icon size={24} />
         </div>
         <div>
-            <h3 className="text-lg font-bold text-slate-800 group-hover:text-primary transition-colors flex items-center gap-2">
+            <h3 className="text-lg font-bold text-gray-200 group-hover:text-[#00ff9d] transition-colors flex items-center gap-2">
                 {title}
-                <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 transform text-[#00ff9d]" />
             </h3>
-            <p className="text-slate-500 text-sm leading-relaxed mt-1 group-hover:text-slate-600">
+            <p className="text-gray-500 text-sm leading-relaxed mt-1 group-hover:text-gray-400 font-mono">
                 {description}
             </p>
         </div>
@@ -70,7 +69,7 @@ function Dashboard() {
                     setLoading(false);
                     return;
                 }
-                const response = await fetch('http://localhost:8000/api/v1/auth/me', {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -109,21 +108,22 @@ function Dashboard() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-slate-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="flex justify-center items-center h-screen bg-[#050505]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00ff9d]"></div>
             </div>
         );
     }
 
     if (!user) {
         return (
-            <div className="text-center mt-20 p-8 bg-white rounded-2xl shadow-sm max-w-md mx-auto border border-slate-100">
-                <p className="text-slate-500 font-medium">Please log in to view the dashboard.</p>
+            <div className="text-center mt-20 p-8 bg-[#0a0a0a] rounded-2xl shadow-2xl max-w-md mx-auto border border-white/10">
+                <Terminal size={48} className="text-[#00ff9d] mx-auto mb-4 opacity-50" />
+                <p className="text-gray-400 font-medium font-mono mb-6">Unauthorized Access. Please authenticate.</p>
                 <button
                     onClick={() => navigate('/login')}
-                    className="mt-4 px-6 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transition-colors font-medium"
+                    className="mt-4 px-6 py-2 bg-[#00ff9d] text-black rounded-xl hover:bg-[#00cc7d] transition-colors font-bold shadow-[0_0_15px_rgba(0,255,157,0.3)]"
                 >
-                    Go to Login
+                    INITIATE LOGIN
                 </button>
             </div>
         );
@@ -136,19 +136,23 @@ function Dashboard() {
     }
 
     return (
-        <PageContainer className="py-8">
+        <PageContainer className="py-8 bg-[#050505] min-h-screen text-gray-200">
             {/* Header / Hero Section */}
             <header className="mb-10 text-center sm:text-left">
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-3xl"
+                    className="max-w-4xl"
                 >
-                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-                        Welcome back! <span className="text-primary">{user.name.split(' ')[0]}</span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ff9d]/10 border border-[#00ff9d]/20 text-[#00ff9d] text-xs font-mono mb-4">
+                        <div className="w-2 h-2 rounded-full bg-[#00ff9d] animate-pulse"></div>
+                        SYSTEM OPERATIONAL
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-white tracking-tight mb-3">
+                        Welcome Back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-emerald-600">{user.name.split(' ')[0]}</span>
                     </h1>
-                    <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                        Here's an overview of your student database and learning analytics.
+                    <p className="text-lg text-gray-500 font-medium leading-relaxed font-mono max-w-2xl">
+                        Neural interface connected. Accessing student database and learning analytics modules.
                     </p>
                 </motion.div>
             </header>
@@ -157,7 +161,7 @@ function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <StatCard
                     icon={MessageSquare}
-                    label="Total Chats"
+                    label="Total Queries"
                     value={user.stats_chat_count || 0}
                     trend="+12%"
                     color="bg-emerald-500"
@@ -165,9 +169,9 @@ function Dashboard() {
                 />
                 <StatCard
                     icon={Zap}
-                    label="Words Generated"
+                    label="Tokens Processed"
                     value={user.stats_words_generated ? (user.stats_words_generated > 1000 ? (user.stats_words_generated / 1000).toFixed(1) + 'k' : user.stats_words_generated) : '0'}
-                    trend="+4"
+                    trend="OPTIMIZED"
                     color="bg-blue-500"
                     onClick={() => { }}
                 />
@@ -175,15 +179,15 @@ function Dashboard() {
                     icon={Clock}
                     label="Active Streak"
                     value={`${user.active_streak || 0} Days`}
-                    trend="Keep it up!"
+                    trend="KEEP GOING"
                     color="bg-amber-500"
                     onClick={() => { }}
                 />
                 <StatCard
                     icon={GraduationCap}
-                    label="Role"
+                    label="Clearance Level"
                     value={user.role || 'Student'}
-                    trend="Active"
+                    trend="ACTIVE"
                     color="bg-purple-500"
                     onClick={() => { }}
                 />
@@ -193,13 +197,16 @@ function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Available Actions - Spans 2 columns */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-slate-800">Quick Actions</h2>
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <Terminal size={20} className="text-[#00ff9d]" />
+                            Command Modules
+                        </h2>
                         <button
                             onClick={handleNewChat}
-                            className="text-primary font-semibold hover:text-primary-hover flex items-center gap-1 text-sm bg-primary/10 px-3 py-1.5 rounded-lg transition-colors group"
+                            className="text-[#00ff9d] font-bold hover:text-white flex items-center gap-2 text-sm bg-[#00ff9d]/10 border border-[#00ff9d]/30 px-4 py-2 rounded-lg transition-all group hover:bg-[#00ff9d]/20 hover:shadow-[0_0_15px_rgba(0,255,157,0.2)]"
                         >
-                            Start New Query <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            INIT_QUERY <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
 
@@ -207,28 +214,28 @@ function Dashboard() {
                         <ActionCard
                             icon={Search}
                             title="Query Records"
-                            description="Find students by analyzing database records using natural language."
+                            description="Deep search student records using natural language processing."
                             onClick={handleNewChat}
                             delay={0.1}
                         />
                         <ActionCard
                             icon={LayoutDashboard}
                             title="Generate Reports"
-                            description="Create visual summaries and performance reports instantly."
+                            description="Compile visual performance metrics and analytics instantly."
                             onClick={handleNewChat}
                             delay={0.2}
                         />
                         <ActionCard
                             icon={MessageSquare}
                             title="Analyze Feedback"
-                            description="Process student survey data and feedback forms."
+                            description="Process unstructured student survey data and forms."
                             onClick={handleNewChat}
                             delay={0.3}
                         />
                         <ActionCard
                             icon={Hash}
-                            title="Search History"
-                            description="Browse through your past search queries and results."
+                            title="Query Logs"
+                            description="Audit past search queries and system interaction logs."
                             onClick={handleSearchHistory}
                             delay={0.4}
                         />
@@ -238,44 +245,47 @@ function Dashboard() {
                 {/* Profile Sidebar - Spans 1 column */}
                 <div className="lg:col-span-1">
                     <motion.div
-                        className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-3xl p-8 text-center sticky top-24 shadow-sm hover:shadow-md transition-all duration-300"
+                        className="bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-8 text-center sticky top-24 shadow-2xl relative overflow-hidden group"
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.5 }}
                     >
-                        <div className="relative inline-block mb-4 group">
-                            <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-blue-500 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500"></div>
+                        {/* Holographic BG Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#00ff9d]/5 to-purple-900/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                        <div className="relative inline-block mb-6 group/avatar z-10">
+                            <div className="absolute -inset-2 bg-gradient-to-tr from-[#00ff9d] to-emerald-600 rounded-full opacity-20 group-hover/avatar:opacity-40 blur-md transition duration-500 animate-pulse"></div>
                             <img
-                                src={`https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}&background=2E8B57&color=fff&size=128`}
+                                src={`https://ui-avatars.com/api/?name=${user.name.replace(' ', '+')}&background=000&color=00ff9d&size=128&bold=true`}
                                 alt="Profile"
-                                className="relative w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto"
+                                className="relative w-28 h-28 rounded-full border-2 border-[#00ff9d]/50 shadow-[0_0_20px_rgba(0,255,157,0.2)] mx-auto p-1 bg-black"
                             />
-                            <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
+                            <div className="absolute bottom-1 right-2 w-4 h-4 bg-[#00ff9d] border-2 border-black rounded-full shadow-[0_0_10px_#00ff9d]"></div>
                         </div>
 
-                        <h3 className="text-xl font-bold text-slate-900 mb-1">{user.name}</h3>
-                        <p className="text-slate-500 text-sm mb-6">{user.role === 'admin' ? 'System Administrator' : 'User'}</p>
+                        <h3 className="text-xl font-bold text-white mb-1 tracking-wide z-10 relative">{user.name}</h3>
+                        <p className="text-gray-500 text-xs font-mono mb-6 uppercase tracking-widest z-10 relative">{user.role === 'admin' ? 'sys_admin_root' : 'standard_user'}</p>
 
-                        <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <span className="block text-slate-400 text-xs uppercase font-semibold">Email</span>
-                                <span className="font-medium text-slate-700 truncate" title={user.email}>{user.email.split('@')[0]}</span>
+                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm z-10 relative">
+                            <div className="bg-black/50 p-3 rounded-xl border border-white/5 backdrop-blur-sm">
+                                <span className="block text-gray-500 text-[10px] uppercase font-bold mb-1">ID / Email</span>
+                                <span className="font-mono text-gray-300 truncate text-xs" title={user.email}>{user.email.split('@')[0]}</span>
                             </div>
-                            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <span className="block text-slate-400 text-xs uppercase font-semibold">College</span>
-                                <span className="font-medium text-slate-700 truncate" title={user.college}>{user.college || 'N/A'}</span>
+                            <div className="bg-black/50 p-3 rounded-xl border border-white/5 backdrop-blur-sm">
+                                <span className="block text-gray-500 text-[10px] uppercase font-bold mb-1">Affiliation</span>
+                                <span className="font-mono text-gray-300 truncate text-xs" title={user.college}>{user.college || 'N/A'}</span>
                             </div>
                         </div>
 
                         <button
-                            className="w-full flex items-center justify-center gap-2 text-slate-600 hover:text-red-500 hover:bg-red-50 py-3 rounded-xl transition-all font-medium border border-transparent hover:border-red-100 group"
+                            className="w-full flex items-center justify-center gap-2 text-gray-400 hover:text-red-400 hover:bg-red-900/10 py-3 rounded-xl transition-all font-bold border border-white/5 hover:border-red-500/30 group z-10 relative text-sm uppercase tracking-wide"
                             onClick={() => {
                                 localStorage.removeItem('token');
                                 window.location.href = '/login';
                             }}
                         >
-                            <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-                            <span>Sign Out</span>
+                            <LogOut size={16} className="group-hover:translate-x-1 transition-transform" />
+                            <span>Terminate Session</span>
                         </button>
                     </motion.div>
                 </div>

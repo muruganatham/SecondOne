@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Plus, Search, Home, Trash2, X, Pin, PinOff } from 'lucide-react';
+import { MessageSquare, Plus, Search, Home, Trash2, X, Pin, PinOff, Terminal } from 'lucide-react';
 
 function ChatSidebar({
     conversations,
@@ -86,100 +86,90 @@ function ChatSidebar({
 
     return (
         <motion.div
-            className={`fixed left-0 top-0 h-screen bg-white/90 backdrop-blur-md border-r border-slate-200 flex flex-col z-40 overflow-hidden transition-all duration-300 ease-out shadow-sm peer ${isExpanded ? 'expanded w-56 shadow-xl' : 'w-16'} ${isPinned ? 'pinned' : ''}`}
+            className={`fixed left-0 top-0 h-screen bg-[#050505]/95 backdrop-blur-xl border-r border-white/5 flex flex-col z-40 overflow-hidden transition-all duration-300 ease-out shadow-2xl shadow-black peer ${isExpanded ? 'expanded w-64' : 'w-16'} ${isPinned ? 'pinned' : ''}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             initial={{ width: 64 }}
-            animate={{ width: isExpanded ? 224 : 64 }}
+            animate={{ width: isExpanded ? 256 : 64 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
         >
             {/* Navigation Rail Items */}
-            <div className="flex flex-col gap-1 p-2 border-b border-slate-200 shrink-0">
-                <a href="/" className="flex items-center gap-3 p-3 rounded-xl cursor-pointer text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 group" title="Dashboard">
+            <div className="flex flex-col gap-2 p-3 border-b border-white/5 shrink-0">
+                <a href="/" className="flex items-center gap-3 p-3 rounded-lg cursor-pointer text-gray-400 transition-all hover:bg-white/5 hover:text-[#00ff9d] group" title="Dashboard">
                     <Home size={20} />
-                    {isExpanded && <span className="whitespace-nowrap font-medium">Dashboard</span>}
+                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Dashboard</span>}
                 </a>
 
-                <div className="flex items-center gap-3 p-3 rounded-xl cursor-pointer bg-primary/10 text-primary font-medium group" title="Chats">
-                    <MessageSquare size={20} />
-                    {isExpanded && <span className="whitespace-nowrap">Chats</span>}
+                <div className="flex items-center gap-3 p-3 rounded-lg cursor-pointer bg-[#00ff9d]/5 text-[#00ff9d] border border-[#00ff9d]/20 group shadow-[0_0_15px_rgba(0,255,157,0.1)]" title="Chats">
+                    <Terminal size={20} />
+                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Active Session</span>}
                 </div>
 
-                <button className="flex items-center gap-3 p-3 rounded-xl cursor-pointer bg-primary text-white hover:bg-primary-hover shadow-md hover:shadow-lg transition-all" onClick={onNewChat} title="New Chat">
-                    <Plus size={20} />
-                    {isExpanded && <span className="whitespace-nowrap font-medium">New Chat</span>}
+                <button
+                    className="flex items-center gap-3 p-3 rounded-lg cursor-pointer bg-[#00ff9d] text-black hover:bg-[#00cc7d] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:shadow-[0_0_25px_rgba(0,255,157,0.5)] transition-all mt-2"
+                    onClick={onNewChat}
+                    title="New Chat"
+                >
+                    <Plus size={20} strokeWidth={2.5} />
+                    {isExpanded && <span className="whitespace-nowrap font-bold text-sm">NEW TERMINAL</span>}
                 </button>
 
-                <div className="h-[1px] bg-slate-200 my-2" />
+                <div className="h-[1px] bg-white/5 my-2" />
 
                 {/* Pin/Unpin Button */}
                 {isExpanded && (
                     <motion.button
-                        className="flex items-center gap-3 p-3 rounded-xl cursor-pointer text-slate-400 hover:text-slate-600 hover:bg-slate-50 text-sm"
+                        className="flex items-center gap-3 p-2 rounded-lg cursor-pointer text-gray-500 hover:text-gray-300 hover:bg-white/5 text-xs uppercase tracking-wider"
                         onClick={togglePin}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         title={isPinned ? "Unpin sidebar" : "Pin sidebar"}
                     >
-                        {isPinned ? <PinOff size={18} /> : <Pin size={18} />}
-                        <span className="whitespace-nowrap">{isPinned ? 'Unpin' : 'Pin'}</span>
+                        {isPinned ? <PinOff size={14} /> : <Pin size={14} />}
+                        <span className="whitespace-nowrap">{isPinned ? 'Unpin Sidebar' : 'Pin Sidebar'}</span>
                     </motion.button>
                 )}
-
-                {/*                
-                <button
-                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer text-slate-500 transition-all hover:bg-red-50 hover:text-red-600 group"
-                    onClick={() => {
-                        localStorage.removeItem('token');
-                        window.location.href = '/login';
-                    }}
-                    title="Sign Out"
-                >
-                    <LogOut size={20} />
-                    {isExpanded && <span className="whitespace-nowrap font-medium">Sign Out</span>}
-                </button> */}
             </div>
 
             {/* Conversations Section (only visible when expanded) */}
             <AnimatePresence>
                 {isExpanded && (
                     <motion.div
-                        className="flex-1 flex flex-col overflow-hidden p-2"
+                        className="flex-1 flex flex-col overflow-hidden p-3"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                     >
                         {/* Search Bar */}
-                        <div className="flex items-center gap-2 p-2.5 bg-slate-100 border border-slate-200 rounded-xl mb-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-                            <Search size={16} className="text-slate-400" />
+                        <div className="flex items-center gap-2 p-2.5 bg-black/40 border border-white/10 rounded-lg mb-4 focus-within:border-[#00ff9d]/50 focus-within:ring-1 focus-within:ring-[#00ff9d]/50 transition-all">
+                            <Search size={14} className="text-gray-500" />
                             <input
                                 type="text"
-                                placeholder="Search chats..."
+                                placeholder="SEARCH LOGS..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="flex-1 bg-transparent border-none outline-none text-sm text-slate-800 placeholder-slate-400 min-w-0"
+                                className="flex-1 bg-transparent border-none outline-none text-xs text-gray-300 placeholder-gray-600 min-w-0 font-mono"
                             />
                             {searchQuery && (
-                                <button onClick={() => setSearchQuery('')} className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200">
-                                    <X size={14} />
+                                <button onClick={() => setSearchQuery('')} className="p-1 text-gray-500 hover:text-white rounded-full hover:bg-white/10">
+                                    <X size={12} />
                                 </button>
                             )}
                         </div>
 
                         {/* Conversations List */}
-                        <div className="flex-1 overflow-y-auto pr-1">
+                        <div className="flex-1 overflow-y-auto pr-1 scrollbar-hide">
                             {filteredConversations.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-10 text-slate-400 text-center">
-                                    <MessageSquare size={32} className="opacity-50 mb-3" />
-                                    <p className="text-sm font-semibold text-slate-500">No conversations yet</p>
-                                    <span className="text-xs">Start a new chat to begin</span>
+                                <div className="flex flex-col items-center justify-center py-10 text-gray-600 text-center">
+                                    <MessageSquare size={24} className="opacity-20 mb-2" />
+                                    <span className="text-xs font-mono">NO LOGS FOUND</span>
                                 </div>
                             ) : (
                                 <>
                                     {groupedConversations.today.length > 0 && (
                                         <div className="mb-4">
-                                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-2">Today</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-600 px-2 py-2 mb-1">Today</div>
                                             {groupedConversations.today.map(conv => (
                                                 <ConversationItem
                                                     key={conv.id}
@@ -194,7 +184,7 @@ function ChatSidebar({
 
                                     {groupedConversations.yesterday.length > 0 && (
                                         <div className="mb-4">
-                                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-2">Yesterday</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-600 px-2 py-2 mb-1">Yesterday</div>
                                             {groupedConversations.yesterday.map(conv => (
                                                 <ConversationItem
                                                     key={conv.id}
@@ -209,7 +199,7 @@ function ChatSidebar({
 
                                     {groupedConversations.older.length > 0 && (
                                         <div className="mb-4">
-                                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-2">Older</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-widest text-gray-600 px-2 py-2 mb-1">Archived</div>
                                             {groupedConversations.older.map(conv => (
                                                 <ConversationItem
                                                     key={conv.id}
@@ -232,26 +222,25 @@ function ChatSidebar({
 }
 
 // Conversation Item Component
-// Conversation Item Component
 function ConversationItem({ conversation, isActive, onSelect, onDelete }) {
     const [showConfirm, setShowConfirm] = useState(false);
 
     return (
         <motion.div
-            className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors mb-0.5 group relative ${isActive ? 'bg-primary/10 border-l-2 border-primary pl-[8px]' : 'hover:bg-slate-100 border-l-2 border-transparent'}`}
+            className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all mb-1 group relative ${isActive ? 'bg-[#00ff9d]/10 border-l-2 border-[#00ff9d] pl-[8px]' : 'hover:bg-white/5 border-l-2 border-transparent hover:border-gray-700'}`}
             onClick={onSelect}
             whileHover={{ x: 2 }}
         >
-            <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isActive ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500 group-hover:bg-white'}`}>
-                <MessageSquare size={16} />
+            <div className={`w-6 h-6 rounded flex items-center justify-center shrink-0 transition-colors ${isActive ? 'text-[#00ff9d]' : 'text-gray-600 group-hover:text-gray-400'}`}>
+                <Terminal size={14} />
             </div>
 
             <div className="flex-1 min-w-0">
-                <div className={`text-sm font-medium truncate ${isActive ? 'text-primary' : 'text-slate-700'}`}>
-                    {conversation.title || 'Untitled Chat'}
+                <div className={`text-xs font-medium truncate font-mono ${isActive ? 'text-[#00ff9d]' : 'text-gray-400'}`}>
+                    {conversation.title || 'Untitled Session'}
                 </div>
-                <div className="text-xs text-slate-400">
-                    {conversation.messages ? conversation.messages.length : 0} messages
+                <div className="text-[10px] text-gray-600 truncate">
+                    {conversation.messages ? conversation.messages.length : 0} ops
                 </div>
             </div>
 
@@ -262,44 +251,43 @@ function ConversationItem({ conversation, isActive, onSelect, onDelete }) {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="absolute right-0 top-0 bottom-0 flex items-center gap-1 bg-white/95 backdrop-blur-sm pl-2 shadow-sm rounded-r-lg"
+                        className="absolute right-0 top-0 bottom-0 flex items-center gap-1 bg-black pl-2 shadow-lg rounded-r-lg z-10"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <span className="text-[10px] font-semibold text-slate-500 mr-1">Delete?</span>
                         <button
-                            className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                            className="p-1.5 bg-red-900/50 text-red-400 rounded hover:bg-red-900 transition-colors"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onDelete();
                                 setShowConfirm(false);
                             }}
-                            title="Confirm Delete"
+                            title="Confirm"
                         >
-                            <Trash2 size={14} />
+                            <Trash2 size={12} />
                         </button>
                         <button
-                            className="p-1.5 bg-slate-200 text-slate-600 rounded-md hover:bg-slate-300 transition-colors"
+                            className="p-1.5 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-colors"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setShowConfirm(false);
                             }}
                             title="Cancel"
                         >
-                            <X size={14} />
+                            <X size={12} />
                         </button>
                     </motion.div>
                 ) : (
                     <motion.button
-                        className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all absolute right-2"
+                        className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-600 hover:text-red-400 rounded-md transition-all absolute right-2"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowConfirm(true);
                         }}
-                        title="Delete conversation"
+                        title="Delete Log"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                     >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                     </motion.button>
                 )}
             </AnimatePresence>
