@@ -12,8 +12,7 @@ app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
 
 # CORS Configuration
 origins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
+    "http://192.168.0.125:3000",
     "*", # Allow All Origins for Debugging as requested
 ]
 

@@ -1,0 +1,6 @@
+from .admin_prompts import get_admin_prompt
+from .student_prompts import get_student_prompt
+from .staff_prompts import get_staff_prompt
+from .college_admin_prompts import get_college_admin_prompt
+from .trainer_prompts import get_trainer_prompt
+from .content_creator_prompts import get_content_creator_prompt
