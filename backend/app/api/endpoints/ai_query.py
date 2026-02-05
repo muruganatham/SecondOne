@@ -66,7 +66,19 @@ async def ask_database(
         # Fetch Student's Department
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
-        role_instruction = get_student_prompt(dept_id, current_user.id)
+        college_id = academics.college_id if academics else "Unknown"
+        
+        # Safe access to college short name
+        college_short_name = "admin" # default
+        if academics and academics.college:
+             # explicit string conversion to avoid potential Enum issues if SQLAlchemy maps it weirdly
+             # Also handling attribute error just in case
+             try:
+                 college_short_name = str(academics.college.college_short_name).lower()
+             except:
+                 college_short_name = "admin"
+
+        role_instruction = get_student_prompt(dept_id, college_id, college_short_name, current_user.id)
 
     # STAFF / FACULTY ROLE (ID: 4)
     elif current_user.role == 4:

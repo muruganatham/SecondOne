@@ -47,6 +47,7 @@ class Colleges(Base):
     # Fallback to Integer for missing Enums
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False) 
     college_name = Column(Integer, nullable=False) # Maps to an Enum value
+    college_short_name = Column(String(20), nullable=False)
     # Removed other columns
 
 class Departments(Base):
