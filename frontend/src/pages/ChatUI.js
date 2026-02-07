@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, User, Lightbulb, Download, Terminal, Brain, Cpu, Square, Code, Sparkles } from 'lucide-react';
 import ChatSidebar from '../Components/ChatSidebar';
@@ -21,6 +22,7 @@ function ChatUI() {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
     const [followUpQuestions, setFollowUpQuestions] = useState([]);
 
     // Confirmation Modal State
@@ -57,7 +59,13 @@ function ChatUI() {
             localStorage.removeItem('createNewChat');
             handleNewChat();
         }
-    }, []);
+
+        // Auth Check
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     // ChatGPT-style auto-scroll: Always scroll to bottom on new messages
     const scrollToBottom = () => {
@@ -171,6 +179,12 @@ function ChatUI() {
                 signal: abortControllerRef.current.signal
             });
 
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                navigate('/login');
+                throw new Error('Unauthorized');
+            }
+
             const data = await response.json();
 
             if (data.requires_confirmation) {
@@ -228,6 +242,12 @@ function ChatUI() {
                     confirmed: true
                 }),
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                navigate('/login');
+                throw new Error('Unauthorized');
+            }
 
             const data = await response.json();
             const aiMessage = {

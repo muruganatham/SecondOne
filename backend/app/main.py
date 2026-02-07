@@ -46,3 +46,6 @@ app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(conversations.router, prefix="/api/v1/conversations", tags=["Conversations"])
 
+from app.api.endpoints import leaderboard
+app.include_router(leaderboard.router, prefix="/api/v1", tags=["Analytics"])
+

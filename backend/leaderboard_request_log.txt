@@ -1,0 +1,348 @@
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "coding",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "mcq",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "47",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "mcq",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "19",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "mcq",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "2024-2028",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "8",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "19",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "47",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "19",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "19",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "3",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "19",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "4",
+  "category": "all",
+  "limit": 10
+}
+
+=== New Request ===
+User: 4, Role: 1
+Filters: {
+  "college_id": "8",
+  "course_id": "47",
+  "department_id": "",
+  "batch_id": "",
+  "section_id": "4",
+  "category": "all",
+  "limit": 10
+}

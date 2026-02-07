@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Sun, Bell, ChevronDown, LogOut, Terminal, User } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Sun, Bell, ChevronDown, LogOut, Terminal, User, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 
@@ -96,6 +96,10 @@ function Navbar() {
                         <Link to="/chat" className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${location.pathname === '/chat' ? 'text-[#00ff9d] bg-[#00ff9d]/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}`}>
                             <MessageSquare size={16} />
                             <span className="font-mono">TERMINAL</span>
+                        </Link>
+                        <Link to="/leaderboard" className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${location.pathname === '/leaderboard' ? 'text-[#00ff9d] bg-[#00ff9d]/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}`}>
+                            <Trophy size={16} />
+                            <span className="font-mono">LEADERBOARD</span>
                         </Link>
                     </div>
 

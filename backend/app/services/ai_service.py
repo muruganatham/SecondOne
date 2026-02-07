@@ -76,13 +76,25 @@ class AIService:
         prompt = f"""
         User Question: "{user_question}"
         
-        SQL Query Run: {sql_result}
+        SQL Query Context: "{sql_result}"
         
-        Data Returned: {str(row_data)}
+        Data Retrieved: 
+        {str(row_data)}
         
-        Task: Explain the answer to the user in simple, friendly human language. 
-        Do not show the SQL or raw JSON unless specifically asked.
-        Just give the insight.
+        Task: You are a Data Analyst. Analyze the data above and provide a clear, accurate response.
+        
+        Guidelines:
+        1. **Direct Answer**: Start with the direct answer (number, list, or fact).
+        2. **Insight (If applicable)**: If the data allows, briefly explain *why* or provide a percentage/trend (e.g. "This represents 80% of active users").
+        3. **No Data Handling**: If the data is empty `[]` or None, say "No active records found matching that criteria." Do NOT make up data.
+        4. **Tone**: Professional, precise, yet conversational.
+        5. **Formatting**: Use bullet points for lists. Use bold for key numbers.
+        6. **Context**: If the SQL used `status=1`, you can mention "active students" to be precise.
+
+        Reference Cheat Sheet (Translate these codes to text if seen):
+        - Status: 0=Inactive, 1=Active
+        - Role: 1=SuperAdmin, 2=Admin, 3=CollegeAdmin, 4=Staff, 5=Trainer, 7=Student
+        - Gender: 1=Male, 2=Female
         """
         
         try:

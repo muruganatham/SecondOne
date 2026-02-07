@@ -1,0 +1,6 @@
+Testing Leaderboard Query for Dr Mahalingam College of Engineering and Technology + Batch 8...
+College ID: 8, Code: MCET
+Users matching College 8 + Batch 8: 194
+Users with results for College 8 + Batch 8: 65
+Users with results (batch as int): 65
+Sample batch_id from DB: 8, Type: <class 'int'>

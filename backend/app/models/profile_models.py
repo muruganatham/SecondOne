@@ -46,7 +46,7 @@ class Colleges(Base):
 
     # Fallback to Integer for missing Enums
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False) 
-    college_name = Column(Integer, nullable=False) # Maps to an Enum value
+    college_name = Column(String(255), nullable=False) 
     college_short_name = Column(String(20), nullable=False)
     # Removed other columns
 
@@ -63,9 +63,80 @@ class UserAcademics(Base):
     user_id = Column(String, ForeignKey('users.id'), nullable=False)
     college_id = Column(Integer, ForeignKey('colleges.id'), nullable=True)
     department_id = Column(String, ForeignKey('departments.id'), nullable=True)
+    batch_id = Column(String, ForeignKey('batches.id'), nullable=True)
+    section_id = Column(String, ForeignKey('sections.id'), nullable=True)
     
     # Relationships
     college = relationship('Colleges', foreign_keys=[college_id])
     department = relationship('Departments', foreign_keys=[department_id])
     user = relationship('Users', foreign_keys=[user_id])
+    batch = relationship('Batches', foreign_keys=[batch_id])
+    section = relationship('Sections', foreign_keys=[section_id])
+
+class Batches(Base):
+    __tablename__ = 'batches'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    batch_name = Column(String(50), nullable=False)
+    college_id = Column(Integer, ForeignKey('colleges.id'), nullable=False)
+    status = Column(Integer, nullable=False)
+    created_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, nullable=True)
+    college = relationship('Colleges', foreign_keys=[college_id])
+
+class Sections(Base):
+    __tablename__ = 'sections'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    section = Column(String(20), nullable=False) # Changed from section_name assumption to section
+    status = Column(Integer, nullable=False)
+    created_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, nullable=True)
+
+class Courses(Base):
+    __tablename__ = 'courses'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    course_name = Column(String(255), nullable=False)
+    # Add other columns if needed, but minimal for leaderboard is fine
+
+class CourseAcademicMaps(Base):
+    __tablename__ = 'course_academic_maps'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    allocation_id = Column(Integer, nullable=False)
+    college_id = Column(Integer, ForeignKey('colleges.id'), nullable=True)
+    department_id = Column(String, ForeignKey('departments.id'), nullable=True)
+    batch_id = Column(String, ForeignKey('batches.id'), nullable=True)
+    section_id = Column(String, ForeignKey('sections.id'), nullable=True)
+    course_id = Column(String, ForeignKey('courses.id'), nullable=False)
+    
+    # Relationships
+    college = relationship('Colleges', foreign_keys=[college_id])
+    department = relationship('Departments', foreign_keys=[department_id])
+    batch = relationship('Batches', foreign_keys=[batch_id])
+    section = relationship('Sections', foreign_keys=[section_id])
+    course = relationship('Courses', foreign_keys=[course_id])
+
+class CollegeSectionMaps(Base):
+    __tablename__ = 'college_section_maps'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    college_id = Column(Integer, ForeignKey('colleges.id'), nullable=False) # Changed from Enum to Integer based on Colleges.id type in profile_models
+    section_id = Column(String, ForeignKey('sections.id'), nullable=False)
+    
+    # Relationships
+    college = relationship('Colleges', foreign_keys=[college_id])
+    section = relationship('Sections', foreign_keys=[section_id])
+
+class CollegeDepartmentMaps(Base):
+    __tablename__ = 'college_department_maps'
+
+    id = Column(String, primary_key=True, autoincrement=True, nullable=False)
+    college_id = Column(Integer, ForeignKey('colleges.id'), nullable=False)
+    department_id = Column(String, ForeignKey('departments.id'), nullable=False)
+    
+    # Relationships
+    college = relationship('Colleges', foreign_keys=[college_id])
+    department = relationship('Departments', foreign_keys=[department_id])
 

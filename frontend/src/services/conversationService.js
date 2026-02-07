@@ -8,6 +8,11 @@ export const conversationService = {
         const response = await fetch(`${API_BASE}/conversations/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
         if (!response.ok) throw new Error('Failed to fetch conversations');
         return response.json();
     },
@@ -17,6 +22,11 @@ export const conversationService = {
         const response = await fetch(`${API_BASE}/conversations/${id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
         if (!response.ok) throw new Error('Failed to fetch conversation');
         return response.json();
     },
@@ -31,6 +41,11 @@ export const conversationService = {
             },
             body: JSON.stringify(conversation)
         });
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
         if (!response.ok) throw new Error('Failed to create conversation');
         return response.json();
     },
@@ -45,6 +60,11 @@ export const conversationService = {
             },
             body: JSON.stringify(conversation)
         });
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
         if (!response.ok) throw new Error('Failed to update conversation');
         return response.json();
     },
@@ -55,6 +75,11 @@ export const conversationService = {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            throw new Error('Unauthorized');
+        }
         if (!response.ok) throw new Error('Failed to delete conversation');
         if (response.status === 204) return true;
         return response.json();

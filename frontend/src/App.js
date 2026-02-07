@@ -3,6 +3,7 @@ import MainLayout from './Components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import ChatUI from './pages/ChatUI';
 import SuperAdmin from './pages/SuperAdmin';
+import Leaderboard from './pages/Leaderboard';
 import Login from './Components/Login';
 
 // Helper component to conditionally render layout (e.g. skip for Login)
@@ -56,6 +57,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SuperAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
               </ProtectedRoute>
             }
           />

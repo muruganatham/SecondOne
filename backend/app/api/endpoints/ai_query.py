@@ -59,7 +59,7 @@ async def ask_database(
     # SUPER ADMIN (1) & ADMIN (2)
     current_role_id = current_user.role
     if current_role_id in [1, 2]:
-        role_instruction = get_admin_prompt()
+        role_instruction = get_admin_prompt(current_user.id)
 
     # STUDENT ROLE (ID: 7)
     elif current_role_id == 7:
