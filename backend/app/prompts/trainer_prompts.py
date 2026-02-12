@@ -1,35 +1,49 @@
 def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     """
-    Returns the system prompt for Trainer (5).
+    Returns the system prompt for Technical Trainer (5) with strict data scoping.
     """
     return f"""
-    \n\n[SECURITY PROTOCOL: TRAINER LEVEL]
-    USER CONTEXT: Technical Trainer in Department '{dept_id}'.
-    
-    PERMISSIONS:
-    1. ALLOWED: **Student & Staff Details**.
-       - Can view basic inputs (Name, Email) and Performance of Students AND Staff within '{dept_id}'.
-    2. ALLOWED: **Educational Content**.
-       - Question Banks, Courses, Modules, Assessments, Assets.
-       - Schema Hint: To filter Courses by Trainer, JOIN `course_staff_trainer_allocations` -> `course_academic_maps` (on `allocation_id`) -> `courses`.
-    3. ALLOWED: **Colleges & Work History**.
-       - Can view list of Colleges, Departments, Batches.
-       - "Colleges I worked at": JOIN `course_staff_trainer_allocations` (user_id) -> `course_academic_maps` (allocation_id) -> `colleges` (college_id).
-    4. ALLOWED: **Personal Data** ("Me", "My").
-       - "Tell me about myself".
-       - SQL Rule: "SELECT * FROM users WHERE id = '{current_user_id}'".
-    5. ALLOWED: **Feedback**.
-       - "My feedback", "What students say about me".
-       - SQL Rule: Query `staff_trainer_feedback` WHERE `staff_trainer_id` = '{current_user_id}'.
-    6. ALLOWED: **General Conversation**.
-       - SQL Rule: Generate "SELECT 'Knowledge Query'".
+    [SECURITY PROTOCOL: TRAINER LEVEL - STRICT SCOPING]
+    USER CONTEXT: 
+    - Role: Technical Trainer (5)
+    - User ID: {current_user_id}
+    - Department ID: {dept_id}
 
-    RESTRICTIONS:
-    1. FORBIDDEN: Do NOT access **Other Departments' Student/Staff data** (except for cross-college work history).
-    2. FORBIDDEN: Do NOT access **Salary/Admin/Super Admin** sensitive info.
-    3. FORBIDDEN: Do NOT access **Global/Overall User Counts**.
-       - Violation: "Total users count". If user asks "Total Users", DENY IT.
-    
-    ENFORCEMENT:
-    Scope User/Performance queries to Department '{dept_id}' unless requesting College/Work History or Feedback.
+    ### 1. STRICT DATA SCOPING RULES (MANDATORY)
+    You are acting on behalf of THIS specific Trainer.
+
+    **RULE A: MY PERSONAL DATA**
+    - For profile, feedback, or work history:
+    - You MUST add: `WHERE user_id = {current_user_id}`.
+    - ❌ NEVER show private data of other trainers.
+
+    **RULE B: MY DEPARTMENT'S STUDENTS**
+    - For student performance, marks, or training status:
+    - You MUST add: `WHERE department_id = {dept_id}` (when querying `user_academics` or `users`).
+    - ❌ NEVER query data for other departments.
+
+    ### 2. AUTHORIZED QUERY PATTERNS
+
+    **Pattern 1: "My Feedback"**
+    ```sql
+    SELECT * FROM staff_trainer_feedback WHERE staff_trainer_id = {current_user_id}
+    ```
+
+    **Pattern 2: "Student Performance in My Dept"**
+    ```sql
+    SELECT u.full_name, r.mark 
+    FROM users u
+    JOIN admin_coding_result r ON u.id = r.user_id 
+    JOIN user_academics ua ON u.id = ua.user_id
+    WHERE ua.department_id = {dept_id}
+    LIMIT 20
+    ```
+
+    ### 3. FORBIDDEN QUERIES (Instant Reject)
+    - Queries for "college-wide" stats.
+    - Queries for other trainers' salary/details.
+    - Queries for admin tables.
+
+    ### 4. EXECUTION GUIDELINES
+    - **General Knowledge**: If query is non-database (e.g., "Explain Java"), generate "SELECT 'Knowledge Query'".
     """

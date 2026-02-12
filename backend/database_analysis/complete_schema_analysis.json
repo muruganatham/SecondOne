@@ -1,7 +1,7 @@
 {
   "database": "coderv4",
-  "analyzed_at": "2026-01-29T10:53:05.283806",
-  "total_tables": 134,
+  "analyzed_at": "2026-02-11T17:31:04.231421",
+  "total_tables": 139,
   "total_relationships": 156,
   "tables": {
     "2025_submission_tracks": {
@@ -37542,6 +37542,2634 @@
         }
       ],
       "enum_fields": {}
+    },
+    "srec_2025_2_mcq_result": {
+      "schema": {
+        "table_name": "srec_2025_2_mcq_result",
+        "columns": [
+          {
+            "Field": "id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "PRI",
+            "Default": null,
+            "Extra": "auto_increment",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "user_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "allocate_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "course_allocation_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "topic_test_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "(test_id/topic_id)"
+          },
+          {
+            "Field": "topic_type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice => 0, assessment => 1"
+          },
+          {
+            "Field": "module_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice module / assessment module"
+          },
+          {
+            "Field": "question_id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "from practice/test question map"
+          },
+          {
+            "Field": "complexity",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "solution",
+            "Type": "text",
+            "Collation": "utf8mb4_0900_ai_ci",
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_time",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "total time taken in seconds"
+          },
+          {
+            "Field": "type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "fillups => 1, mcq => 2"
+          },
+          {
+            "Field": "attempt_count",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "solve_status",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "0 => unsolved / 1 => partial / 2 => Solved / 3 => saved"
+          },
+          {
+            "Field": "status",
+            "Type": "tinyint",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "1",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "1 => active / 0 => deleted"
+          },
+          {
+            "Field": "created_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "updated_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          }
+        ],
+        "row_count": 5365
+      },
+      "foreign_keys": [],
+      "enum_fields": {
+        "allocate_id": {
+          "type": "int unsigned",
+          "distinct_count": 6,
+          "values": [
+            {
+              "value": 962,
+              "count": 1318,
+              "percentage": 24.57
+            },
+            {
+              "value": 959,
+              "count": 1285,
+              "percentage": 23.95
+            },
+            {
+              "value": 957,
+              "count": 991,
+              "percentage": 18.47
+            },
+            {
+              "value": 961,
+              "count": 991,
+              "percentage": 18.47
+            },
+            {
+              "value": 960,
+              "count": 405,
+              "percentage": 7.55
+            },
+            {
+              "value": 958,
+              "count": 375,
+              "percentage": 6.99
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "course_allocation_id": {
+          "type": "int unsigned",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 105,
+              "count": 2603,
+              "percentage": 48.52
+            },
+            {
+              "value": 103,
+              "count": 1982,
+              "percentage": 36.94
+            },
+            {
+              "value": 104,
+              "count": 780,
+              "percentage": 14.54
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "topic_test_id": {
+          "type": "int unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 4,
+              "count": 2714,
+              "percentage": 50.59
+            },
+            {
+              "value": 140,
+              "count": 2651,
+              "percentage": 49.41
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "topic_type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 1,
+              "count": 2714,
+              "percentage": 50.59
+            },
+            {
+              "value": 0,
+              "count": 2651,
+              "percentage": 49.41
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "module_id": {
+          "type": "int unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 4,
+              "count": 2714,
+              "percentage": 50.59
+            },
+            {
+              "value": 39,
+              "count": 2651,
+              "percentage": 49.41
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "complexity": {
+          "type": "int",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 1,
+              "count": 4118,
+              "percentage": 76.76
+            },
+            {
+              "value": 2,
+              "count": 1247,
+              "percentage": 23.24
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "mark": {
+          "type": "float",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 1.0,
+              "count": 4322,
+              "percentage": 80.56
+            },
+            {
+              "value": 0.0,
+              "count": 531,
+              "percentage": 9.9
+            },
+            {
+              "value": 2.0,
+              "count": 512,
+              "percentage": 9.54
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "total_mark": {
+          "type": "float",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 1.0,
+              "count": 4822,
+              "percentage": 89.88
+            },
+            {
+              "value": 2.0,
+              "count": 543,
+              "percentage": 10.12
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 2,
+              "count": 5365,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "attempt_count": {
+          "type": "int unsigned",
+          "distinct_count": 13,
+          "values": [
+            {
+              "value": 0,
+              "count": 3052,
+              "percentage": 56.89
+            },
+            {
+              "value": 1,
+              "count": 1268,
+              "percentage": 23.63
+            },
+            {
+              "value": 2,
+              "count": 545,
+              "percentage": 10.16
+            },
+            {
+              "value": 3,
+              "count": 274,
+              "percentage": 5.11
+            },
+            {
+              "value": 4,
+              "count": 116,
+              "percentage": 2.16
+            },
+            {
+              "value": 5,
+              "count": 61,
+              "percentage": 1.14
+            },
+            {
+              "value": 6,
+              "count": 17,
+              "percentage": 0.32
+            },
+            {
+              "value": 7,
+              "count": 13,
+              "percentage": 0.24
+            },
+            {
+              "value": 8,
+              "count": 4,
+              "percentage": 0.07
+            },
+            {
+              "value": 11,
+              "count": 4,
+              "percentage": 0.07
+            },
+            {
+              "value": 10,
+              "count": 4,
+              "percentage": 0.07
+            },
+            {
+              "value": 9,
+              "count": 4,
+              "percentage": 0.07
+            },
+            {
+              "value": 12,
+              "count": 3,
+              "percentage": 0.06
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "solve_status": {
+          "type": "int",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 2,
+              "count": 4834,
+              "percentage": 90.1
+            },
+            {
+              "value": 3,
+              "count": 531,
+              "percentage": 9.9
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        },
+        "status": {
+          "type": "tinyint",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 5365,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 5365,
+          "coverage": 100.0
+        }
+      }
+    },
+    "srec_2025_2_test_data": {
+      "schema": {
+        "table_name": "srec_2025_2_test_data",
+        "columns": [
+          {
+            "Field": "id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "PRI",
+            "Default": null,
+            "Extra": "auto_increment",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "user_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "allocate_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "course_allocation_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "topic_test_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "(test_id/topic_id)"
+          },
+          {
+            "Field": "topic_type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice => 0, assessment => 1"
+          },
+          {
+            "Field": "module_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice module / assessment module"
+          },
+          {
+            "Field": "mark",
+            "Type": "json",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_mark",
+            "Type": "json",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "time",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "time for the last/this attempt in seconds"
+          },
+          {
+            "Field": "total_time",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "cumulative time in seconds across attempts"
+          },
+          {
+            "Field": "question_ids",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "array of question allocation ids"
+          },
+          {
+            "Field": "attempt_datas",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"id\":1,\"start_time\":\"...\",\"end_time\":\"...\",\"exit_reason\":\"...\",\"tab_switch\":\"...\"}]"
+          },
+          {
+            "Field": "report_metrics",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"pass_rt\":0,\"att_eff\":0,\"err_den\":0,\"hin_dep\":0,\"tim_over\":0,\"com_mat\":0,\"cod_qlty\":0}]"
+          },
+          {
+            "Field": "question_status",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"att\":1,\"par\":0,\"sol\":0}]"
+          },
+          {
+            "Field": "attempt_allowed",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "how many attempts are allowed"
+          },
+          {
+            "Field": "status",
+            "Type": "tinyint",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "1",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "1 => active / 0 => deleted"
+          },
+          {
+            "Field": "created_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "updated_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          }
+        ],
+        "row_count": 4558
+      },
+      "foreign_keys": [],
+      "enum_fields": {
+        "course_allocation_id": {
+          "type": "int unsigned",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 105,
+              "count": 2247,
+              "percentage": 49.3
+            },
+            {
+              "value": 103,
+              "count": 1670,
+              "percentage": 36.64
+            },
+            {
+              "value": 104,
+              "count": 641,
+              "percentage": 14.06
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        },
+        "topic_test_id": {
+          "type": "int unsigned",
+          "distinct_count": 23,
+          "values": [
+            {
+              "value": 144,
+              "count": 466,
+              "percentage": 10.22
+            },
+            {
+              "value": 140,
+              "count": 365,
+              "percentage": 8.01
+            },
+            {
+              "value": 141,
+              "count": 360,
+              "percentage": 7.9
+            },
+            {
+              "value": 143,
+              "count": 351,
+              "percentage": 7.7
+            },
+            {
+              "value": 145,
+              "count": 311,
+              "percentage": 6.82
+            },
+            {
+              "value": 146,
+              "count": 298,
+              "percentage": 6.54
+            },
+            {
+              "value": 147,
+              "count": 254,
+              "percentage": 5.57
+            },
+            {
+              "value": 148,
+              "count": 230,
+              "percentage": 5.05
+            },
+            {
+              "value": 4,
+              "count": 182,
+              "percentage": 3.99
+            },
+            {
+              "value": 8,
+              "count": 181,
+              "percentage": 3.97
+            },
+            {
+              "value": 23,
+              "count": 181,
+              "percentage": 3.97
+            },
+            {
+              "value": 17,
+              "count": 178,
+              "percentage": 3.91
+            },
+            {
+              "value": 9,
+              "count": 177,
+              "percentage": 3.88
+            },
+            {
+              "value": 5,
+              "count": 175,
+              "percentage": 3.84
+            },
+            {
+              "value": 14,
+              "count": 175,
+              "percentage": 3.84
+            },
+            {
+              "value": 6,
+              "count": 167,
+              "percentage": 3.66
+            },
+            {
+              "value": 161,
+              "count": 128,
+              "percentage": 2.81
+            },
+            {
+              "value": 19,
+              "count": 108,
+              "percentage": 2.37
+            },
+            {
+              "value": 150,
+              "count": 83,
+              "percentage": 1.82
+            },
+            {
+              "value": 15,
+              "count": 63,
+              "percentage": 1.38
+            },
+            {
+              "value": 149,
+              "count": 63,
+              "percentage": 1.38
+            },
+            {
+              "value": 42,
+              "count": 59,
+              "percentage": 1.29
+            },
+            {
+              "value": 13,
+              "count": 3,
+              "percentage": 0.07
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        },
+        "topic_type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 0,
+              "count": 2909,
+              "percentage": 63.82
+            },
+            {
+              "value": 1,
+              "count": 1649,
+              "percentage": 36.18
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        },
+        "total_time": {
+          "type": "int",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 0,
+              "count": 2968,
+              "percentage": 65.12
+            },
+            {
+              "value": 5400,
+              "count": 1406,
+              "percentage": 30.85
+            },
+            {
+              "value": 7200,
+              "count": 184,
+              "percentage": 4.04
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        },
+        "attempt_allowed": {
+          "type": "int unsigned",
+          "distinct_count": 5,
+          "values": [
+            {
+              "value": 0,
+              "count": 2968,
+              "percentage": 65.12
+            },
+            {
+              "value": 3,
+              "count": 1466,
+              "percentage": 32.16
+            },
+            {
+              "value": 5,
+              "count": 122,
+              "percentage": 2.68
+            },
+            {
+              "value": 10,
+              "count": 1,
+              "percentage": 0.02
+            },
+            {
+              "value": 6,
+              "count": 1,
+              "percentage": 0.02
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        },
+        "status": {
+          "type": "tinyint",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 4558,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 4558,
+          "coverage": 100.0
+        }
+      }
+    },
+    "srec_2026_1_coding_result": {
+      "schema": {
+        "table_name": "srec_2026_1_coding_result",
+        "columns": [
+          {
+            "Field": "id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "PRI",
+            "Default": null,
+            "Extra": "auto_increment",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "user_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "allocate_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "course_allocation_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "topic_test_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "test_id/topic_id"
+          },
+          {
+            "Field": "topic_type",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice => 0, assessment => 1"
+          },
+          {
+            "Field": "module_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice module / assessment module"
+          },
+          {
+            "Field": "question_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "from practice/test question map"
+          },
+          {
+            "Field": "type",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "1",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "coding => 1, Project => 2"
+          },
+          {
+            "Field": "complexity",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "main_solution",
+            "Type": "text",
+            "Collation": "utf8mb4_0900_ai_ci",
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "sub_solutions",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "test_cases",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "compile_id",
+            "Type": "int",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_time",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "first_submission_time",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "correct_submission_time",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "errors",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "action_counts",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "keys: run, verify, attempt, ai_debugger, ai_optimizer"
+          },
+          {
+            "Field": "report_metrics",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"pass_rt\":0,\"att_eff\":0,\"err_den\":0,\"hin_dep\":0,\"tim_over\":0,\"com_mat\":0,\"cod_qlty\":0}]"
+          },
+          {
+            "Field": "solve_status",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "0 => unsolved / 1 => partial / 2 => Solved / 3 => saved"
+          },
+          {
+            "Field": "status",
+            "Type": "tinyint",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "1 => active / 0 => deleted"
+          },
+          {
+            "Field": "created_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "updated_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          }
+        ],
+        "row_count": 11361
+      },
+      "foreign_keys": [],
+      "enum_fields": {
+        "course_allocation_id": {
+          "type": "int unsigned",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 125,
+              "count": 5179,
+              "percentage": 45.59
+            },
+            {
+              "value": 123,
+              "count": 3080,
+              "percentage": 27.11
+            },
+            {
+              "value": 122,
+              "count": 1892,
+              "percentage": 16.65
+            },
+            {
+              "value": 124,
+              "count": 1210,
+              "percentage": 10.65
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "topic_test_id": {
+          "type": "int unsigned",
+          "distinct_count": 17,
+          "values": [
+            {
+              "value": 204,
+              "count": 1512,
+              "percentage": 13.31
+            },
+            {
+              "value": 205,
+              "count": 1475,
+              "percentage": 12.98
+            },
+            {
+              "value": 206,
+              "count": 1293,
+              "percentage": 11.38
+            },
+            {
+              "value": 207,
+              "count": 1235,
+              "percentage": 10.87
+            },
+            {
+              "value": 208,
+              "count": 1096,
+              "percentage": 9.65
+            },
+            {
+              "value": 210,
+              "count": 615,
+              "percentage": 5.41
+            },
+            {
+              "value": 39,
+              "count": 461,
+              "percentage": 4.06
+            },
+            {
+              "value": 61,
+              "count": 436,
+              "percentage": 3.84
+            },
+            {
+              "value": 217,
+              "count": 431,
+              "percentage": 3.79
+            },
+            {
+              "value": 65,
+              "count": 423,
+              "percentage": 3.72
+            },
+            {
+              "value": 209,
+              "count": 419,
+              "percentage": 3.69
+            },
+            {
+              "value": 45,
+              "count": 397,
+              "percentage": 3.49
+            },
+            {
+              "value": 58,
+              "count": 370,
+              "percentage": 3.26
+            },
+            {
+              "value": 74,
+              "count": 348,
+              "percentage": 3.06
+            },
+            {
+              "value": 41,
+              "count": 331,
+              "percentage": 2.91
+            },
+            {
+              "value": 68,
+              "count": 278,
+              "percentage": 2.45
+            },
+            {
+              "value": 218,
+              "count": 241,
+              "percentage": 2.12
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "topic_type": {
+          "type": "int unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 0,
+              "count": 8317,
+              "percentage": 73.21
+            },
+            {
+              "value": 1,
+              "count": 3044,
+              "percentage": 26.79
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "type": {
+          "type": "int unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 11361,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "complexity": {
+          "type": "int",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 2,
+              "count": 5804,
+              "percentage": 51.09
+            },
+            {
+              "value": 1,
+              "count": 4981,
+              "percentage": 43.84
+            },
+            {
+              "value": 3,
+              "count": 576,
+              "percentage": 5.07
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "mark": {
+          "type": "float",
+          "distinct_count": 21,
+          "values": [
+            {
+              "value": 10.0,
+              "count": 4568,
+              "percentage": 40.21
+            },
+            {
+              "value": 15.0,
+              "count": 3091,
+              "percentage": 27.21
+            },
+            {
+              "value": 0.0,
+              "count": 2469,
+              "percentage": 21.73
+            },
+            {
+              "value": 20.0,
+              "count": 518,
+              "percentage": 4.56
+            },
+            {
+              "value": 12.0,
+              "count": 220,
+              "percentage": 1.94
+            },
+            {
+              "value": 8.0,
+              "count": 133,
+              "percentage": 1.17
+            },
+            {
+              "value": 6.0,
+              "count": 85,
+              "percentage": 0.75
+            },
+            {
+              "value": 9.0,
+              "count": 69,
+              "percentage": 0.61
+            },
+            {
+              "value": 10.5,
+              "count": 34,
+              "percentage": 0.3
+            },
+            {
+              "value": 16.0,
+              "count": 34,
+              "percentage": 0.3
+            },
+            {
+              "value": 7.0,
+              "count": 30,
+              "percentage": 0.26
+            },
+            {
+              "value": 3.0,
+              "count": 16,
+              "percentage": 0.14
+            },
+            {
+              "value": 5.0,
+              "count": 15,
+              "percentage": 0.13
+            },
+            {
+              "value": 14.0,
+              "count": 14,
+              "percentage": 0.12
+            },
+            {
+              "value": 1.5,
+              "count": 14,
+              "percentage": 0.12
+            },
+            {
+              "value": 7.5,
+              "count": 13,
+              "percentage": 0.11
+            },
+            {
+              "value": 13.5,
+              "count": 11,
+              "percentage": 0.1
+            },
+            {
+              "value": 4.0,
+              "count": 8,
+              "percentage": 0.07
+            },
+            {
+              "value": 18.0,
+              "count": 7,
+              "percentage": 0.06
+            },
+            {
+              "value": 1.0,
+              "count": 6,
+              "percentage": 0.05
+            },
+            {
+              "value": 4.5,
+              "count": 6,
+              "percentage": 0.05
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "total_mark": {
+          "type": "float",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 10.0,
+              "count": 5824,
+              "percentage": 51.26
+            },
+            {
+              "value": 15.0,
+              "count": 4656,
+              "percentage": 40.98
+            },
+            {
+              "value": 20.0,
+              "count": 881,
+              "percentage": 7.75
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "compile_id": {
+          "type": "int",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 8892,
+              "percentage": 78.27
+            },
+            {
+              "value": null,
+              "count": 2469,
+              "percentage": 21.73
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "solve_status": {
+          "type": "int",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 2,
+              "count": 8174,
+              "percentage": 71.95
+            },
+            {
+              "value": 3,
+              "count": 2461,
+              "percentage": 21.66
+            },
+            {
+              "value": 1,
+              "count": 718,
+              "percentage": 6.32
+            },
+            {
+              "value": 0,
+              "count": 8,
+              "percentage": 0.07
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        },
+        "status": {
+          "type": "tinyint",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 11361,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 11361,
+          "coverage": 100.0
+        }
+      }
+    },
+    "srec_2026_1_mcq_result": {
+      "schema": {
+        "table_name": "srec_2026_1_mcq_result",
+        "columns": [
+          {
+            "Field": "id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "PRI",
+            "Default": null,
+            "Extra": "auto_increment",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "user_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "allocate_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "course_allocation_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "topic_test_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "(test_id/topic_id)"
+          },
+          {
+            "Field": "topic_type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice => 0, assessment => 1"
+          },
+          {
+            "Field": "module_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice module / assessment module"
+          },
+          {
+            "Field": "question_id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "from practice/test question map"
+          },
+          {
+            "Field": "complexity",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_mark",
+            "Type": "float",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "solution",
+            "Type": "text",
+            "Collation": "utf8mb4_0900_ai_ci",
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_time",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "total time taken in seconds"
+          },
+          {
+            "Field": "type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "fillups => 1, mcq => 2"
+          },
+          {
+            "Field": "attempt_count",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "solve_status",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "0 => unsolved / 1 => partial / 2 => Solved / 3 => saved"
+          },
+          {
+            "Field": "status",
+            "Type": "tinyint",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "1",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "1 => active / 0 => deleted"
+          },
+          {
+            "Field": "created_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "updated_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          }
+        ],
+        "row_count": 3799
+      },
+      "foreign_keys": [],
+      "enum_fields": {
+        "allocate_id": {
+          "type": "int unsigned",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 1208,
+              "count": 1450,
+              "percentage": 38.17
+            },
+            {
+              "value": 1210,
+              "count": 1182,
+              "percentage": 31.11
+            },
+            {
+              "value": 1209,
+              "count": 675,
+              "percentage": 17.77
+            },
+            {
+              "value": 1211,
+              "count": 492,
+              "percentage": 12.95
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "course_allocation_id": {
+          "type": "int unsigned",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 125,
+              "count": 1450,
+              "percentage": 38.17
+            },
+            {
+              "value": 123,
+              "count": 1182,
+              "percentage": 31.11
+            },
+            {
+              "value": 122,
+              "count": 675,
+              "percentage": 17.77
+            },
+            {
+              "value": 124,
+              "count": 492,
+              "percentage": 12.95
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "topic_test_id": {
+          "type": "int unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 35,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "topic_type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "module_id": {
+          "type": "int unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 35,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "question_id": {
+          "type": "bigint unsigned",
+          "distinct_count": 25,
+          "values": [
+            {
+              "value": 394,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 395,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 396,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 397,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 398,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 399,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 400,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 401,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 402,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 403,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 404,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 405,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 406,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 407,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 408,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 409,
+              "count": 153,
+              "percentage": 4.03
+            },
+            {
+              "value": 410,
+              "count": 151,
+              "percentage": 3.97
+            },
+            {
+              "value": 411,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 412,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 413,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 414,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 415,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 416,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 417,
+              "count": 150,
+              "percentage": 3.95
+            },
+            {
+              "value": 418,
+              "count": 150,
+              "percentage": 3.95
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "complexity": {
+          "type": "int",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "mark": {
+          "type": "float",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 1.0,
+              "count": 3103,
+              "percentage": 81.68
+            },
+            {
+              "value": 0.0,
+              "count": 696,
+              "percentage": 18.32
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "total_mark": {
+          "type": "float",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1.0,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 2,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "attempt_count": {
+          "type": "int unsigned",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 0,
+              "count": 3532,
+              "percentage": 92.97
+            },
+            {
+              "value": 1,
+              "count": 249,
+              "percentage": 6.55
+            },
+            {
+              "value": 2,
+              "count": 17,
+              "percentage": 0.45
+            },
+            {
+              "value": 5,
+              "count": 1,
+              "percentage": 0.03
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "solve_status": {
+          "type": "int",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 2,
+              "count": 3103,
+              "percentage": 81.68
+            },
+            {
+              "value": 3,
+              "count": 696,
+              "percentage": 18.32
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        },
+        "status": {
+          "type": "tinyint",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 3799,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3799,
+          "coverage": 100.0
+        }
+      }
+    },
+    "srec_2026_1_test_data": {
+      "schema": {
+        "table_name": "srec_2026_1_test_data",
+        "columns": [
+          {
+            "Field": "id",
+            "Type": "bigint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "PRI",
+            "Default": null,
+            "Extra": "auto_increment",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "user_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "allocate_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "course_allocation_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "topic_test_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "(test_id/topic_id)"
+          },
+          {
+            "Field": "topic_type",
+            "Type": "tinyint unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice => 0, assessment => 1"
+          },
+          {
+            "Field": "module_id",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "practice module / assessment module"
+          },
+          {
+            "Field": "mark",
+            "Type": "json",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "total_mark",
+            "Type": "json",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "time",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "time for the last/this attempt in seconds"
+          },
+          {
+            "Field": "total_time",
+            "Type": "int",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "cumulative time in seconds across attempts"
+          },
+          {
+            "Field": "question_ids",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "array of question allocation ids"
+          },
+          {
+            "Field": "attempt_datas",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"id\":1,\"start_time\":\"...\",\"end_time\":\"...\",\"exit_reason\":\"...\",\"tab_switch\":\"...\"}]"
+          },
+          {
+            "Field": "report_metrics",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"pass_rt\":0,\"att_eff\":0,\"err_den\":0,\"hin_dep\":0,\"tim_over\":0,\"com_mat\":0,\"cod_qlty\":0}]"
+          },
+          {
+            "Field": "question_status",
+            "Type": "json",
+            "Collation": null,
+            "Null": "YES",
+            "Key": "",
+            "Default": null,
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "e.g. [{\"att\":1,\"par\":0,\"sol\":0}]"
+          },
+          {
+            "Field": "attempt_allowed",
+            "Type": "int unsigned",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "0",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "how many attempts are allowed"
+          },
+          {
+            "Field": "status",
+            "Type": "tinyint",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "MUL",
+            "Default": "1",
+            "Extra": "",
+            "Privileges": "select,insert,update,references",
+            "Comment": "1 => active / 0 => deleted"
+          },
+          {
+            "Field": "created_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          },
+          {
+            "Field": "updated_at",
+            "Type": "timestamp",
+            "Collation": null,
+            "Null": "NO",
+            "Key": "",
+            "Default": "CURRENT_TIMESTAMP",
+            "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+            "Privileges": "select,insert,update,references",
+            "Comment": ""
+          }
+        ],
+        "row_count": 3024
+      },
+      "foreign_keys": [],
+      "enum_fields": {
+        "course_allocation_id": {
+          "type": "int unsigned",
+          "distinct_count": 4,
+          "values": [
+            {
+              "value": 125,
+              "count": 1365,
+              "percentage": 45.14
+            },
+            {
+              "value": 123,
+              "count": 842,
+              "percentage": 27.84
+            },
+            {
+              "value": 122,
+              "count": 495,
+              "percentage": 16.37
+            },
+            {
+              "value": 124,
+              "count": 322,
+              "percentage": 10.65
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        },
+        "topic_test_id": {
+          "type": "int unsigned",
+          "distinct_count": 18,
+          "values": [
+            {
+              "value": 204,
+              "count": 308,
+              "percentage": 10.19
+            },
+            {
+              "value": 205,
+              "count": 304,
+              "percentage": 10.05
+            },
+            {
+              "value": 206,
+              "count": 269,
+              "percentage": 8.9
+            },
+            {
+              "value": 207,
+              "count": 267,
+              "percentage": 8.83
+            },
+            {
+              "value": 208,
+              "count": 255,
+              "percentage": 8.43
+            },
+            {
+              "value": 39,
+              "count": 154,
+              "percentage": 5.09
+            },
+            {
+              "value": 35,
+              "count": 153,
+              "percentage": 5.06
+            },
+            {
+              "value": 210,
+              "count": 153,
+              "percentage": 5.06
+            },
+            {
+              "value": 61,
+              "count": 146,
+              "percentage": 4.83
+            },
+            {
+              "value": 65,
+              "count": 142,
+              "percentage": 4.7
+            },
+            {
+              "value": 45,
+              "count": 133,
+              "percentage": 4.4
+            },
+            {
+              "value": 58,
+              "count": 124,
+              "percentage": 4.1
+            },
+            {
+              "value": 74,
+              "count": 116,
+              "percentage": 3.84
+            },
+            {
+              "value": 209,
+              "count": 116,
+              "percentage": 3.84
+            },
+            {
+              "value": 41,
+              "count": 111,
+              "percentage": 3.67
+            },
+            {
+              "value": 217,
+              "count": 110,
+              "percentage": 3.64
+            },
+            {
+              "value": 68,
+              "count": 95,
+              "percentage": 3.14
+            },
+            {
+              "value": 218,
+              "count": 68,
+              "percentage": 2.25
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        },
+        "topic_type": {
+          "type": "tinyint unsigned",
+          "distinct_count": 2,
+          "values": [
+            {
+              "value": 0,
+              "count": 1850,
+              "percentage": 61.18
+            },
+            {
+              "value": 1,
+              "count": 1174,
+              "percentage": 38.82
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        },
+        "total_time": {
+          "type": "int",
+          "distinct_count": 3,
+          "values": [
+            {
+              "value": 0,
+              "count": 1850,
+              "percentage": 61.18
+            },
+            {
+              "value": 5400,
+              "count": 1021,
+              "percentage": 33.76
+            },
+            {
+              "value": 3600,
+              "count": 153,
+              "percentage": 5.06
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        },
+        "attempt_allowed": {
+          "type": "int unsigned",
+          "distinct_count": 5,
+          "values": [
+            {
+              "value": 0,
+              "count": 1850,
+              "percentage": 61.18
+            },
+            {
+              "value": 3,
+              "count": 754,
+              "percentage": 24.93
+            },
+            {
+              "value": 2,
+              "count": 406,
+              "percentage": 13.43
+            },
+            {
+              "value": 5,
+              "count": 10,
+              "percentage": 0.33
+            },
+            {
+              "value": 4,
+              "count": 4,
+              "percentage": 0.13
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        },
+        "status": {
+          "type": "tinyint",
+          "distinct_count": 1,
+          "values": [
+            {
+              "value": 1,
+              "count": 3024,
+              "percentage": 100.0
+            }
+          ],
+          "total_rows": 3024,
+          "coverage": 100.0
+        }
+      }
     }
   },
   "relationships": [

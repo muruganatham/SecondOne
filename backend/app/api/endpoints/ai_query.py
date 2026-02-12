@@ -1,6 +1,7 @@
 """
 AI API Endpoint
 Exposes the Text-to-SQL functionality.
+Role-based access control enabled.
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -34,6 +35,19 @@ class AIQueryResponse(BaseModel):
     requires_confirmation: bool = False
     affected_rows: int = 0
 
+@router.get("/tables")
+async def get_available_tables(current_user: Users = Depends(get_current_user)):
+    """
+    Get list of available tables in the database.
+    Useful for debugging and understanding what data is available.
+    """
+    tables = sql_executor.get_available_tables()
+    return {
+        "tables": tables,
+        "count": len(tables),
+        "message": f"Found {len(tables)} tables in the database"
+    }
+
 @router.post("/ask", response_model=AIQueryResponse)
 async def ask_database(
     request: AIQueryRequest, 
@@ -42,6 +56,7 @@ async def ask_database(
 ):
     """
     Process natural language question -> SQL -> Answer
+    Role-based access control enabled
     """
     question = request.question
     model = request.model
@@ -49,12 +64,11 @@ async def ask_database(
     # 1. Get Schema Context (The Prompt)
     system_prompt = schema_context.get_system_prompt()
     
-    # 1.5 Role-Based Search Control (Student Focus)
+    # 1.5 Role-Based Search Control
     from app.models.profile_models import UserAcademics
     
     # Defaults
     role_instruction = ""
-    is_access_denied = False
     
     # SUPER ADMIN (1) & ADMIN (2)
     current_role_id = current_user.role
@@ -71,8 +85,6 @@ async def ask_database(
         # Safe access to college short name
         college_short_name = "admin" # default
         if academics and academics.college:
-             # explicit string conversion to avoid potential Enum issues if SQLAlchemy maps it weirdly
-             # Also handling attribute error just in case
              try:
                  college_short_name = str(academics.college.college_short_name).lower()
              except:
@@ -108,7 +120,27 @@ async def ask_database(
     # Construct the Prompt
     system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
     
-    # 2. Get SQL from AI
+    # 1.8 DEEP SCHEMA ANALYSIS: Analyze question with FULL schema context
+    # This is INFORMATIONAL ONLY - we use it to log insights but don't block SQL generation
+    # WE NOW PASS system_prompt_with_context SO THE ANALYST SEES THE ROLE RESTRICTIONS
+    analysis = ai_service.analyze_question_with_schema(
+        user_question=question,
+        schema_context=system_prompt_with_context,  # Includes Schema + Role Rules
+        model=model
+    )
+    
+    print(f"📊 Question Analysis (Informational):")
+    print(f"   - Can Answer: {analysis.get('can_answer', True)}")
+    print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
+    print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
+    print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
+    print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
+    
+    # NOTE: We don't block based on analysis - let the AI attempt to generate SQL
+    # The analysis provides insights but we trust the SQL generation phase
+    
+    # 2. Get SQL from AI (with schema analysis insights)
+    # The AI has deep understanding of available tables and relationships from the schema context
     generated_sql = ai_service.generate_sql(system_prompt_with_context, question, model)
     
     # 2.4 Intercept Knowledge Queries (General Q&A)
@@ -144,16 +176,28 @@ async def ask_database(
             "requires_confirmation": False,
             "affected_rows": 0
         }
-    
+
     # 3. Execute SQL
     execution_result = sql_executor.execute_query(generated_sql)
     
     if "error" in execution_result:
+        # Production-ready error message
+        # We don't burden the user with debug details unless it's a critical system error
+        # The AI should have used available tables. If this fails, it's a data availability issue.
+        
+        answer = "I couldn't retrieve that information from the database. This might be because the specific data hasn't been recorded yet or is structured differently."
+        
+        # Optional: Add specific note if table is missing
+        if "doesn't exist" in execution_result.get('error', '').lower():
+             answer = "I couldn't find the specific table or data you requested in the current database. I tried looking for relevant information but couldn't locate it."
+
         return {
-            "answer": f"I couldn't run that query. Error: {execution_result['error']}",
-            "sql": generated_sql,
+            "answer": answer,
+            "sql": generated_sql, # Keep SQL for transparency/admins
             "data": [],
-            "follow_ups": []
+            "follow_ups": ["List available tables", "Show courses", "Show student performance"],
+            "requires_confirmation": False,
+            "affected_rows": 0
         }
         
     data = execution_result["data"]

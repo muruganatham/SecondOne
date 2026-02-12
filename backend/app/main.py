@@ -37,15 +37,12 @@ def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
-# Include Routers
+# Include Routers - Full Role-Based System
 from app.api.endpoints import ai_query
 from app.api.endpoints import auth
 from app.api.endpoints import conversations
 
-app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI"])
+app.include_router(ai_query.router, prefix="/api/v1/ai", tags=["AI Chat"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(conversations.router, prefix="/api/v1/conversations", tags=["Conversations"])
-
-from app.api.endpoints import leaderboard
-app.include_router(leaderboard.router, prefix="/api/v1", tags=["Analytics"])
 

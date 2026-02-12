@@ -1,0 +1,7 @@
+Checking Users table columns via RAW SQL...
+Columns in users table: ['id', 'name', 'email', 'password', 'roll_no', 'email_verified_at', 'expires_at', 'remember_token', 'dob', 'gender', 'role', 'contact_number', 'profile', 'status', 'password_validate_at', 'access', 'permission', 'created_at', 'updated_at', 'stats_chat_count', 'stats_words_generated', 'active_streak', 'last_active_date']
+All required columns present in users table.
+Attempting ORM query for user...
+User found: ID=2368, Role=7
+Streak: 0
+Last Active: None

@@ -40,6 +40,115 @@ class AIService:
         # For backward compatibility
         self.client = self.deepseek_client
         
+    def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat") -> dict:
+        """
+        Deep analysis of the question with FULL schema context.
+        The AI analyzes:
+        1. Question intent and what data is needed
+        2. Which tables and relationships can provide that data
+        3. Whether the query is answerable with available schema
+        4. Recommended query strategy
+        
+        Returns: {
+            "can_answer": bool,
+            "query_type": str,
+            "recommended_tables": [...],
+            "reasoning": str,
+            "confidence": str,
+            "suggested_sql_approach": str
+        }
+        """
+        client = self._get_client(model)
+        if not client:
+            return {"can_answer": True, "error": "AI client not available, proceeding anyway"}
+        
+        # Enhanced analysis prompt with FULL schema context
+        analysis_prompt = f"""You are an expert database analyst. Your job is to help answer the user's question by identifying relevant tables and query strategies.
+
+COMPLETE DATABASE SCHEMA:
+{schema_context}
+
+USER QUESTION: "{user_question}"
+
+Your task:
+1. Understand what data the user is asking for
+2. Identify which tables and relationships can provide this data
+3. Suggest the best query approach
+4. Be OPTIMISTIC - if there's any way to answer the question with available data, identify it
+
+Respond in this EXACT JSON format (no markdown, no extra text):
+{{
+    "can_answer": true/false,
+    "query_type": "simple|complex|general_knowledge",
+    "recommended_tables": ["table1", "table2"],
+    "reasoning": "brief explanation of your analysis and recommended approach",
+    "confidence": "high|medium|low",
+    "suggested_sql_approach": "brief description of how to construct the query",
+    "alternative_interpretation": "if the question could mean multiple things, suggest the most likely interpretation"
+}}
+
+IMPORTANT GUIDELINES:
+- If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true
+- If data exists but in different table names, identify the correct tables (e.g., "assessments" might be in "user_assessments" or "assessment_results")
+- Consider table relationships and foreign keys to find indirect data
+- Look for enum mappings to understand status/role fields
+- Be creative in finding solutions - don't say "unanswerable" unless truly impossible
+- For user-specific questions (like "my assessments"), assume we can filter by user_id
+- College-specific tables are prefixed with college codes (e.g., srec_2025_2_coding_result)"""
+
+        try:
+            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": "You are a database schema expert. Analyze questions deeply and respond with valid JSON only."},
+                    {"role": "user", "content": analysis_prompt},
+                ],
+                max_tokens=800,
+                temperature=0.1,
+                stream=False
+            )
+            
+            import json
+            analysis_text = response.choices[0].message.content.strip()
+            
+            # Remove markdown code blocks if present
+            if "```json" in analysis_text:
+                analysis_text = analysis_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in analysis_text:
+                analysis_text = analysis_text.split("```")[1].split("```")[0].strip()
+            
+            analysis = json.loads(analysis_text)
+            
+            print(f"🔍 Deep Schema Analysis:")
+            print(f"   - Can Answer: {analysis.get('can_answer', 'unknown')}")
+            print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
+            print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
+            print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
+            print(f"   - Reasoning: {analysis.get('reasoning', 'N/A')[:100]}...")
+            
+            return {
+                "can_answer": analysis.get("can_answer", True),
+                "query_type": analysis.get("query_type", "unknown"),
+                "recommended_tables": analysis.get("recommended_tables", []),
+                "reasoning": analysis.get("reasoning", ""),
+                "confidence": analysis.get("confidence", "medium"),
+                "suggested_sql_approach": analysis.get("suggested_sql_approach", ""),
+                "alternative_interpretation": analysis.get("alternative_interpretation", "")
+            }
+            
+        except Exception as e:
+            print(f"❌ Schema Analysis Error: {e}")
+            # If analysis fails, allow to proceed (fallback to original behavior)
+            return {
+                "can_answer": True,
+                "error": str(e),
+                "query_type": "unknown",
+                "recommended_tables": [],
+                "reasoning": "Analysis failed, proceeding with direct SQL generation",
+                "confidence": "low"
+            }
+
     def generate_sql(self, system_prompt: str, user_question: str, model: str = "deepseek-chat") -> str:
         """
         Generates SQL from natural language using specified model
@@ -49,7 +158,7 @@ class AIService:
             return f"Error: API Key for {model} is missing."
 
         try:
-            model_name = "deepseek-coder" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
@@ -217,7 +326,15 @@ class AIService:
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
-                    {"role": "system", "content": "You are a helpful IT and Educational Consultant. Answer the user's question accurately based on general knowledge. Do not mention that you cannot access the database. Be helpful, professional, and concise."},
+                    {"role": "system", "content": """You are a specialized IT and Educational Consultant. 
+You are strictly limited to answering questions related to:
+1. Companies (e.g., tech companies, recruiting firms, industry leaders).
+2. Professional Skills (e.g., programming languages, soft skills, technical concepts).
+3. Educational Information (e.g., courses, degrees, study topics, academic concepts).
+
+If the user asks about ANYTHING else (e.g., movies, sports, politics, general history, biology, entertainment, personal advice), you MUST refuse to answer.
+Refusal message: "I can only answer general knowledge questions related to Companies, Skills, and Educational Information."
+Do not answer the prohibited question."""},
                     {"role": "user", "content": user_question},
                 ],
                 max_tokens=500,

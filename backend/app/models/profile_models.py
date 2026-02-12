@@ -88,7 +88,7 @@ class Sections(Base):
     __tablename__ = 'sections'
 
     id = Column(String, primary_key=True, autoincrement=True, nullable=False)
-    section = Column(String(20), nullable=False) # Changed from section_name assumption to section
+    section_name = Column(String(20), nullable=False) 
     status = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)

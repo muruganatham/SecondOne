@@ -1,0 +1,566 @@
+{
+	"info": {
+		"_postman_id": "ai-app-backend-2024",
+		"name": "AI Application Backend API",
+		"description": "Complete API collection for testing AI Application Backend endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save the access token to environment variable",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"    pm.environment.set(\"role_id\", jsonData.role_id);",
+									"    console.log(\"Token saved:\", jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Super Admin Metrics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/super-admin/metrics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "super-admin", "metrics"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AI Query",
+			"item": [
+				{
+					"name": "Ask Database - General Query",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"How many students are there in total?\",\n    \"model\": \"deepseek-chat\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ai/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ai", "ask"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ask Database - Department Query",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Show me all departments\",\n    \"model\": \"deepseek-chat\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ai/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ai", "ask"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ask Database - Student Performance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"What is the average performance of students?\",\n    \"model\": \"deepseek-chat\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ai/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ai", "ask"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ask Database - Knowledge Query",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"What is artificial intelligence?\",\n    \"model\": \"deepseek-chat\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ai/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ai", "ask"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conversations",
+			"item": [
+				{
+					"name": "Get All Conversations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/conversations/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "conversations", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Conversation by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/conversations/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "conversations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Conversation\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"Hello, how are you?\",\n            \"timestamp\": \"2024-01-01T00:00:00Z\"\n        },\n        {\n            \"role\": \"assistant\",\n            \"content\": \"I'm doing well, thank you!\",\n            \"timestamp\": \"2024-01-01T00:00:05Z\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/conversations/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "conversations", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Conversation Title\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"Updated message\",\n            \"timestamp\": \"2024-01-01T00:00:00Z\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/conversations/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "conversations", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/conversations/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "conversations", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Leaderboard",
+			"item": [
+				{
+					"name": "Get Leaderboard",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"college_id\": 1,\n    \"department_id\": null,\n    \"batch_id\": null,\n    \"section_id\": null,\n    \"course_id\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/leaderboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leaderboard"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leaderboard Colleges",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/leaderboard/colleges",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leaderboard", "colleges"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leaderboard Metadata",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/leaderboard/metadata?college_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leaderboard", "metadata"],
+							"query": [
+								{
+									"key": "college_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Leaderboard Courses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/leaderboard/courses?college_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "leaderboard", "courses"],
+							"query": [
+								{
+									"key": "college_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get College Courses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/college-courses?college_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "college-courses"],
+							"query": [
+								{
+									"key": "college_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "role_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
