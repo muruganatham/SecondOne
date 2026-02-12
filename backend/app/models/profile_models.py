@@ -98,7 +98,8 @@ class Courses(Base):
 
     id = Column(String, primary_key=True, autoincrement=True, nullable=False)
     course_name = Column(String(255), nullable=False)
-    # Add other columns if needed, but minimal for leaderboard is fine
+    course_start_date = Column(Date, nullable=True)
+    course_end_date = Column(Date, nullable=True)
 
 class CourseAcademicMaps(Base):
     __tablename__ = 'course_academic_maps'
@@ -110,6 +111,8 @@ class CourseAcademicMaps(Base):
     batch_id = Column(String, ForeignKey('batches.id'), nullable=True)
     section_id = Column(String, ForeignKey('sections.id'), nullable=True)
     course_id = Column(String, ForeignKey('courses.id'), nullable=False)
+    course_start_date = Column(Date, nullable=True)
+    course_end_date = Column(Date, nullable=True)
     
     # Relationships
     college = relationship('Colleges', foreign_keys=[college_id])

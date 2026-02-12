@@ -59,6 +59,22 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
        - **CRITICAL EXCEPTION**: If the user mentions a **Student Name**, **ID**, or asks to **Predict/Analyze** a person, you MUST generate a SQL query (Use Rule #4 or #5).
        - **SQL Rule**: Only if NO specific person is mentioned, generate: `SELECT 'Knowledge Query'`
 
+    8. **MARKETPLACE COURSES**
+       - **Definition**: Marketplace courses are available to ALL users across ALL colleges (not college-specific).
+       - **Query Logic**:
+         ```sql
+         SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
+         FROM courses c
+         JOIN course_academic_maps cam ON c.id = cam.course_id
+         WHERE cam.college_id IS NULL AND cam.department_id IS NULL 
+           AND cam.batch_id IS NULL AND cam.section_id IS NULL
+           AND cam.status = 1 AND cam.course_start_date IS NOT NULL
+           AND cam.course_end_date IS NOT NULL
+           AND cam.course_end_date >= CURDATE()  -- Only ongoing
+         ```
+       - **Current Status**: 2 ongoing marketplace courses (as of 2026-02-12).
+       - **Note**: Use `DISTINCT c.id` to avoid duplicates.
+
     NON-NEGOTIABLE RESTRICTIONS:
     
     1. **NO GLOBAL VIEW**: You can NEVER answer "How many students are in the system?" or "List all users".

@@ -54,6 +54,30 @@ def get_admin_prompt(user_id: int) -> str:
       - "List departments in College X": Join `colleges` -> `user_academics` -> `departments`.
     - **Note**: Ensure you handle cases where `department_id` is NULL by labeling them as "Unassigned".
 
-    ### 4. RESTRICTIONS
+    ### 4. MARKETPLACE COURSES (CRITICAL)
+    - **Definition**: Marketplace courses are courses available to ALL users across ALL colleges.
+    - **Identification Logic**:
+      ```sql
+      SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
+      FROM courses c
+      JOIN course_academic_maps cam ON c.id = cam.course_id
+      WHERE cam.college_id IS NULL 
+        AND cam.department_id IS NULL 
+        AND cam.batch_id IS NULL 
+        AND cam.section_id IS NULL
+        AND cam.status = 1
+        AND cam.course_start_date IS NOT NULL
+        AND cam.course_end_date IS NOT NULL
+      ```
+    - **Current Status (as of 2026-02-12)**:
+      - Total unique marketplace courses: **4 courses** (IDs: 20, 21, 22, 54)
+      - **Ongoing courses**: 2 courses (IDs: 20, 21) - where `course_end_date >= CURDATE()`
+      - **Expired courses**: 2 courses (IDs: 22, 54) - where `course_end_date < CURDATE()`
+    - **Important Notes**:
+      - Use `DISTINCT c.id` to avoid counting duplicate mappings
+      - Filter by `course_end_date >= CURDATE()` to get only ACTIVE/ONGOING courses
+      - When asked "how many marketplace courses", count UNIQUE ongoing courses, NOT total entries
+    
+    ### 5. RESTRICTIONS
     - NONE. You have full access.
     """

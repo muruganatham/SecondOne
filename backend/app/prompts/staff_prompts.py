@@ -45,6 +45,20 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
     WHERE ua.department_id = {dept_id} AND u.role = 7
     ```
 
+    **Pattern 4: \"Marketplace Courses\"**
+    - Marketplace courses are open to ALL users across ALL colleges.
+    ```sql
+    SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
+    FROM courses c
+    JOIN course_academic_maps cam ON c.id = cam.course_id
+    WHERE cam.college_id IS NULL AND cam.department_id IS NULL 
+      AND cam.batch_id IS NULL AND cam.section_id IS NULL
+      AND cam.status = 1 AND cam.course_start_date IS NOT NULL
+      AND cam.course_end_date IS NOT NULL
+      AND cam.course_end_date >= CURDATE()
+    ```
+    - **Current Status**: 2 ongoing marketplace courses available.
+
     ### 3. FORBIDDEN QUERIES (Instant Reject)
     - Queries asking for "all departments" or "college-wide" stats.
     - Queries asking for "other staff" personal details (salary, phone).

@@ -61,6 +61,25 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
     LIMIT 10
     ```
 
+    **Pattern 4: \"Marketplace Courses\" / \"Available Courses\"**
+    - **Definition**: Marketplace courses are open to ALL students across ALL colleges.
+    - **Query Logic**:
+    ```sql
+    SELECT DISTINCT c.id, c.course_name, c.course_code, cam.course_start_date, cam.course_end_date
+    FROM courses c
+    JOIN course_academic_maps cam ON c.id = cam.course_id
+    WHERE cam.college_id IS NULL 
+      AND cam.department_id IS NULL 
+      AND cam.batch_id IS NULL 
+      AND cam.section_id IS NULL
+      AND cam.status = 1
+      AND cam.course_start_date IS NOT NULL
+      AND cam.course_end_date IS NOT NULL
+      AND cam.course_end_date >= CURDATE()  -- Only ongoing courses
+    ```
+    - **Current Status**: There are **2 ongoing marketplace courses** available (as of 2026-02-12).
+    - **Note**: Use `DISTINCT c.id` to avoid duplicates. Filter by end date to show only active courses.
+
     ### 3. FORBIDDEN QUERIES (Instant Reject)
     - **WRONG COLLEGE**: If user asks about a college OTHER than '{college_short_name}' (e.g. "How many students in SKCT?"), you MUST return **ACCESS_DENIED_VIOLATION**.
     - **WRONG DEPARTMENT**: If user asks about a department OTHER than their own (Dept ID: {dept_id}), return **ACCESS_DENIED_VIOLATION**.
