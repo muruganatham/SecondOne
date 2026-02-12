@@ -4,7 +4,7 @@ from typing import List
 from app.core.db import get_db
 from app.models.profile_models import Users, Conversations
 from app.schemas.conversation import ConversationCreate, ConversationUpdate, ConversationResponse
-from app.api.endpoints.auth import get_current_user
+from app.core.security import get_current_user
 
 router = APIRouter()
 

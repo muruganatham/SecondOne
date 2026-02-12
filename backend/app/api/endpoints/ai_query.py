@@ -10,7 +10,7 @@ from app.services.ai_service import ai_service
 from app.services.schema_context import schema_context
 from app.services.sql_executor import sql_executor
 from app.models.profile_models import Users
-from app.api.endpoints.auth import get_current_user
+from app.core.security import get_current_user, RoleChecker
 from app.core.db import get_db
 from app.prompts import (
     get_admin_prompt, 
@@ -22,6 +22,9 @@ from app.prompts import (
 )
 
 router = APIRouter()
+
+# Example: Protect specific endpoints with RoleChecker
+# router = APIRouter(dependencies=[Depends(RoleChecker([1, 2]))]) # This would protect the whole router
 
 class AIQueryRequest(BaseModel):
     question: str

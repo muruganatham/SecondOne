@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core.db import get_db
-from app.api.endpoints.auth import get_current_user
+from app.core.security import get_current_user, RoleChecker
 from app.models.profile_models import Users, UserAcademics, Colleges, Departments
 from app.core.config import settings
 
@@ -282,10 +282,8 @@ async def get_college_courses(
 @router.get("/analytics/leaderboard/colleges")
 def get_leaderboard_colleges(
     db: Session = Depends(get_db),
-    current_user: Users = Depends(get_current_user)
+    current_user: Users = Depends(RoleChecker([1, 2]))
 ):
-    if current_user.role != 1 and current_user.role != 2:
-         return []
          
     # Exclude dummy/test colleges
     colleges = db.query(Colleges).filter(Colleges.college_name.notin_(['skcet', 'skct'])).all()
@@ -297,7 +295,7 @@ from app.models.profile_models import Batches, Sections, CourseAcademicMaps, Col
 def get_leaderboard_metadata(
     college_id: int = None,
     db: Session = Depends(get_db),
-    current_user: Users = Depends(get_current_user)
+    current_user: Users = Depends(RoleChecker([1, 2]))
 ):
     with open("debug_log.txt", "a") as f:
         f.write(f"Metadata Request: college_id={college_id}, Role={current_user.role}\n")
@@ -309,10 +307,6 @@ def get_leaderboard_metadata(
              if current_user.role == 1:
                  return {"departments": [], "batches": [], "sections": []}
              raise HTTPException(status_code=400, detail="College ID required")
-
-    # Restrict Students (Role 7) from accessing this Admin-only metadata
-    if current_user.role == 7:
-        raise HTTPException(status_code=403, detail="Access denied")
 
     # Verify access
     if current_user.role == 2:
