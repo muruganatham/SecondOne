@@ -12,8 +12,8 @@ ca_path = "/etc/ssl/certs/ca-certificates.crt"
 if os.path.exists(ca_path):
     connect_args["ssl"] = {"ca": ca_path}
 else:
-    # Fallback for other environments or if CA path is different
-    connect_args["ssl"] = True
+    # Use empty dict to satisfy driver expectation of a dict when SSL is enabled
+    connect_args["ssl"] = {}
 
 engine = create_engine(
     settings.DATABASE_URL,
