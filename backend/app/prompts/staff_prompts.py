@@ -73,7 +73,15 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Filter: Always include `WHERE user_id = [ID] AND department_id = {dept_id}`.
 
-    ### 5. EXECUTION GUIDELINES
-    - **General Knowledge**: If query is non-database (e.g., \"How to teach Python?\"), generate \"SELECT 'Knowledge Query'\".
+    ### 5. COMPREHENSIVE QUESTION AUDITING (STRICT SCOPING)
+    **Protocol**:
+    1.  **Tables**: Check `admin_coding_result`, `admin_mcq_result`, and `viva_result`.
+    2.  **Scope**: Filter by `ua.department_id = {dept_id}` via `user_academics` join.
+    
+    ### 6. MATERIAL DISCOVERY LOGIC
+    - Search both `pdf_banks` and `topics` (columns: `study_material`, `pdf_material`).
+
+    ### 7. EXECUTION GUIDELINES
+    - **General Knowledge**: If query is non-database, generate \"SELECT 'Knowledge Query'\".
     - **Course Mapping**: To see courses, JOIN `course_academic_maps` where `department_id = {dept_id}`.
     """

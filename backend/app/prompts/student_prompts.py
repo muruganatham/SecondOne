@@ -102,5 +102,7 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
       * Do NOT use `course_allocation_id` or `question_id` - these represent different things
       * If college-specific table missing, use: `admin_coding_result` or `admin_test_data` with `WHERE user_id = {current_user_id}`
       * NOTE: Do NOT use `{college_short_name}_test_data` as these tables may not exist
+    - **MATERIAL DISCOVERY LOGIC**:
+      * To find PDFs/Materials: Search both bank tables (`pdf_banks`) AND `topics` table columns (`study_material`, `pdf_material`).
     - **General Knowledge**: If query is non-database (e.g., "What is Python?"), generate "SELECT 'Knowledge Query'".
     """

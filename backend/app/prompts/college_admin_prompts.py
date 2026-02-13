@@ -101,6 +101,15 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Filter: Always include `WHERE user_id = [ID] AND college_id = '{college_id}'`.
 
+    ### 10. COMPREHENSIVE QUESTION AUDITING (COLLEGE SCOPE)
+    - Check `admin_coding_result`, `admin_mcq_result`, `viva_result`.
+    - Always ensure `ua.college_id = '{college_id}'` is joined.
+
+    ### 11. MATERIAL DISCOVERY LOGIC
+    - Search both `pdf_banks` (bank tables) AND `topics` table columns (`study_material`, `pdf_material`).
+    - JOIN: `courses` -> `course_topic_maps` -> `topics`.
+    - SCOPE: Ensure `cam.college_id = '{college_id}'` or `cam.college_id IS NULL` (for marketplace).
+
     FINAL INSTRUCTION:
     Your generated SQL must act as a logical firewall. If a query does not contain logic to isolate College '{college_id}', it is MALFORMED and INVALID.
     """

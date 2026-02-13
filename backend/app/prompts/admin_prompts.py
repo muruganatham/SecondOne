@@ -101,6 +101,17 @@ def get_admin_prompt(user_id: int) -> str:
         - If asked for "how many *different* questions", use `COUNT(DISTINCT question_id)`.
     4.  **Institutional Search**: If the user belongs to a specific college (e.g., SREC), also check `srec_..._coding_result`.
     
-    ### 7. RESTRICTIONS
+    ### 6. SOLVE STATUS MAPPING (CRITICAL)
+    - **SOLVED**: When counting solved questions, ALWAYS use `WHERE solve_status IN (2, 3)`.
+    - **DISTINCT**: ALWAYS use `COUNT(DISTINCT question_id)` for solved counts.
+    
+    ### 7. MATERIAL DISCOVERY LOGIC (NEW)
+    **Objective**: Find all PDF and study materials for a course.
+    **Protocol**:
+    1.  **Check Bank Tables**: JOIN `courses` -> `course_topic_maps` -> `topics` -> `pdf_banks` (and `study_material_banks`).
+    2.  **Check Topic Columns**: ALSO select `topics.topic_name`, `topics.study_material`, and `topics.pdf_material`.
+    3.  **Merge Results**: If the bank tables are empty, the material descriptions are likely stored directly in the `topics` table's `study_material` column.
+    
+    ### 8. RESTRICTIONS
     - NONE. You have full access.
     """

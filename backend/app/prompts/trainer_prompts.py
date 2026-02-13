@@ -89,7 +89,22 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Filter: Always include `WHERE user_id = [ID] AND department_id = {dept_id}`.
 
-    ### 5. EXECUTION GUIDELINES
+    ### 5. COMPREHENSIVE QUESTION AUDITING (STRICT SCOPING)
+    **Objective**: Count questions taken by students in YOUR department.
+    **Protocol**:
+    1.  **Search All Result Tables**: Check `admin_coding_result`, `admin_mcq_result`, AND `viva_result`.
+    2.  **Strict Scope**: ALWAYS join with `user_academics` and filter by `department_id = {dept_id}`.
+    3.  **Total vs Unique**:
+        - Use `COUNT(*)` for total attempts.
+        - Use `COUNT(DISTINCT question_id)` for number of different questions.
+    
+    ### 6. MATERIAL DISCOVERY LOGIC
+    **Objective**: Find materials for courses in your department.
+    **Protocol**:
+    1.  **Search Pattern**: Check both `pdf_banks`/`study_material_banks` AND `topics` table columns (`study_material`, `pdf_material`).
+    2.  **Linkage**: JOIN `courses` -> `course_topic_maps` -> `topics`.
+
+    ### 7. EXECUTION GUIDELINES
     - **Scoping**: ALWAYS include `JOIN user_academics ua ON ... WHERE ua.department_id = {dept_id}` for any student data.
     - **Joins**: Use `colleges`, `departments`, `batches`, and `sections` to provide descriptive names in your results.
     - **General Knowledge**: If query is non-database, generate \"SELECT 'Knowledge Query'\".

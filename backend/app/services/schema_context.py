@@ -47,6 +47,7 @@ class SchemaContext:
             lines.append("4. COURSE ENROLLMENTS: To count students in a course, JOIN `users` -> `course_wise_segregations` -> `courses`. Do NOT use `user_course_enrollments` unless specifically asked. Filter by `users.status=1` ONLY if asked for 'active'.")
             lines.append("5. COLLEGE RESULTS: Result tables are prefixed by college code (e.g., `srec_2025_2_coding_result` for SREC). If the user mentions a college, ALWAYS use their specific `{college}_%_result` table. If it DOES NOT EXIST in the list below, use generic `coding_results` or similar base tables.")
             lines.append("6. TOPIC ANALYSIS: To find topics in a course, JOIN `courses` -> `course_topic_maps` -> `topics`. Use `course_topic_maps.status=1` AND `topics.status=1`.")
+            lines.append("   - NOTE: Material info can often be found directly in `topics.study_material` or `topics.pdf_material` columns.")
             lines.append("7. ASSESSMENT/TEST DATA: For questions about 'assessments', 'tests', or 'how many done':")
             lines.append("   - FIRST check if college-specific `{college}_coding_result` table exists (e.g., `srec_2025_2_coding_result`)")
             lines.append("   - If college-specific table exists, use it: SELECT COUNT(DISTINCT problem_id) FROM {college}_coding_result WHERE user_id = X")
@@ -54,6 +55,13 @@ class SchemaContext:
             lines.append("   - For 'my assessments' or 'assessments I done', filter by user_id from the authenticated user")
             lines.append("   - Count DISTINCT problem_id or test_id to avoid duplicates from multiple attempts")
 
+
+            lines.append("\n### SOLVE STATUS MAPPING (IMPORTANT):")
+            lines.append("To count 'Solved' questions in `admin_coding_result` or `{college}_coding_result`:")
+            lines.append("- ALWAYS use `solve_status IN (2, 3)` for 'Solved' or 'Success'.")
+            lines.append("- `solve_status = 2` = Solved/Partially Solved.")
+            lines.append("- `solve_status = 3` = Fully Solved.")
+            lines.append("- Count DISTINCT `question_id` (or `problem_id`) to get the unique solved count.")
 
             lines.append("\n### SYSTEM ARCHITECTURE (FEATURE MAPPING):")
             lines.append("The 163+ tables are organized into 10 functional modules. Refer to these to find logic blocks:")
