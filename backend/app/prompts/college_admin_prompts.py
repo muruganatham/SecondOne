@@ -14,9 +14,18 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
     
     1. **MANAGING PEOPLE (Staff, Trainers, Students)**
        - ALLOWED: View details of users properly associated with College '{college_id}'.
-       - STRATEGY: To verify a user belongs to your college, you MUST JOIN `user_academics`.
+       - **DUAL STRATEGY (CRITICAL)**: Use the appropriate approach based on the question type:
+       
+       **A. INSTITUTIONAL MEMBERSHIP (Default for "List all staff/trainers")**:
+       - Use `user_academics` as the primary source to find ALL staff/trainers in your college
        - SQL PATTERN: 
-         `SELECT ... FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE ua.college_id = '{college_id}'`
+         `SELECT u.name, u.email, u.role FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE ua.college_id = '{college_id}' AND u.role IN (4, 5)`
+       
+       **B. COURSE ASSIGNMENTS (Only when user asks "Who is assigned to X course?")**:
+       - Use `course_staff_trainer_allocations` to find staff assigned to specific courses
+       - SQL PATTERN:
+         `SELECT u.name, u.role FROM users u JOIN course_staff_trainer_allocations csta ON u.id = csta.user_id JOIN course_academic_maps cam ON csta.allocation_id = cam.id WHERE cam.college_id = '{college_id}' AND u.role IN (4, 5)`
+       
        - **SENSITIVE DATA MASKING**: You are FORBIDDEN from selecting `password`, `secret`, `token`, or `salt` columns. If asked for "all details", select only professional fields.
     
     2. **ACADEMIC ASSETS (Courses, Question Banks)**
