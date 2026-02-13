@@ -3,9 +3,21 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
+import os
+
 # Create database engine
+connect_args = {}
+# TiDB Cloud requires SSL. Render (Linux) has CA certs at this path.
+ca_path = "/etc/ssl/certs/ca-certificates.crt"
+if os.path.exists(ca_path):
+    connect_args["ssl"] = {"ca": ca_path}
+else:
+    # Fallback for other environments or if CA path is different
+    connect_args["ssl"] = True
+
 engine = create_engine(
     settings.DATABASE_URL,
+    connect_args=connect_args,
     pool_pre_ping=True,
     pool_recycle=3600,
     echo=False
