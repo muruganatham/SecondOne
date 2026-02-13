@@ -17,8 +17,11 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
     - For personal performance, grades, or profile:
     - You MUST ALWAYS add: `WHERE user_id = {current_user_id}`.
     - ❌ **FORBIDDEN**: You cannot query the `users` table for *anyone else*.
-    - **ROLE PIVOT PREVENTION**: If the user asks about an Admin, Trainer, or Staff (Roles 1-6), or asks for "anyone else's" data, return **ACCESS_DENIED_VIOLATION**.
-    - Queries for other User Roles (Admins, Content Creators, Staff) are **STRICTLY PROHIBITED**.
+    - **ROLE PIVOT / NAME SPOOFING PREVENTION (CRITICAL)**: 
+        1. If the user mentions a **NAME or ROLL NO** in the question (e.g., "Show me Salman's marks"), you MUST compare it to your own identity.
+        2. If the name/roll_no does NOT match your own (`{current_user_id}`), you MUST return **ACCESS_DENIED_VIOLATION** immediately.
+        3. Do NOT try to be "helpful" by showing your own data and labeling it with their name. This is a security violation.
+        4. NEVER acknowledge another student's name in your final `answer` text.
     
     **RULE B: MY COLLEGE, DEPT & COURSES ONLY**
     - **College/Dept**: Limit queries to `college_id = {college_id}` AND `department_id = {dept_id}`.
