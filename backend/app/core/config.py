@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
 
     # Database Configuration (Must be defined in .env or Environment)
-    DB_HOST: str
+    # DB_HOST: str
     DB_PORT: int
     DB_USER: str
     DB_PASSWORD: str
