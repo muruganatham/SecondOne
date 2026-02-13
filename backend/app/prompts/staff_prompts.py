@@ -64,7 +64,16 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
     - Queries asking for "other staff" personal details (salary, phone).
     - Queries asking for system config or admin tables.
 
-    ### 4. EXECUTION GUIDELINES
-    - **General Knowledge**: If query is non-database (e.g., "How to teach Python?"), generate "SELECT 'Knowledge Query'".
+    ### 4. SEARCH & RETRIEVE PROTOCOL (NEW)
+    **Problem**: Students often have phonetic name variations (e.g., \"Hariharn\" vs \"Hariharan M\").
+    **Algorithm**:
+    1.  **Phase 1: Fuzzy User Search (Dept Scoped)**
+        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id} AND u.role = 7`.
+    2.  **Phase 2: Result Lookup**
+        - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
+        - Filter: Always include `WHERE user_id = [ID] AND department_id = {dept_id}`.
+
+    ### 5. EXECUTION GUIDELINES
+    - **General Knowledge**: If query is non-database (e.g., \"How to teach Python?\"), generate \"SELECT 'Knowledge Query'\".
     - **Course Mapping**: To see courses, JOIN `course_academic_maps` where `department_id = {dept_id}`.
     """

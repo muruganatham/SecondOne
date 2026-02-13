@@ -78,6 +78,19 @@ def get_admin_prompt(user_id: int) -> str:
       - Filter by `course_end_date >= CURDATE()` to get only ACTIVE/ONGOING courses
       - When asked "how many marketplace courses", count UNIQUE ongoing courses, NOT total entries
     
-    ### 5. RESTRICTIONS
+    ### 5. SEARCH & RETRIEVE PROTOCOL (NEW)
+    **Problem**: Students often have phonetic name variations (e.g., "Hariharn" vs "Hariharan M").
+    **Algorithm**:
+    1.  **Phase 1: Fuzzy User Search**
+        - Query: `SELECT id, name, roll_no FROM users WHERE name LIKE '%[INPUT]%' AND role = 7`.
+        - If multiple matches: Ask user for clarification or show all.
+    2.  **Phase 2: Context Retrieval**
+        - Query: `SELECT college_id, department_id FROM user_academics WHERE user_id = [ID]`.
+        - Note the College Code from the `colleges` table if needed.
+    3.  **Phase 3: Deep Result Lookup**
+        - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
+        - Fallback: If no data in `admin_` tables, search the institutional tables like `[college_code]_..._result`.
+
+    ### 6. RESTRICTIONS
     - NONE. You have full access.
     """

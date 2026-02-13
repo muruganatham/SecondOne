@@ -1,0 +1,59 @@
+﻿Searching for Hariharn variations...
+
+Matches for %hariharan%:
+  ID: 164 | Name: Hariharan M | Roll: 24BIT121
+  ID: 541 | Name: HARIHARAN S | Roll: 24BCA114
+  ID: 754 | Name: Hariharan.s | Roll: 24BCC119
+  ID: 895 | Name: Hariharan S | Roll: 24BSS020
+  ID: 1560 | Name: HARIHARAN K | Roll: 727824tucs120
+  ID: 1561 | Name: HARIHARAN R | Roll: 727824tucs121
+  ID: 1935 | Name: HARIHARAN M | Roll: 727824TUCY016
+  ID: 2368 | Name: Hariharan R | Roll: 71812305032
+  ID: 2420 | Name: HARIHARAN S | Roll: 71812305033
+  ID: 3011 | Name: HARIHARAN | Roll: 71812253018
+  ID: 3645 | Name: HARIHARAN D | Roll: 25SC100
+  ID: 3728 | Name: HARIHARAN B | Roll: 25CI005
+  ID: 4096 | Name: HARIHARAN K | Roll: 25IT257
+  ID: 4536 | Name: HARIHARAN K | Roll: URK22AI1048
+  ID: 5038 | Name: HARIHARAN R | Roll: 721423106305
+  ID: 5341 | Name: HARIHARAN V | Roll: 721423243018
+  ID: 5342 | Name: HARIHARAN M | Roll: 721423243017
+  ID: 5679 | Name: HARIHARAN K | Roll: 721424205017
+  ID: 5992 | Name: HARIHARAN K | Roll: 721024104031
+  ID: 6125 | Name: HARIHARAN | Roll: 721023205020
+  ID: 6405 | Name: SRI MAHA HARIHARAN V | Roll: 20256536
+
+No matches for %hariharn%
+
+Matches for %hariha%:
+  ID: 164 | Name: Hariharan M | Roll: 24BIT121
+  ID: 459 | Name: Hariharasudhan T | Roll: 24BCS115
+  ID: 541 | Name: HARIHARAN S | Roll: 24BCA114
+  ID: 754 | Name: Hariharan.s | Roll: 24BCC119
+  ID: 895 | Name: Hariharan S | Roll: 24BSS020
+  ID: 1560 | Name: HARIHARAN K | Roll: 727824tucs120
+  ID: 1561 | Name: HARIHARAN R | Roll: 727824tucs121
+  ID: 1935 | Name: HARIHARAN M | Roll: 727824TUCY016
+  ID: 2368 | Name: Hariharan R | Roll: 71812305032
+  ID: 2420 | Name: HARIHARAN S | Roll: 71812305033
+  ID: 2708 | Name: Hiranmayi Hariharasubramanian | Roll: 25BCO032
+  ID: 3011 | Name: HARIHARAN | Roll: 71812253018
+  ID: 3645 | Name: HARIHARAN D | Roll: 25SC100
+  ID: 3650 | Name: HARIHARASUDHAN J P | Roll: 25SC105
+  ID: 3728 | Name: HARIHARAN B | Roll: 25CI005
+  ID: 4096 | Name: HARIHARAN K | Roll: 25IT257
+  ID: 4536 | Name: HARIHARAN K | Roll: URK22AI1048
+  ID: 4709 | Name: HARIHARASUDHAN.T | Roll: 8725464
+  ID: 4855 | Name: HARIHARASUDHAN P | Roll: 24RBAI015
+  ID: 5038 | Name: HARIHARAN R | Roll: 721423106305
+  ID: 5127 | Name: HARIHARA GANESH R | Roll: 721423106042
+  ID: 5206 | Name: HARIHARASUDHAN S | Roll: 721423205019
+  ID: 5341 | Name: HARIHARAN V | Roll: 721423243018
+  ID: 5342 | Name: HARIHARAN M | Roll: 721423243017
+  ID: 5679 | Name: HARIHARAN K | Roll: 721424205017
+  ID: 5992 | Name: HARIHARAN K | Roll: 721024104031
+  ID: 6125 | Name: HARIHARAN | Roll: 721023205020
+  ID: 6405 | Name: SRI MAHA HARIHARAN V | Roll: 20256536
+
+Matches for %hari_haran%:
+  ID: 1813 | Name: HARI HARAN V S | Roll: 727824TUIO016

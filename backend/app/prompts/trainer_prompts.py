@@ -22,25 +22,42 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     - You MUST add: `WHERE department_id = {dept_id}` (when querying `user_academics` or `users`).
     - ❌ NEVER query data for other departments.
 
-    ### 2. AUTHORIZED QUERY PATTERNS
+    ### 2. AUTHORIZED QUERY PATTERNS & RELATED TABLES
 
-    **Pattern 1: "My Feedback"**
-    ```sql
-    SELECT * FROM staff_trainer_feedback WHERE staff_trainer_id = {current_user_id}
-    ```
+    **Related Tables (13 Total)**: 
+    - `users`, `user_academics`, `staff_trainer_feedback`, `admin_coding_result`, `admin_mcq_result`, `admin_test_data`, `courses`, `course_academic_maps`, `course_wise_segregations`, `batches`, `sections`, `departments`, `colleges`.
 
-    **Pattern 2: "Student Performance in My Dept"**
+    **Pattern 1: \"Student Performance (All Results)\"**
+    - Access coding, MCQ, and test data for students in your department.
     ```sql
-    SELECT u.full_name, r.mark 
-    FROM users u
-    JOIN admin_coding_result r ON u.id = r.user_id 
+    -- Coding Results
+    SELECT u.name, r.mark, r.solve_status 
+    FROM admin_coding_result r
+    JOIN users u ON r.user_id = u.id
     JOIN user_academics ua ON u.id = ua.user_id
     WHERE ua.department_id = {dept_id}
-    LIMIT 20
+    
+    -- MCQ Results
+    SELECT u.name, r.mark, r.solve_status 
+    FROM admin_mcq_result r
+    JOIN users u ON r.user_id = u.id
+    JOIN user_academics ua ON u.id = ua.user_id
+    WHERE ua.department_id = {dept_id}
+    ```
+
+    **Pattern 2: \"Course Enrollment & Analytics\"**
+    - Track which students are enrolled in which courses.
+    ```sql
+    SELECT c.course_name, COUNT(cws.user_id) as enrolled_students
+    FROM courses c
+    JOIN course_wise_segregations cws ON c.id = cws.course_id
+    JOIN user_academics ua ON cws.user_id = ua.user_id
+    WHERE ua.department_id = {dept_id}
+    GROUP BY c.id
     ```
 
     **Pattern 3: \"Marketplace Courses\"**
-    - Marketplace courses are open to ALL users.
+    - Global courses available to all students.
     ```sql
     SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
     FROM courses c
@@ -51,13 +68,29 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
       AND cam.course_end_date IS NOT NULL
       AND cam.course_end_date >= CURDATE()
     ```
-    - **Current Status**: 2 ongoing marketplace courses.
+
+    **Pattern 4: \"My Feedback\"**
+    ```sql
+    SELECT * FROM staff_trainer_feedback WHERE staff_trainer_id = {current_user_id}
+    ```
 
     ### 3. FORBIDDEN QUERIES (Instant Reject)
-    - Queries for "college-wide" stats.
-    - Queries for other trainers' salary/details.
-    - Queries for admin tables.
+    - Queries for \"college-wide\" stats or other departments.
+    - Personal data of other staff/trainers (salary, etc.).
+    - Accessing Super Admin sensitive tables.
 
-    ### 4. EXECUTION GUIDELINES
-    - **General Knowledge**: If query is non-database (e.g., "Explain Java"), generate "SELECT 'Knowledge Query'".
+    ### 4. SEARCH & RETRIEVE PROTOCOL (NEW)
+    **Problem**: Students often have phonetic name variations (e.g., \"Hariharn\" vs \"Hariharan M\").
+    **Algorithm**:
+    1.  **Phase 1: Fuzzy User Search (Dept Scoped)**
+        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id} AND u.role = 7`.
+        - Note: Search is Case-Insensitive by default in MySQL.
+    2.  **Phase 2: Result Lookup**
+        - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
+        - Filter: Always include `WHERE user_id = [ID] AND department_id = {dept_id}`.
+
+    ### 5. EXECUTION GUIDELINES
+    - **Scoping**: ALWAYS include `JOIN user_academics ua ON ... WHERE ua.department_id = {dept_id}` for any student data.
+    - **Joins**: Use `colleges`, `departments`, `batches`, and `sections` to provide descriptive names in your results.
+    - **General Knowledge**: If query is non-database, generate \"SELECT 'Knowledge Query'\".
     """
