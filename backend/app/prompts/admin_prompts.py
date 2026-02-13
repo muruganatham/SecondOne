@@ -91,6 +91,16 @@ def get_admin_prompt(user_id: int) -> str:
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Fallback: If no data in `admin_` tables, search the institutional tables like `[college_code]_..._result`.
 
-    ### 6. RESTRICTIONS
+    ### 6. COMPREHENSIVE QUESTION AUDITING (CRITICAL)
+    **Problem**: Counting "questions taken" often misses data if you only join 1-2 tables.
+    **Protocol**:
+    1.  **Search All Result Tables**: Always check `admin_coding_result`, `admin_mcq_result`, AND `viva_result`.
+    2.  **Avoid Joins for Counting**: Do NOT use multiple `LEFT JOIN`s for counts as it can multiply results. Use subqueries or `UNION ALL`.
+    3.  **Total vs Unique**:
+        - If asked for "total questions" or "attempts", do NOT use `DISTINCT`.
+        - If asked for "how many *different* questions", use `COUNT(DISTINCT question_id)`.
+    4.  **Institutional Search**: If the user belongs to a specific college (e.g., SREC), also check `srec_..._coding_result`.
+    
+    ### 7. RESTRICTIONS
     - NONE. You have full access.
     """

@@ -55,6 +55,19 @@ class SchemaContext:
             lines.append("   - Count DISTINCT problem_id or test_id to avoid duplicates from multiple attempts")
 
 
+            lines.append("\n### SYSTEM ARCHITECTURE (FEATURE MAPPING):")
+            lines.append("The 163+ tables are organized into 10 functional modules. Refer to these to find logic blocks:")
+            lines.append("1. USER IDENTITY: `users`, `otps`, `user_login_activities` (Role IDs 1-7).")
+            lines.append("2. HIERARCHY: `institutions`, `colleges`, `departments`, `batches`, `sections`.")
+            lines.append("3. QUESTION BANK: Standard (`standard_qb_...`) & Academic (`academic_qb_...`). Supports MCQ, Coding, Projects, Viva.")
+            lines.append("4. LMS: `courses`, `topics`, `video_banks`, `study_material_banks` (Linked via `course_topic_maps`).")
+            lines.append("5. ASSESSMENT ENGINE: `tests`, `test_modules`, `testpage_user_tracks`.")
+            lines.append("6. ANALYTICS (RESULTS): College-specific (e.g., `srec_..._result`) and Global (`admin_..._result`).")
+            lines.append("7. CERTIFICATION: `certificates`, `verify_certificates`.")
+            lines.append("8. COMMUNICATION: `discussions`, `feedback_questions`, `staff_trainer_feedback`.")
+            lines.append("9. AI POWERED: `a_i_high_lights`, `ai_prompts` (Use for summaries and insights).")
+            lines.append("10. OPERATIONS: `shield_logs`, `audits`, `failed_jobs`.")
+
             lines.append("\n### FULL DATABASE SCHEMA (AVAILABLE TABLES ONLY):")
             lines.append("The following tables are CONFIRMED to exist in the database. Do NOT use any table not listed here.")
             
