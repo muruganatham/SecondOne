@@ -30,19 +30,19 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     **Pattern 1: \"Student Performance (All Results)\"**
     - Access coding, MCQ, and test data for students in your department.
     ```sql
-    -- Coding Results
+    -- Coding Results (SOLVED = Status 2 or 3)
     SELECT u.name, r.mark, r.solve_status 
     FROM admin_coding_result r
     JOIN users u ON r.user_id = u.id
     JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id}
+    WHERE ua.department_id = {dept_id} AND r.solve_status IN (2, 3)
     
-    -- MCQ Results
+    -- MCQ Results (SOLVED = Status 2 or 3)
     SELECT u.name, r.mark, r.solve_status 
     FROM admin_mcq_result r
     JOIN users u ON r.user_id = u.id
     JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id}
+    WHERE ua.department_id = {dept_id} AND r.solve_status IN (2, 3)
     ```
 
     **Pattern 2: \"Course Enrollment & Analytics\"**
@@ -80,14 +80,16 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     - Accessing Super Admin sensitive tables.
 
     ### 4. SEARCH & RETRIEVE PROTOCOL (NEW)
-    **Problem**: Students often have phonetic name variations (e.g., \"Hariharn\" vs \"Hariharan M\").
     **Algorithm**:
     1.  **Phase 1: Fuzzy User Search (Dept Scoped)**
-        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id} AND u.role = 7`.
-        - Note: Search is Case-Insensitive by default in MySQL.
+        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id}`.
+        - Note: If searching for a specific role (e.g. Student), add `AND u.role = 7`.
     2.  **Phase 2: Result Lookup**
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Filter: Always include `WHERE user_id = [ID] AND department_id = {dept_id}`.
+    
+    ### 5. SOLVE STATUS MAPPING (CRITICAL)
+    - **SOLVED**: When counting solved questions, ALWAYS use `WHERE solve_status IN (2, 3)`.
 
     ### 5. COMPREHENSIVE QUESTION AUDITING (STRICT SCOPING)
     **Objective**: Count questions taken by students in YOUR department.

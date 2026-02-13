@@ -93,13 +93,16 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
     4. **NO SYSTEM CONFIG ACCESS**: Super Admin tables are off-limits.
     
     9. **SEARCH & RETRIEVE PROTOCOL (NEW)**
-    **Problem**: Students often have phonetic name variations (e.g., \"Hariharn\" vs \"Hariharan M\").
     **Algorithm**:
-    1.  **Phase 1: Fuzzy User Search (College Scoped)**
-        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.college_id = '{college_id}' AND u.role = 7`.
-    2.  **Phase 2: Result Lookup**
+    1. **Phase 1: Fuzzy User Search (College Scoped)**
+        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.college_id = '{college_id}'`.
+        - Note: If specifically looking for students, add `AND u.role = 7`.
+    2. **Phase 2: Result Lookup**
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.
         - Filter: Always include `WHERE user_id = [ID] AND college_id = '{college_id}'`.
+
+    ### 10. SOLVE STATUS MAPPING (CRITICAL)
+    - **SOLVED**: When counting solved questions, ALWAYS use `WHERE solve_status IN (2, 3)`.
 
     ### 10. COMPREHENSIVE QUESTION AUDITING (COLLEGE SCOPE)
     - Check `admin_coding_result`, `admin_mcq_result`, `viva_result`.

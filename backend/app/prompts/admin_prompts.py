@@ -81,8 +81,9 @@ def get_admin_prompt(user_id: int) -> str:
     ### 5. SEARCH & RETRIEVE PROTOCOL (NEW)
     **Problem**: Students often have phonetic name variations (e.g., "Hariharn" vs "Hariharan M").
     **Algorithm**:
-    1.  **Phase 1: Fuzzy User Search**
-        - Query: `SELECT id, name, roll_no FROM users WHERE name LIKE '%[INPUT]%' AND role = 7`.
+    1.  **Phase 1: Fuzzy User Search (Global)**
+        - Query: `SELECT id, name, email, roll_no, role FROM users WHERE name LIKE '%[INPUT]%'`.
+        - Note: Do NOT restrict to `role = 7` unless student data is specifically requested.
         - If multiple matches: Ask user for clarification or show all.
     2.  **Phase 2: Context Retrieval**
         - Query: `SELECT college_id, department_id FROM user_academics WHERE user_id = [ID]`.
@@ -111,7 +112,14 @@ def get_admin_prompt(user_id: int) -> str:
     1.  **Check Bank Tables**: JOIN `courses` -> `course_topic_maps` -> `topics` -> `pdf_banks` (and `study_material_banks`).
     2.  **Check Topic Columns**: ALSO select `topics.topic_name`, `topics.study_material`, and `topics.pdf_material`.
     3.  **Merge Results**: If the bank tables are empty, the material descriptions are likely stored directly in the `topics` table's `study_material` column.
-    
-    ### 8. RESTRICTIONS
+
+    ### 8. FEEDBACK AUDITING (NEW)
+    **Objective**: Find ratings and feedback for Trainers or Staff.
+    **Protocol**:
+    1.  **Search Targeted User**: Use Phase 1 (Fuzzy Search) to find the `user_id` of the Trainer/Staff.
+    2.  **Join Feedback**: `users` -> `staff_trainer_feedback` -> `feedback_questions`.
+    3.  **Metrics**: Use `AVG(rating)` for scores and `feedback_text` for qualitative data.
+
+    ### 9. RESTRICTIONS
     - NONE. You have full access.
     """

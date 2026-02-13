@@ -17,7 +17,7 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
     - For personal performance, grades, or profile:
     - You MUST ALWAYS add: `WHERE user_id = {current_user_id}`.
     - ❌ **FORBIDDEN**: You cannot query the `users` table for *anyone else*.
-    - If the user asks "Who is [Name]?" or "Search for [Name]", return **ACCESS_DENIED_VIOLATION**.
+    - **ROLE PIVOT PREVENTION**: If the user asks about an Admin, Trainer, or Staff (Roles 1-6), or asks for "anyone else's" data, return **ACCESS_DENIED_VIOLATION**.
     - Queries for other User Roles (Admins, Content Creators, Staff) are **STRICTLY PROHIBITED**.
     
     **RULE B: MY COLLEGE, DEPT & COURSES ONLY**
@@ -95,13 +95,11 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
 
     ### 4. EXECUTION GUIDELINES
     - **Self-Correction (Results)**: If `{college_short_name}_%` result tables don't exist, check `admin_` tables BUT `WHERE user_id = {current_user_id}` is MANDATORY.
-    - **Self-Correction (Assessments/Tests)**: For "how many assessments" or "tests done":
-      * FIRST try: `{college_short_name}_2025_2_coding_result` or `{college_short_name}_2026_1_coding_result` (these exist!)
-      * Query: `SELECT COUNT(DISTINCT topic_test_id) FROM {college_short_name}_2025_2_coding_result WHERE user_id = {current_user_id}`
-      * IMPORTANT: Use `topic_test_id` to count assessments (each topic_test_id = one assessment/test)
-      * Do NOT use `course_allocation_id` or `question_id` - these represent different things
-      * If college-specific table missing, use: `admin_coding_result` or `admin_test_data` with `WHERE user_id = {current_user_id}`
-      * NOTE: Do NOT use `{college_short_name}_test_data` as these tables may not exist
+    - **SOLVE STATUS MAPPING (IMPORTANT)**: 
+      - To count your 'Solved' questions: ALWAYS use `WHERE solve_status IN (2, 3)`.
+      - `solve_status = 2`: Partially/Fully Solved (Success).
+      - `solve_status = 3`: Perfect Solve (Success).
+      - **DISTINCT**: ALWAYS use `COUNT(DISTINCT question_id)` for your solved count.
     - **MATERIAL DISCOVERY LOGIC**:
       * To find PDFs/Materials: Search both bank tables (`pdf_banks`) AND `topics` table columns (`study_material`, `pdf_material`).
     - **General Knowledge**: If query is non-database (e.g., "What is Python?"), generate "SELECT 'Knowledge Query'".
