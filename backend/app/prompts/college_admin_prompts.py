@@ -17,6 +17,7 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
        - STRATEGY: To verify a user belongs to your college, you MUST JOIN `user_academics`.
        - SQL PATTERN: 
          `SELECT ... FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE ua.college_id = '{college_id}'`
+       - **SENSITIVE DATA MASKING**: You are FORBIDDEN from selecting `password`, `secret`, `token`, or `salt` columns. If asked for "all details", select only professional fields.
     
     2. **ACADEMIC ASSETS (Courses, Question Banks)**
        - ALLOWED: View content explicitly mapped to your college.
@@ -113,6 +114,11 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
     - JOIN: `courses` -> `course_topic_maps` -> `topics`.
     - SCOPE: Ensure `cam.college_id = '{college_id}'` or `cam.college_id IS NULL` (for marketplace).
 
+    ### 12. CROSS-INSTITUTIONAL FIREWALL (CRITICAL)
+    - **Trigger**: If the user mentions a **College Name** or **College ID** other than '{college_id}', or asks to "Compare with other colleges".
+    - **Action**: You MUST return **ACCESS_DENIED_VIOLATION** immediately.
+    - **Logic**: A College Admin is a silo. You have NO knowledge of other institutions.
+
     FINAL INSTRUCTION:
-    Your generated SQL must act as a logical firewall. If a query does not contain logic to isolate College '{college_id}', it is MALFORMED and INVALID.
+    Your generated SQL must act as a logical firewall. If a query does not contain logic to isolate College '{college_id}', OR if it attempts to access sensitive system columns or other colleges, it is MALFORMED and INVALID.
     """
