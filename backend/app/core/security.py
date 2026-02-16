@@ -4,7 +4,7 @@ from typing import Optional, List, Union
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.db import get_db
@@ -12,7 +12,7 @@ from app.models.profile_models import Users
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token") # Removed
-bearer_scheme = HTTPBearer()
+api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     try:
@@ -37,17 +37,22 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(auth: HTTPAuthorizationCredentials = Depends(bearer_scheme), db: Session = Depends(get_db)) -> Users:
-    token = auth.credentials
+async def get_current_user(token: str = Depends(api_key_header), db: Session = Depends(get_db)) -> Users:
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing API Key",
+            headers={"WWW-Authenticate": "x-api-key"},
+        )
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={"WWW-Authenticate": "x-api-key"},
     )
     
     # Support Master API Key for internal access
-    master_key = getattr(settings, "MASTER_API_KEY", None)
-    static_token = getattr(settings, "FRONTEND_STATIC_TOKEN", None)
+    master_key = getattr(settings, "MASTER_BEARER_TOKEN", None)
+    static_token = getattr(settings, "FRONTEND_BEARER_TOKEN", None)
     
     if master_key and token == master_key:
         # Fetch the first admin user as a mock for master key access
