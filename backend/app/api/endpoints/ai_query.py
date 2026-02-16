@@ -79,7 +79,7 @@ async def ask_database(
             id=str(request.user_id or "0"),
             email="static-frontend@app.local",
             name="Static Frontend App",
-            role=request.user_role or 1, # Default to Admin if none provided
+            role=request.user_role if request.user_role is not None else 0, # Default to 0 (No Role)
         )
     
     # 1. Get Schema Context (The Prompt)
@@ -98,34 +98,57 @@ async def ask_database(
     
     # STUDENT ROLE (ID: 7)
     elif current_role_id == 7:
-        # Fetch Student's Department
+        # Fetch Student's Department and College Details
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
         college_id = academics.college_id if academics else "Unknown"
         
-        # Safe access to college short name
-        college_short_name = "admin" # default
-        if academics and academics.college:
-             try:
-                 college_short_name = str(academics.college.college_short_name).lower()
-             except:
-                 college_short_name = "admin"
+        # Safe access to Names and Short Names
+        college_short_name = "admin" 
+        college_name = "Your Institution"
+        dept_name = "Your Department"
+        
+        if academics:
+            if academics.college:
+                try:
+                    college_short_name = str(academics.college.college_short_name).lower()
+                    college_name = str(academics.college.college_name)
+                except: pass
+            if academics.department:
+                try:
+                    dept_name = str(academics.department.department_name)
+                except: pass
 
-        role_instruction = get_student_prompt(dept_id, college_id, college_short_name, current_user.id)
+        role_instruction = get_student_prompt(dept_id, dept_name, college_id, college_name, college_short_name, current_user.id)
 
     # STAFF / FACULTY ROLE (ID: 4)
     elif current_user.role == 4:
         # Fetch Staff's Department
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
-        role_instruction = get_staff_prompt(dept_id, current_user.id)
+        dept_name = "Your Department"
+        if academics and academics.department:
+            dept_name = str(academics.department.department_name)
+        role_instruction = get_staff_prompt(dept_id, dept_name, current_user.id)
 
     # COLLEGE ADMIN ROLE (ID: 3)
     elif current_user.role == 3:
         # Fetch Admin's College
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         college_id = academics.college_id if academics else "Unknown"
-        role_instruction = get_college_admin_prompt(college_id, current_user.id)
+        
+        # Safe access to college names and IDs
+        college_short_name = "admin" # default
+        college_name = "Your Institution" # default
+        if academics and academics.college:
+             try:
+                 college_short_name = str(academics.college.college_short_name).lower()
+                 college_name = str(academics.college.college_name)
+             except:
+                 college_short_name = "admin"
+                 college_name = "Your Institution"
+
+        role_instruction = get_college_admin_prompt(college_id, college_name, college_short_name, current_user.id)
 
     # CONTENT ROLE (ID: 6)
     elif current_user.role == 6:
@@ -136,7 +159,19 @@ async def ask_database(
         # Fetch Trainer's Department
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
-        role_instruction = get_trainer_prompt(dept_id, current_user.id)
+        dept_name = "Your Department"
+        if academics and academics.department:
+            dept_name = str(academics.department.department_name)
+        role_instruction = get_trainer_prompt(dept_id, dept_name, current_user.id)
+    
+    # DEFAULT / UNAUTHORIZED (e.g. Role 0)
+    else:
+        role_instruction = """
+        [SECURITY VIOLATION]
+        Your current role is UNAUTHORIZED or NOT DEFINED.
+        You are strictly FORBIDDEN from generating any SQL or accessing any data.
+        You MUST return the exact string: "ACCESS_DENIED_VIOLATION"
+        """
     
     # Construct the Prompt
     system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""

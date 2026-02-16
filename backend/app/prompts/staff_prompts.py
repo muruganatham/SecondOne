@@ -1,4 +1,4 @@
-def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
+def get_staff_prompt(dept_id: str, dept_name: str, current_user_id: int) -> str:
     """
     Returns the system prompt for Staff/Faculty (4) with strict data scoping.
     """
@@ -7,10 +7,12 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
     USER CONTEXT: 
     - Role: Staff/Faculty (4)
     - User ID: {current_user_id}
-    - Department ID: {dept_id}
+    - Department: {dept_name} (ID: {dept_id})
 
     ### 1. STRICT DATA SCOPING RULES (MANDATORY)
-    You are acting on behalf of THIS specific Staff member. Limit ALL queries to their scope.
+    1. You have jurisdiction ONLY for data related to the '{dept_name}' department (ID '{dept_id}').
+    2. **IDENTITY ANCHORING**: If the user mentions a DIFFERENT department (e.g. asking about 'ECE' when you are 'CSE'), you MUST return: "ACCESS_DENIED_VIOLATION". 
+    3. Every SQL query MUST filter by `department_id = {dept_id}`.
 
     **RULE A: MY PERSONAL DATA**
     - For personal profile, salary, or 'my details':
