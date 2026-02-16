@@ -27,29 +27,28 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
     - Use ONLY tables starting with **`{college_short_name}_`** (e.g., `{college_short_name}_2025_2_coding_result`).
     - Do NOT use generic `admin_` tables unless absolutely necessary and filtered by `user_id = {current_user_id}`.
 
-    ### 2. AUTHORIZED QUERY PATTERNS
-    
-    **Pattern 1: "My Performance" / "My Marks"**
-    - **Logic**: Select from `{college_short_name}_..._result` tables.
-    - **Filter**: `WHERE user_id = {current_user_id}` (MANDATORY).
+    ### 2. METRIC CALCULATION LOGIC (REASONING LAYER)
+    Use these logical rules to construct your queries dynamically:
 
-    **Pattern 2: "My Courses" / "Enrolled Courses"**
-    - **Logic**: Join `courses` -> `course_wise_segregations` -> `users`.
-    - **Filter**: `WHERE users.id = {current_user_id}` AND `courses.status = 1`.
+    **Metric: "Questions Attended" (Dashboard Parity)**
+    - **Logic**: Count unique combinations of `standard_qb_id` and `academic_qb_id`.
+    - **SQL**: `COUNT(DISTINCT IF(standard_qb_id IS NOT NULL, CONCAT('s', standard_qb_id), CONCAT('a', academic_qb_id))) AS attended_count`.
 
-    **Pattern 3: "Class Leaderboard" / "Toppers"**
-    - **Logic**: Select user name and sum of marks. Join `users` -> `result_table` -> `user_academics`.
-    - **Filter**: `WHERE ua.college_id = {college_id}` AND `ua.department_id = {dept_id}`.
-    - **Sort**: Order by total marks descending. Limit to top 10.
+    **Metric: "Department Rank" (Class Ranking)**
+    - **Logic**: Use `DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT r.id) DESC)` as `dept_rank`.
+    - **Scope**: Join `user_academics` to filter by `department_id = {dept_id}`.
 
-    **Pattern 4: "Marketplace Courses" / "Available Courses"**
-    - **Definition**: Marketplace courses are open to ALL students across ALL colleges.
-    - **Logic**: 
-      - Select distinct courses from `courses` join `course_academic_maps`.
-      - Filter where `college_id`, `department_id`, `batch_id`, `section_id` are ALL NULL.
-      - Filter where `status = 1` and `course_end_date >= CURDATE()`.
-    - **Current Status**: 2 ongoing marketplace courses (as of 2026-02-12).
-    - **Note**: Use `DISTINCT c.id` to avoid duplicates. Filter by end date to show only active courses.
+    **Metric: "Analytical Topic Improvement" (Gap Analysis)**
+    - **Goal**: Identify topics where the student has attempts but NO "Perfect Solves" (Status 3).
+    - **Joins**: 
+        1. Result Table -> `standard_qb_codings` -> `standard_qb_topics`.
+        2. Result Table -> `academic_qb_codings` -> `topics`.
+    - **Recruitment**: If asked about "Product-Based Companies", prioritize analysis of high-value topics (DS/Algo).
+
+    **Metric: "Enrollment Counts" (Active vs Expired)**
+    - **Logic**: Join `course_academic_maps` (CAM) with `user_academics` on `college_id` and `batch_id`.
+    - **Active**: `CAM.course_end_date >= CURDATE()`.
+    - **Expired**: `CAM.course_end_date < CURDATE()`.
 
     ### 3. FORBIDDEN QUERIES (Instant Reject)
     - **WRONG COLLEGE**: If user asks about a college OTHER than '{college_short_name}' (e.g. "How many students in SKCT?"), you MUST return **ACCESS_DENIED_VIOLATION**.

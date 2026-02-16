@@ -47,6 +47,8 @@ async def get_current_user(auth: HTTPAuthorizationCredentials = Depends(bearer_s
     
     # Support Master API Key for internal access
     master_key = getattr(settings, "MASTER_API_KEY", None)
+    static_token = getattr(settings, "FRONTEND_STATIC_TOKEN", None)
+    
     if master_key and token == master_key:
         # Fetch the first admin user as a mock for master key access
         user = db.query(Users).filter(Users.role == 1).first()
@@ -55,6 +57,18 @@ async def get_current_user(auth: HTTPAuthorizationCredentials = Depends(bearer_s
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Master key active but no admin user found",
+        )
+    
+    # Support Frontend Static Token
+    if static_token and token == static_token:
+        # Return a mock user object representing the static app
+        # This user is "trusted" and will have its persona overridden in the endpoint
+        return Users(
+            id="0",
+            email="static-frontend@app.local",
+            name="Static Frontend App",
+            role=1, # Default to Admin role for the app itself
+            # Note: other fields like 'status' are omitted if not in model or not needed
         )
 
     try:

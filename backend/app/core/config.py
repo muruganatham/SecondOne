@@ -28,6 +28,9 @@ class Settings(BaseSettings):
 
     MAX_TOKEN_LIMIT: int = 4096
 
+    # Frontend Static Token (Long-lived)
+    FRONTEND_STATIC_TOKEN: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyb250ZW5kLWFwcCIsInR5cGUiOiJsb25nLWxpdmVkIiwiZ2VuZXJhdGVkIjoiMjAyNS0xMi0yMlQwNToyNzo0My41NTdaIiwiZGVzY3JpcHRpb24iOiJMb25nLWxpdmVkIHRva2VuIGZvciBmcm9udGVuZCBoYXJkY29kZWQgYXV0aGVudGljYXRpb24iLCJpYXQiOjE3NjYzODEyNjMsImV4cCI6MTc2NjQ2NzY2M30.ODSSeKFydOGsdK_uh-jmlF37I2vbNBMKmVcdRjtgxIs"
+
     @property
     def DATABASE_URL(self) -> str:
         from urllib.parse import quote_plus

@@ -3,6 +3,7 @@ AI API Endpoint
 Exposes the Text-to-SQL functionality.
 Role-based access control enabled.
 """
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -29,6 +30,8 @@ router = APIRouter()
 class AIQueryRequest(BaseModel):
     question: str
     model: str = "deepseek-chat"  # Default to DeepSeek
+    user_id: Optional[int] = None
+    user_role: Optional[int] = None
 
 class AIQueryResponse(BaseModel):
     answer: str
@@ -52,15 +55,32 @@ async def get_available_tables(current_user: Users = Depends(get_current_user)):
 @router.post("/ask", response_model=AIQueryResponse, response_model_exclude_none=True)
 async def ask_database(
     request: AIQueryRequest, 
-    current_user: Users = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Process natural language question -> SQL -> Answer
-    Role-based access control enabled
+    AUTHENTICATION BYPASS: Uses user_id and user_role from payload.
     """
     question = request.question
     model = request.model
+    
+    # 0. Identifying the user context from payload (Frontend-only mode)
+    # We trust the frontend to provide valid user_id and user_role
+    current_user = None
+    
+    if request.user_id:
+        current_user = db.query(Users).filter(Users.id == str(request.user_id)).first()
+        if current_user and request.user_role:
+            current_user.role = request.user_role
+            
+    # Fallback/Mock if user doesn't exist or isn't provided
+    if not current_user:
+        current_user = Users(
+            id=str(request.user_id or "0"),
+            email="static-frontend@app.local",
+            name="Static Frontend App",
+            role=request.user_role or 1, # Default to Admin if none provided
+        )
     
     # 1. Get Schema Context (The Prompt)
     system_prompt = schema_context.get_system_prompt()
@@ -247,17 +267,19 @@ async def ask_database(
     is_destructive = ai_service.is_destructive_query(generated_sql)
     affected_rows = len(data) if is_destructive else 0
 
-    # 7. Update User Stats
-    try:
-        current_user.stats_chat_count = (current_user.stats_chat_count or 0) + 1
-        
-        # Estimate word count
-        words = len(human_answer.split())
-        current_user.stats_words_generated = (current_user.stats_words_generated or 0) + words
-        
-        db.commit()
-    except Exception as e:
-        print(f"Failed to update stats: {e}")
+    # 7. Update User Stats (Skip for mock/static user ID "0")
+    if str(current_user.id) != "0":
+        try:
+            current_user.stats_chat_count = (current_user.stats_chat_count or 0) + 1
+            
+            # Estimate word count
+            words = len(human_answer.split())
+            current_user.stats_words_generated = (current_user.stats_words_generated or 0) + words
+            
+            db.commit()
+        except Exception as e:
+            print(f"Failed to update stats: {e}")
+            db.rollback()
 
     return {
         "answer": human_answer,
