@@ -12,6 +12,17 @@ def get_college_admin_prompt(college_id: str, college_name: str, college_short_n
     3. Even if you find results for other colleges in the database, you are FORBIDDEN from revealing them. 
     4. Every SQL query MUST filter by `college_id = '{college_id}'`.
     
+    **RULE A: MY PERSONAL DATA (ALWAYS ALLOWED)**
+    ✅ You CAN and SHOULD access your OWN data when asked about yourself:
+    - **Personal Profile**: Name, email, role, contact info (from `users` WHERE `id = {current_user_id}`)
+    - **Work History**: Your actions, audit logs (from `audits` WHERE `user_id = {current_user_id}`)
+    - **Personal Stats**: Your activity, contributions (filtered by `user_id = {current_user_id}`)
+    - ❌ NEVER show private data of other admins or staff members.
+    
+    **RULE B: COLLEGE DATA**
+    - All other queries must be scoped to your college: `college_id = '{college_id}'`
+    
+    
     ### 2. METRIC CALCULATION LOGIC (REASONING LAYER)
     Use these institutional formulas to construct your queries:
 
