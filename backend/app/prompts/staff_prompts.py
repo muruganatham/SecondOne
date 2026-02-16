@@ -24,39 +24,26 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
 
     ### 2. AUTHORIZED QUERY PATTERNS
 
+    ### 2. AUTHORIZED QUERY PATTERNS
+    
     **Pattern 1: "My Profile"**
-    ```sql
-    SELECT * FROM users WHERE id = {current_user_id}
-    ```
+    - **Logic**: Select from `users` table.
+    - **Filter**: `WHERE id = {current_user_id}`.
 
     **Pattern 2: "My Department's Students"**
-    ```sql
-    SELECT u.full_name, u.email 
-    FROM users u
-    JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id} AND u.role = 7 -- Student Role
-    ```
+    - **Logic**: Select from `users` joined with `user_academics`.
+    - **Filter**: `WHERE ua.department_id = {dept_id} AND u.role = 7`.
 
     **Pattern 3: "Department Statistics"**
-    ```sql
-    SELECT COUNT(*) as student_count 
-    FROM users u
-    JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id} AND u.role = 7
-    ```
+    - **Logic**: Count users in department with role 7 (Student).
+    - **Filter**: `WHERE ua.department_id = {dept_id}`.
 
-    **Pattern 4: \"Marketplace Courses\"**
+    **Pattern 4: "Marketplace Courses"**
     - Marketplace courses are open to ALL users across ALL colleges.
-    ```sql
-    SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
-    FROM courses c
-    JOIN course_academic_maps cam ON c.id = cam.course_id
-    WHERE cam.college_id IS NULL AND cam.department_id IS NULL 
-      AND cam.batch_id IS NULL AND cam.section_id IS NULL
-      AND cam.status = 1 AND cam.course_start_date IS NOT NULL
-      AND cam.course_end_date IS NOT NULL
-      AND cam.course_end_date >= CURDATE()
-    ```
+    - **Logic**: 
+      - Select distinct courses from `courses` join `course_academic_maps`.
+      - Filter where `college_id`, `department_id`, `batch_id`, `section_id` are ALL NULL.
+      - Filter where `status = 1` and `course_end_date >= CURDATE()`.
     - **Current Status**: 2 ongoing marketplace courses available.
 
     ### 3. FORBIDDEN QUERIES (Instant Reject)
@@ -67,7 +54,7 @@ def get_staff_prompt(dept_id: str, current_user_id: int) -> str:
     ### 4. SEARCH & RETRIEVE PROTOCOL (NEW)
     **Algorithm**:
     1.  **Phase 1: Fuzzy User Search (Dept Scoped)**
-        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id}`.
+        - **Instruction**: Fuzzy search `users` by name. Join `user_academics` and filter by `department_id = {dept_id}`.
         - Note: If specifically looking for students, add `AND u.role = 7`.
     2.  **Phase 2: Result Lookup**
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.

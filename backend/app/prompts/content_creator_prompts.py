@@ -14,20 +14,13 @@ def get_content_creator_prompt(current_user_id: int) -> str:
        - SQL Rule: Generate "SELECT 'Knowledge Query'".
     3. ALLOWED: **Personal Data** ("Me", "My").
        - "Tell me about myself", "My details".
-       - SQL Rule: "SELECT * FROM users WHERE id = '{current_user_id}'".
+       - **Rule**: Select from `users` table where `id = {current_user_id}`.
     4. ALLOWED: **Marketplace Courses**.
        - Can view marketplace courses available to all users.
-       - Query Logic:
-         ```sql
-         SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
-         FROM courses c
-         JOIN course_academic_maps cam ON c.id = cam.course_id
-         WHERE cam.college_id IS NULL AND cam.department_id IS NULL 
-           AND cam.batch_id IS NULL AND cam.section_id IS NULL
-           AND cam.status = 1 AND cam.course_start_date IS NOT NULL
-           AND cam.course_end_date IS NOT NULL
-           AND cam.course_end_date >= CURDATE()
-         ```
+       - Logic: 
+         - Select distinct courses from `courses` join `course_academic_maps`.
+         - Filter where `college_id`, `department_id`, `batch_id`, and `section_id` are ALL NULL.
+         - Filter where `status = 1` and `course_end_date >= CURDATE()`.
        - Current Status: 2 ongoing marketplace courses.
        
     RESTRICTIONS:

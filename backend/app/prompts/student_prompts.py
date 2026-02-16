@@ -34,53 +34,27 @@ def get_student_prompt(dept_id: str, college_id: str, college_short_name: str, c
     - Do NOT use generic `admin_` tables unless absolutely necessary and filtered by `user_id = {current_user_id}`.
 
     ### 2. AUTHORIZED QUERY PATTERNS
-
+    
     **Pattern 1: "My Performance" / "My Marks"**
-    ```sql
-    SELECT * FROM {college_short_name}_2025_2_coding_result 
-    WHERE user_id = {current_user_id}
-    -- Add ORDER BY created_at DESC for recent
-    ```
+    - **Logic**: Select from `{college_short_name}_..._result` tables.
+    - **Filter**: `WHERE user_id = {current_user_id}` (MANDATORY).
 
     **Pattern 2: "My Courses" / "Enrolled Courses"**
-    ```sql
-    SELECT c.course_name, c.course_code 
-    FROM courses c
-    JOIN course_wise_segregations cws ON c.id = cws.course_id
-    JOIN users u ON cws.batch_id = u.batch_id -- Linked via Batch
-    WHERE u.id = {current_user_id} AND c.status = 1
-    ```
+    - **Logic**: Join `courses` -> `course_wise_segregations` -> `users`.
+    - **Filter**: `WHERE users.id = {current_user_id}` AND `courses.status = 1`.
 
     **Pattern 3: "Class Leaderboard" / "Toppers"**
-    ```sql
-    SELECT u.full_name, SUM(r.mark) as total_mark
-    FROM users u
-    JOIN {college_short_name}_2025_2_coding_result r ON u.id = r.user_id
-    JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.college_id = {college_id} 
-      AND ua.department_id = {dept_id} -- Strict Department Scope
-    GROUP BY u.id
-    ORDER BY total_mark DESC
-    LIMIT 10
-    ```
+    - **Logic**: Select user name and sum of marks. Join `users` -> `result_table` -> `user_academics`.
+    - **Filter**: `WHERE ua.college_id = {college_id}` AND `ua.department_id = {dept_id}`.
+    - **Sort**: Order by total marks descending. Limit to top 10.
 
-    **Pattern 4: \"Marketplace Courses\" / \"Available Courses\"**
+    **Pattern 4: "Marketplace Courses" / "Available Courses"**
     - **Definition**: Marketplace courses are open to ALL students across ALL colleges.
-    - **Query Logic**:
-    ```sql
-    SELECT DISTINCT c.id, c.course_name, c.course_code, cam.course_start_date, cam.course_end_date
-    FROM courses c
-    JOIN course_academic_maps cam ON c.id = cam.course_id
-    WHERE cam.college_id IS NULL 
-      AND cam.department_id IS NULL 
-      AND cam.batch_id IS NULL 
-      AND cam.section_id IS NULL
-      AND cam.status = 1
-      AND cam.course_start_date IS NOT NULL
-      AND cam.course_end_date IS NOT NULL
-      AND cam.course_end_date >= CURDATE()  -- Only ongoing courses
-    ```
-    - **Current Status**: There are **2 ongoing marketplace courses** available (as of 2026-02-12).
+    - **Logic**: 
+      - Select distinct courses from `courses` join `course_academic_maps`.
+      - Filter where `college_id`, `department_id`, `batch_id`, `section_id` are ALL NULL.
+      - Filter where `status = 1` and `course_end_date >= CURDATE()`.
+    - **Current Status**: 2 ongoing marketplace courses (as of 2026-02-12).
     - **Note**: Use `DISTINCT c.id` to avoid duplicates. Filter by end date to show only active courses.
 
     ### 3. FORBIDDEN QUERIES (Instant Reject)

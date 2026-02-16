@@ -27,62 +27,37 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     **Related Tables (13 Total)**: 
     - `users`, `user_academics`, `staff_trainer_feedback`, `admin_coding_result`, `admin_mcq_result`, `admin_test_data`, `courses`, `course_academic_maps`, `course_wise_segregations`, `batches`, `sections`, `departments`, `colleges`.
 
-    **Pattern 1: \"Student Performance (All Results)\"**
+    **Pattern 1: "Student Performance (All Results)"**
     - Access coding, MCQ, and test data for students in your department.
-    ```sql
-    -- Coding Results (SOLVED = Status 2 or 3)
-    SELECT u.name, r.mark, r.solve_status 
-    FROM admin_coding_result r
-    JOIN users u ON r.user_id = u.id
-    JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id} AND r.solve_status IN (2, 3)
-    
-    -- MCQ Results (SOLVED = Status 2 or 3)
-    SELECT u.name, r.mark, r.solve_status 
-    FROM admin_mcq_result r
-    JOIN users u ON r.user_id = u.id
-    JOIN user_academics ua ON u.id = ua.user_id
-    WHERE ua.department_id = {dept_id} AND r.solve_status IN (2, 3)
-    ```
+    - **Logic**: Join `admin_coding_result` or `admin_mcq_result` -> `users` -> `user_academics`.
+    - **Filter**: `WHERE ua.department_id = {dept_id}` AND `r.solve_status IN (2, 3)` (for solved).
 
-    **Pattern 2: \"Course Enrollment & Analytics\"**
+    **Pattern 2: "Course Enrollment & Analytics"**
     - Track which students are enrolled in which courses.
-    ```sql
-    SELECT c.course_name, COUNT(cws.user_id) as enrolled_students
-    FROM courses c
-    JOIN course_wise_segregations cws ON c.id = cws.course_id
-    JOIN user_academics ua ON cws.user_id = ua.user_id
-    WHERE ua.department_id = {dept_id}
-    GROUP BY c.id
-    ```
+    - **Logic**: Join `courses` -> `course_wise_segregations` -> `user_academics`.
+    - **Filter**: `WHERE ua.department_id = {dept_id}`.
+    - **Aggregation**: Group by `courses.id`.
 
-    **Pattern 3: \"Marketplace Courses\"**
+    **Pattern 3: "Marketplace Courses"**
     - Global courses available to all students.
-    ```sql
-    SELECT DISTINCT c.id, c.course_name, cam.course_start_date, cam.course_end_date
-    FROM courses c
-    JOIN course_academic_maps cam ON c.id = cam.course_id
-    WHERE cam.college_id IS NULL AND cam.department_id IS NULL 
-      AND cam.batch_id IS NULL AND cam.section_id IS NULL
-      AND cam.status = 1 AND cam.course_start_date IS NOT NULL
-      AND cam.course_end_date IS NOT NULL
-      AND cam.course_end_date >= CURDATE()
-    ```
+    - **Logic**: 
+      - Select distinct courses from `courses` join `course_academic_maps`.
+      - Filter where `college_id`, `department_id`, `batch_id`, and `section_id` are ALL NULL.
+      - Filter where `status = 1` and `course_end_date >= CURDATE()`.
 
-    **Pattern 4: \"My Feedback\"**
-    ```sql
-    SELECT * FROM staff_trainer_feedback WHERE staff_trainer_id = {current_user_id}
-    ```
+    **Pattern 4: "My Feedback"**
+    - **Logic**: Select from `staff_trainer_feedback`.
+    - **Filter**: `WHERE staff_trainer_id = {current_user_id}`.
 
     ### 3. FORBIDDEN QUERIES (Instant Reject)
-    - Queries for \"college-wide\" stats or other departments.
+    - Queries for "college-wide" stats or other departments.
     - Personal data of other staff/trainers (salary, etc.).
     - Accessing Super Admin sensitive tables.
 
     ### 4. SEARCH & RETRIEVE PROTOCOL (NEW)
     **Algorithm**:
     1.  **Phase 1: Fuzzy User Search (Dept Scoped)**
-        - Query: `SELECT u.id, u.name, u.roll_no FROM users u JOIN user_academics ua ON u.id = ua.user_id WHERE u.name LIKE '%[INPUT]%' AND ua.department_id = {dept_id}`.
+        - **Instruction**: Fuzzy search `users` by name. Join `user_academics` and filter by `department_id = {dept_id}`.
         - Note: If searching for a specific role (e.g. Student), add `AND u.role = 7`.
     2.  **Phase 2: Result Lookup**
         - Joins: Always use `admin_coding_result.course_allocation_id` -> `course_academic_maps.id` -> `courses.id`.

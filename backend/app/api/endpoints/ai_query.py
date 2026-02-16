@@ -142,9 +142,31 @@ async def ask_database(
     # NOTE: We don't block based on analysis - let the AI attempt to generate SQL
     # The analysis provides insights but we trust the SQL generation phase
     
+    # 1.9 INTEGRATE ANALYSIS INTO GENERATION PROMPT (CRITICAL FIX)
+    # We now explicitly force the SQL generator to use the analysis results
+    # Safe extraction of tables
+    rec_tables = analysis.get('recommended_tables', [])
+    if isinstance(rec_tables, list):
+        rec_tables_str = ", ".join(rec_tables)
+    else:
+        rec_tables_str = str(rec_tables)
+
+    analysis_guidance = f"""
+    \n{'='*20}
+    [PRE-COMPUTED SCHEMA ANALYSIS]
+    Use the following expert analysis to guide your SQL generation:
+    1. **Recommended Tables**: {rec_tables_str}
+    2. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
+    3. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
+    
+    IMPORTANT: If the analysis suggests specific tables (especially college-specific ones), YOU MUST USE THEM.
+    {'='*20}
+    """
+    
+    final_system_prompt = f"{system_prompt_with_context}\n{analysis_guidance}"
+
     # 2. Get SQL from AI (with schema analysis insights)
-    # The AI has deep understanding of available tables and relationships from the schema context
-    generated_sql = ai_service.generate_sql(system_prompt_with_context, question, model)
+    generated_sql = ai_service.generate_sql(final_system_prompt, question, model)
     
     # 2.4 Intercept Knowledge Queries (General Q&A)
     if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
