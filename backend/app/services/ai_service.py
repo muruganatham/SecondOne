@@ -185,25 +185,27 @@ IMPORTANT GUIDELINES:
         prompt = f"""
         User Question: "{user_question}"
         
-        SQL Query Context: "{sql_result}"
-        
         Data Retrieved: 
         {str(row_data)}
         
-        Task: You are a Data Analyst. Analyze the data above and provide a clear, accurate response.
+        Task: You are an Executive Assistant. Summarize the data for a non-technical user.
         
-        Guidelines:
-        1. **Direct Answer**: Start with the direct answer (number, list, or fact).
-        2. **Insight (If applicable)**: If the data allows, briefly explain *why* or provide a percentage/trend (e.g. "This represents 80% of active users").
-        3. **No Data Handling**: If the data is empty `[]` or None, say "No active records found matching that criteria." Do NOT make up data.
-        4. **Tone**: Professional, precise, yet conversational.
-        5. **Formatting**: Use bullet points for lists. Use bold for key numbers.
-        6. **Context**: If the SQL used `status=1`, you can mention "active students" to be precise.
+        PRODUCTION GUIDELINES:
+        1. **Clean & Direct**: Start with the answer immediately. No "Based on the data..." preambles.
+        2. **No Technical Terms**: Do NOT mention "columns", "rows", "status codes", "table names", or "role IDs".
+        3. **Formatting**:
+           - **NO MARKDOWN**: Plain text only. No asterisks (**), underscores (_), or backticks (`).
+           - **LISTS**: Use standard bullet points ("- ") for items. 
+           - **SPACING**: Use **SINGLE SPACING** only. Do NOT use double newlines (blank lines) between list items.
+           - **LAYOUT**: Keep the output compact.
+        4. **Tone**: Professional, confident, and concise. 
+        5. **Context**: If the count includes specific filters (like "Active Only"), mention it naturally.
 
-        Reference Cheat Sheet (Translate these codes to text if seen):
-        - Status: 0=Inactive, 1=Active
-        - Role: 1=SuperAdmin, 2=Admin, 3=CollegeAdmin, 4=Staff, 5=Trainer, 7=Student
-        - Gender: 1=Male, 2=Female
+        EXAMPLE OUTPUT:
+        "There are 4,021 active students across these departments:
+        - CSE: 1,200 students
+        - ECE: 800 students
+        - MECH: 600 students"
         """
         
         try:
@@ -211,7 +213,7 @@ IMPORTANT GUIDELINES:
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
-                    {"role": "system", "content": "You are a helpful data assistant. Answer the user based on the provided data."},
+                    {"role": "system", "content": "You are a professional assistant. Output clean, formatted text only."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7

@@ -32,11 +32,9 @@ class AIQueryRequest(BaseModel):
 
 class AIQueryResponse(BaseModel):
     answer: str
-    sql: str
-    data: list
+    sql: str | None = None
+    data: list | None = None
     follow_ups: list = []
-    requires_confirmation: bool = False
-    affected_rows: int = 0
 
 @router.get("/tables")
 async def get_available_tables(current_user: Users = Depends(get_current_user)):
@@ -51,7 +49,7 @@ async def get_available_tables(current_user: Users = Depends(get_current_user)):
         "message": f"Found {len(tables)} tables in the database"
     }
 
-@router.post("/ask", response_model=AIQueryResponse)
+@router.post("/ask", response_model=AIQueryResponse, response_model_exclude_none=True)
 async def ask_database(
     request: AIQueryRequest, 
     current_user: Users = Depends(get_current_user),
@@ -77,7 +75,7 @@ async def ask_database(
     current_role_id = current_user.role
     if current_role_id in [1, 2]:
         role_instruction = get_admin_prompt(current_user.id)
-
+    
     # STUDENT ROLE (ID: 7)
     elif current_role_id == 7:
         # Fetch Student's Department
@@ -173,11 +171,9 @@ async def ask_database(
         human_answer = ai_service.answer_general_question(question, model)
         return {
             "answer": human_answer,
-            "sql": "-- General Knowledge Query (No DB Access)",
-            "data": [],
-            "follow_ups": [],
-            "requires_confirmation": False,
-            "affected_rows": 0
+            #"sql": "-- General Knowledge Query (No DB Access)", # HIDDEN
+            #"data": [], # HIDDEN
+            "follow_ups": []
         }
 
     # 2.5 Intercept Access Denied
@@ -195,11 +191,9 @@ async def ask_database(
             denial_reason = "Access Denied: You are restricted to Student Performance data within your Department."
         return {
             "answer": denial_reason,
-            "sql": "-- Blocked by Security Protocol",
-            "data": [],
-            "follow_ups": [],
-            "requires_confirmation": False,
-            "affected_rows": 0
+            #"sql": "-- Blocked by Security Protocol", # HIDDEN
+            #"data": [], # HIDDEN
+            "follow_ups": []
         }
 
     # 3. Execute SQL
@@ -218,11 +212,9 @@ async def ask_database(
 
         return {
             "answer": answer,
-            "sql": generated_sql, # Keep SQL for transparency/admins
-            "data": [],
-            "follow_ups": ["List available tables", "Show courses", "Show student performance"],
-            "requires_confirmation": False,
-            "affected_rows": 0
+            #"sql": generated_sql, # Keep SQL for transparency/admins # HIDDEN
+            #"data": [], # HIDDEN
+            "follow_ups": ["List available tables", "Show courses", "Show student performance"]
         }
         
     data = execution_result["data"]
@@ -269,9 +261,7 @@ async def ask_database(
 
     return {
         "answer": human_answer,
-        "sql": generated_sql,
-        "data": data,
-        "follow_ups": follow_ups,
-        "requires_confirmation": is_destructive,
-        "affected_rows": affected_rows
+        #"sql": generated_sql, # HIDDEN
+        #"data": data, # HIDDEN
+        "follow_ups": follow_ups
     }
