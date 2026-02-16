@@ -9,11 +9,11 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
 
     # Database Configuration (Must be defined in .env or Environment)
-    DB_HOST: str = "localhost"
-    DB_PORT: int = 3306
-    DB_USER: str = "root"
-    DB_PASSWORD: str = "Varun1121@#"
-    DB_NAME: str = "coderv4"
+    DB_HOST: str 
+    DB_PORT: int 
+    DB_USER: str 
+    DB_PASSWORD: str 
+    DB_NAME: str 
 
     # API Keys (Required in production, no defaults)
     GROQ_API_KEY: Optional[str] = None
@@ -24,12 +24,12 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "temporary-secret-key-change-this-in-env"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 Hours
-    MASTER_API_KEY: str = "master-key-must-be-set-in-env"
+    MASTER_BEARER_TOKEN: str = "master-key-must-be-set-in-env"
 
     MAX_TOKEN_LIMIT: int = 4096
 
-    # Frontend Static Token (Long-lived)
-    FRONTEND_STATIC_TOKEN: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyb250ZW5kLWFwcCIsInR5cGUiOiJsb25nLWxpdmVkIiwiZ2VuZXJhdGVkIjoiMjAyNS0xMi0yMlQwNToyNzo0My41NTdaIiwiZGVzY3JpcHRpb24iOiJMb25nLWxpdmVkIHRva2VuIGZvciBmcm9udGVuZCBoYXJkY29kZWQgYXV0aGVudGljYXRpb24iLCJpYXQiOjE3NjYzODEyNjMsImV4cCI6MTc2NjQ2NzY2M30.ODSSeKFydOGsdK_uh-jmlF37I2vbNBMKmVcdRjtgxIs"
+    # Frontend Bearer Token (Long-lived)
+    FRONTEND_BEARER_TOKEN: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyb250ZW5kLWFwcCIsInR5cGUiOiJsb25nLWxpdmVkIiwiZ2VuZXJhdGVkIjoiMjAyNS0xMi0yMlQwNToyNzo0My41NTdaIiwiZGVzY3JpcHRpb24iOiJMb25nLWxpdmVkIHRva2VuIGZvciBmcm9udGVuZCBoYXJkY29kZWQgYXV0aGVudGljYXRpb24iLCJpYXQiOjE3NjYzODEyNjMsImV4cCI6MTc2NjQ2NzY2M30.ODSSeKFydOGsdK_uh-jmlF37I2vbNBMKmVcdRjtgxIs"
 
     @property
     def DATABASE_URL(self) -> str:
