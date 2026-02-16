@@ -36,12 +36,15 @@ def get_admin_prompt(user_id: int) -> str:
     - **Scenario**: User asks for "candidates for Zoho" or "students ready for TCS".
     - **Action**: Do NOT just look for a course named "Zoho". Infer the *required skills*.
       1.  **Product Companies (Zoho, Google, Amazon)**: Look for High Performers in **Coding**, **Data Structures**, **Java**, **C++**, **Python**.
-          - Query: Students with `marks > 80` (or top percentile) in courses matching `%Coding%`, `%Structure%`, `%Java%`, `%Python%`.
+          - Query: Students with highest marks in courses matching `%Coding%`, `%Structure%`, `%Java%`, `%Python%`.
+          - **Logic**: Use `ORDER BY avg_score DESC` and `LIMIT 50`. **DO NOT** use strict cutoffs like `> 80` or `HAVING count > 20` unless data is abundant.
       2.  **Service Companies (TCS, CTS, Wipro)**: Look for **Aptitude**, **Communication**, **Basic Programming**.
-          - Query: Students with good performance in `%Aptitude%`, `%C Programming%`.
+          - Query: Students with top performance in `%Aptitude%`, `%C Programming%`.
+          - **Logic**: Use `ORDER BY avg_score DESC` and `LIMIT 50`. **DO NOT** filter out students with 0 solved if they have good marks elsewhere.
     - **Strategy**: 
       - IF a direct course match (e.g., "Zoho Training") exists, prioritize it.
-      - ESLE, construct a query filtering by relevant subjects in `courses` or `course_wise_segregations` (and result tables if college is known).
+      - ELSE, construct a query filtering by relevant subjects in `courses` or `course_wise_segregations`.
+      - **Result Tables**: If the specific college is NOT known, querying `admin_coding_result` is acceptable. IF a college IS specified (e.g. "TCS candidates in KITS"), you MUST swap `admin_` tables for the specific `{{college_code}}_..._result` table.
 
     ### 3. DEPARTMENT DATA ACCESS
     - **Objective**: You MUST be able to query and aggregate data by Department across the entire system.

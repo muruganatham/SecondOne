@@ -9,11 +9,11 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
 
     # Database Configuration (Must be defined in .env or Environment)
-    DB_HOST: str
-    DB_PORT: int
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_NAME: str
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 3306
+    DB_USER: str = "root"
+    DB_PASSWORD: str = "Varun1121@#"
+    DB_NAME: str = "coderv4"
 
     # API Keys (Required in production, no defaults)
     GROQ_API_KEY: Optional[str] = None
