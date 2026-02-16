@@ -212,44 +212,45 @@ async def ask_database(
     # Construct the Prompt
     system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
     
-    analysis = ai_service.analyze_question_with_schema(
-        user_question=question,
-        schema_context=system_prompt_with_context,  # Includes Schema + Role Rules
-        model=model
-    )
+    # OPTIMIZATION: Skip analysis step to reduce API calls and prevent timeouts
+    # This analysis was primarily for debugging and not critical for SQL generation
+    # analysis = ai_service.analyze_question_with_schema(
+    #     user_question=question,
+    #     schema_context=system_prompt_with_context,
+    #     model=model
+    # )
     
-    print(f"📊 Question Analysis (Informational):")
-    print(f"   - Can Answer: {analysis.get('can_answer', True)}")
-    print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
-    print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
-    print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
-    print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
+    # print(f"📊 Question Analysis (Informational):")
+    # print(f"   - Can Answer: {analysis.get('can_answer', True)}")
+    # print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
+    # print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
+    # print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
+    # print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
     
     # NOTE: We don't block based on analysis - let the AI attempt to generate SQL
     # The analysis provides insights but we trust the SQL generation phase
     
     # 1.9 INTEGRATE ANALYSIS INTO GENERATION PROMPT (CRITICAL FIX)
-    # We now explicitly force the SQL generator to use the analysis results
-    # Safe extraction of tables
-    rec_tables = analysis.get('recommended_tables', [])
-    if isinstance(rec_tables, list):
-        rec_tables_str = ", ".join(rec_tables)
-    else:
-        rec_tables_str = str(rec_tables)
+    # OPTIMIZATION: Skip analysis integration since we're not running analysis
+    # rec_tables = analysis.get('recommended_tables', [])
+    # if isinstance(rec_tables, list):
+    #     rec_tables_str = ", ".join(rec_tables)
+    # else:
+    #     rec_tables_str = str(rec_tables)
 
-    analysis_guidance = f"""
-    \n{'='*20}
-    [PRE-COMPUTED SCHEMA ANALYSIS]
-    Use the following expert analysis to guide your SQL generation:
-    1. **Recommended Tables**: {rec_tables_str}
-    2. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
-    3. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
+    # analysis_guidance = f"""
+    # \n{'='*20}
+    # [PRE-COMPUTED SCHEMA ANALYSIS]
+    # Use the following expert analysis to guide your SQL generation:
+    # 1. **Recommended Tables**: {rec_tables_str}
+    # 2. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
+    # 3. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
+    # 
+    # IMPORTANT: If the analysis suggests specific tables (especially college-specific ones), YOU MUST USE THEM.
+    # {'='*20}
+    # """
     
-    IMPORTANT: If the analysis suggests specific tables (especially college-specific ones), YOU MUST USE THEM.
-    {'='*20}
-    """
-    
-    final_system_prompt = f"{system_prompt_with_context}\n{analysis_guidance}"
+    final_system_prompt = system_prompt_with_context  # Use prompt without analysis
 
     # 2. Get SQL from AI (with schema analysis insights)
     generated_sql = ai_service.generate_sql(final_system_prompt, question, model)
