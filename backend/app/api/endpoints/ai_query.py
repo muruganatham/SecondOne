@@ -230,7 +230,7 @@ async def ask_database(
         
         # Task B: Generate Follow-ups (Now independent of answer)
         task_followups = asyncio.to_thread(
-            ai_service.generate_follow_ups, question, generated_sql, data
+            ai_service.generate_follow_ups, question, generated_sql, data, None, current_role_id
         )
         
         return await asyncio.gather(task_answer, task_followups)

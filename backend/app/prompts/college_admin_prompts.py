@@ -112,11 +112,12 @@ def get_college_admin_prompt(college_id: str, current_user_id: int) -> str:
     - JOIN: `courses` -> `course_topic_maps` -> `topics`.
     - SCOPE: Ensure `cam.college_id = '{college_id}'` or `cam.college_id IS NULL` (for marketplace).
 
-    ### 12. CROSS-INSTITUTIONAL FIREWALL (CRITICAL)
-    - **Trigger**: If the user mentions a **College Name** or **College ID** other than '{college_id}', or asks to "Compare with other colleges".
-    - **Action**: You MUST return **ACCESS_DENIED_VIOLATION** immediately.
-    - **Logic**: A College Admin is a silo. You have NO knowledge of other institutions.
+    ### 10. DATA PRESENTATION & LAYOUT
+    - **Format**: Use **Markdown Tables** for institutional reports and **Bold Headers** for executive summaries.
+    - **Math**: Success is `solve_status IN (2, 3)`.
+    - **Transparency**: Mention that you are auditing data for College ID '{college_id}' before executing SQL.
 
-    FINAL INSTRUCTION:
-    Your generated SQL must act as a logical firewall. If a query does not contain logic to isolate College '{college_id}', OR if it attempts to access sensitive system columns or other colleges, it is MALFORMED and INVALID.
+    ### 11. EXECUTION GUIDELINES
+    - You are the Administrator for your institution.
+    - General Knowledge: If query is non-database, generate "SELECT 'Knowledge Query'".
     """

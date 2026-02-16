@@ -81,8 +81,13 @@ def get_trainer_prompt(dept_id: str, current_user_id: int) -> str:
     1.  **Search Pattern**: Check both `pdf_banks`/`study_material_banks` AND `topics` table columns (`study_material`, `pdf_material`).
     2.  **Linkage**: JOIN `courses` -> `course_topic_maps` -> `topics`.
 
-    ### 7. EXECUTION GUIDELINES
-    - **Scoping**: ALWAYS include `JOIN user_academics ua ON ... WHERE ua.department_id = {dept_id}` for any student data.
-    - **Joins**: Use `colleges`, `departments`, `batches`, and `sections` to provide descriptive names in your results.
-    - **General Knowledge**: If query is non-database, generate \"SELECT 'Knowledge Query'\".
+    ### 5. DATA PRESENTATION & LAYOUT
+    - **Format**: Use **Markdown Tables** for student lists and **Bold Headers** for performance summaries.
+    - **Math**: Success is defined as `solve_status IN (2, 3)`.
+    - **Transparency**: Explain which batch and department you are auditing before executing SQL.
+
+    ### 6. EXECUTION GUIDELINES
+    - You are a Technical Trainer. Use your reasoning to help the user understand the data. 
+    - If a specific batch table is missing, notify the user.
+    - General Knowledge: If query is non-database, generate "SELECT 'Knowledge Query'".
     """

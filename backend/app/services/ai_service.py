@@ -191,15 +191,14 @@ IMPORTANT GUIDELINES:
         Task: You are an Executive Assistant. Summarize the data for a non-technical user.
         
         PRODUCTION GUIDELINES:
-        1. **Clean & Direct**: Start with the answer immediately. No "Based on the data..." preambles.
-        2. **No Technical Terms**: Do NOT mention "columns", "rows", "status codes", "table names", or "role IDs".
+        1. **Professional & Informative**: Start with the direct answer.
+        2. **Insightful**: Use the data to provide context and trends.
         3. **Formatting**:
-           - **NO MARKDOWN**: Plain text only. No asterisks (**), underscores (_), or backticks (`).
-           - **LISTS**: Use standard bullet points ("- ") for items. 
-           - **SPACING**: Use **SINGLE SPACING** only. Do NOT use double newlines (blank lines) between list items.
-           - **LAYOUT**: Keep the output compact.
-        4. **Tone**: Professional, confident, and concise. 
-        5. **Context**: If the count includes specific filters (like "Active Only"), mention it naturally.
+           - **MARKDOWN**: Use Markdown Tables for datasets to ensure high readability.
+           - **BOLDING**: Use bold text for key metrics and numbers.
+           - **LISTS**: Use standard bullet points.
+        4. **No Technical Jargon**: Do NOT mention "columns", "rows", or "table names".
+        5. **Confidence**: Provide a complete summary of all retrieved data.
 
         EXAMPLE OUTPUT:
         "There are 4,021 active students across these departments:
@@ -222,9 +221,10 @@ IMPORTANT GUIDELINES:
         except Exception as e:
              return f"Here is the data: {row_data}"
 
-    def generate_follow_ups(self, user_question: str, sql_query: str, data: list = None, answer: str = None) -> list:
+    def generate_follow_ups(self, user_question: str, sql_query: str, data: list = None, answer: str = None, role_id: int = None) -> list:
         """
-        Generates 3 contextual follow-up questions independent of the final answer text
+        Generates 3 contextual follow-up questions independent of the final answer text.
+        Injects role-specific security constraints to prevent unauthorized pivots.
         """
         if not self.client:
             return ["Show more details", "Visualization", "Export data"]
@@ -232,29 +232,42 @@ IMPORTANT GUIDELINES:
         # Optimize Context
         data_preview = "No Data"
         if data:
-            # Create a structured preview of the first few items to help AI pick names/values
             try:
-                # If data is list of objects/dicts
                 preview_items = data[:3]
                 data_preview = str(preview_items)
             except:
                 data_preview = str(data)[:500]
         
+        # Role-based Security Constraints
+        security_guidance = ""
+        if role_id == 7: # Student
+            security_guidance = """
+            [SECURITY: STUDENT ROLE]
+            - DO NOT suggest querying marks, grades, or performance for ANY individual OTHER than the user.
+            - DO NOT suggest "drilling down" into peer data found in the findings.
+            - Focus suggestions on personal growth, department rankings, or course materials.
+            """
+        elif role_id == 5: # Trainer
+            security_guidance = "[SECURITY: TRAINER] Focus on department-level performance and student tracking."
+        elif role_id == 3: # College Admin
+            security_guidance = "[SECURITY: COLLEGE ADMIN] Focus on institutional metrics and recruitment."
+
         prompt = f"""
         [SCENARIO]
         User Query: "{user_question}"
         Data Findings: {data_preview}
         
+        {security_guidance}
+
         [TASK]
-        As an expert Data Analyst, suggest 3 "Next Logical Questions" the user should ask to dig deeper.
+        Suggest 3 "Next Logical Questions" that are safe and relevant for this user's role.
         
         [STRATEGY]
-        1. **Drill Down**: specific detail query (e.g., "Show [Student Name]'s marks" if a name appears).
-        2. **Pivot/Compare**: comparative insight (e.g., "How does this compare to class average?").
-        3. **Actionable**: a decision-support query (e.g., "Who needs improvement?").
+        1. **Deepen**: Ask for more detail about the *current* dataset (e.g., "Top performers" if looking at marks).
+        2. **Personal**: Focus on user's own path (if Student).
+        3. **Safe Pivots**: Comparisons to averages or exploring related courses/materials.
         
         [CONSTRAINTS]
-        - If specific names/roles appear in Data Findings, USE THEM in the questions (e.g. "What about [Name]?").
         - Keep questions short, natural, and useful.
         - Output strictly 3 lines. No numbering.
         """
