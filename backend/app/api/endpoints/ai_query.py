@@ -173,12 +173,45 @@ async def ask_database(
         You MUST return the exact string: "ACCESS_DENIED_VIOLATION"
         """
     
+    # --- SECURITY INTERCEPTOR (CRITICAL) ---
+    # DEBUG: Force explicit role check
+    effective_role = request.user_role if request.user_role is not None else current_user.role
+    try:
+        current_role_id = int(effective_role)
+    except:
+        current_role_id = 7 # Default to Student if undefined
+        
+    print(f"SECURITY DEBUG: User={request.user_id}, Role={current_role_id}, Question='{question}'")
+
+    # Block queries about system internals for NON-ADMINS immediately
+    if current_role_id not in [1, 2]:
+        lower_q = question.lower()
+        
+        # 1. Hard Bans (Phrases that are never allowed)
+        hard_bans = ["database schema", "list distinct data", "db schema", "system structure", "backend config", "metadata", "show databases", "show tables", "list tables", "list all tables"]
+        if any(ban in lower_q for ban in hard_bans):
+            print("SECURITY BLOCK: Hard Ban Triggered")
+            return {
+                "answer": "Access Denied: You do not have permission to view system architecture or schema details.",
+                "follow_ups": []
+            }
+            
+        # 2. Soft Bans (Contextual)
+        # Block queries asking "What are the tables", "Available tables", etc.
+        if "table" in lower_q or "collection" in lower_q or "database" in lower_q:
+             trigger_words = ["list", "available", "all", "what", "show", "how many", "structure", "explain"]
+             if any(trigger in lower_q for trigger in trigger_words):
+                 # Exception: Allow "time table" or "timetable"
+                 if "time table" not in lower_q and "timetable" not in lower_q:
+                     print("SECURITY BLOCK: Contextual Ban Triggered")
+                     return {
+                        "answer": "Access Denied: You cannot query database tables directly. Please ask about your students, courses, or department performance.",
+                        "follow_ups": []
+                     }
+
     # Construct the Prompt
     system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
     
-    # 1.8 DEEP SCHEMA ANALYSIS: Analyze question with FULL schema context
-    # This is INFORMATIONAL ONLY - we use it to log insights but don't block SQL generation
-    # WE NOW PASS system_prompt_with_context SO THE ANALYST SEES THE ROLE RESTRICTIONS
     analysis = ai_service.analyze_question_with_schema(
         user_question=question,
         schema_context=system_prompt_with_context,  # Includes Schema + Role Rules
