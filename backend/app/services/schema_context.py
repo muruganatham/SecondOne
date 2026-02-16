@@ -39,7 +39,6 @@ class SchemaContext:
             lines.append("1. Use ONLY the tables and relationships defined below.")
             lines.append("2. Use the EXACT numeric values for Enums (definitions provided).")
             lines.append("3. Return ONLY the SQL query. No markdown, no explanation.")
-            lines.append("4. GENERAL KNOWLEDGE TRAP: If the question is about Study Tips, Interview Prep, Soft Skills, or General Educational Concepts (and does NOT need DB data), return exactly: `SELECT 'Knowledge Query';`")
             
             lines.append("\n### COMPLEX QUERY STRATEGY:")
             lines.append("1. JOIN PATHS: For multi-table questions (e.g. 'Departments in College'), you MUST follow the Relationship Paths defined below. Do not guess foreign keys.")
