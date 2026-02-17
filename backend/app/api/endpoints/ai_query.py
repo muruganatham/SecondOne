@@ -212,48 +212,52 @@ async def ask_database(
     # Construct the Prompt
     system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
     
-    # OPTIMIZATION: Skip analysis step to reduce API calls and prevent timeouts
-    # This analysis was primarily for debugging and not critical for SQL generation
-    # analysis = ai_service.analyze_question_with_schema(
-    #     user_question=question,
-    #     schema_context=system_prompt_with_context,
-    #     model=model
-    # )
+    # STEP 1: Analyze the question with full schema context for accurate table recommendations
+    print(f"🔍 Analyzing question with database schema...")
+    analysis = ai_service.analyze_question_with_schema(
+        user_question=question,
+        schema_context=system_prompt_with_context,
+        model=model
+    )
     
-    # print(f"📊 Question Analysis (Informational):")
-    # print(f"   - Can Answer: {analysis.get('can_answer', True)}")
-    # print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
-    # print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
-    # print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
-    # print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
+    print(f"📊 Schema Analysis Results:")
+    print(f"   - Can Answer: {analysis.get('can_answer', True)}")
+    print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
+    print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
+    print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
+    print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
     
-    # NOTE: We don't block based on analysis - let the AI attempt to generate SQL
-    # The analysis provides insights but we trust the SQL generation phase
-    
-    # 1.9 INTEGRATE ANALYSIS INTO GENERATION PROMPT (CRITICAL FIX)
-    # OPTIMIZATION: Skip analysis integration since we're not running analysis
-    # rec_tables = analysis.get('recommended_tables', [])
-    # if isinstance(rec_tables, list):
-    #     rec_tables_str = ", ".join(rec_tables)
-    # else:
-    #     rec_tables_str = str(rec_tables)
+    # STEP 2: Integrate analysis into SQL generation prompt for maximum accuracy
+    rec_tables = analysis.get('recommended_tables', [])
+    if isinstance(rec_tables, list):
+        rec_tables_str = ", ".join(rec_tables)
+    else:
+        rec_tables_str = str(rec_tables)
 
-    # analysis_guidance = f"""
-    # \n{'='*20}
-    # [PRE-COMPUTED SCHEMA ANALYSIS]
-    # Use the following expert analysis to guide your SQL generation:
-    # 1. **Recommended Tables**: {rec_tables_str}
-    # 2. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
-    # 3. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
-    # 
-    # IMPORTANT: If the analysis suggests specific tables (especially college-specific ones), YOU MUST USE THEM.
-    # {'='*20}
-    # """
-    
-    final_system_prompt = system_prompt_with_context  # Use prompt without analysis
+    analysis_guidance = f"""
+\n{'='*20}
+[PRE-COMPUTED SCHEMA ANALYSIS]
+Use the following expert analysis to guide your SQL generation:
+1. **Recommended Tables**: {rec_tables_str}
+2. **Query Type**: {analysis.get('query_type', 'unknown')}
+3. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
+4. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
 
-    # 2. Get SQL from AI (with schema analysis insights)
+CRITICAL INSTRUCTIONS:
+- If recommended tables are provided, YOU MUST USE THEM (especially college-specific tables)
+- Follow the suggested SQL approach exactly
+- The schema analysis has already identified the optimal tables and relationships
+{'='*20}
+"""
+    
+    final_system_prompt = system_prompt_with_context + analysis_guidance
+
+    # STEP 3: Generate SQL with schema analysis insights
     generated_sql = ai_service.generate_sql(final_system_prompt, question, model)
+    
+    # DEBUG: Print generated SQL to see what the AI is producing
+    print(f"🔍 DEBUG - Generated SQL: {generated_sql[:200]}...")
+    
     
     # 2.4 Intercept Knowledge Queries (General Q&A)
     if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
@@ -293,17 +297,27 @@ async def ask_database(
         # We don't burden the user with debug details unless it's a critical system error
         # The AI should have used available tables. If this fails, it's a data availability issue.
         
+        # Enhanced logging for debugging
+        print(f"❌ SQL EXECUTION ERROR:")
+        print(f"   Question: {question}")
+        print(f"   Generated SQL: {generated_sql}")
+        print(f"   Error: {execution_result.get('error', 'Unknown error')}")
+        
         answer = "I couldn't retrieve that information from the database. This might be because the specific data hasn't been recorded yet or is structured differently."
         
         # Optional: Add specific note if table is missing
         if "doesn't exist" in execution_result.get('error', '').lower():
              answer = "I couldn't find the specific table or data you requested in the current database. I tried looking for relevant information but couldn't locate it."
+        
+        # Special handling for course improvement questions
+        if any(phrase in question.lower() for phrase in ["how can i improve", "how do i improve", "how to improve", "what should i focus"]):
+            answer = "I don't see any assessment data for this course yet. To get personalized improvement recommendations, start by attempting the available assessments and practice questions. Once you have some attempts, I can analyze your performance and suggest areas to focus on."
 
         return {
             "answer": answer,
             #"sql": generated_sql, # Keep SQL for transparency/admins # HIDDEN
             #"data": [], # HIDDEN
-            "follow_ups": ["List available tables", "Show courses", "Show student performance"]
+            "follow_ups": ["Show my courses", "Show my performance", "What are my enrolled courses?"]
         }
         
     data = execution_result["data"]
