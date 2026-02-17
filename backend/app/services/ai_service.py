@@ -81,10 +81,8 @@ Respond in this EXACT JSON format (no markdown, no extra text):
     "can_answer": true/false,
     "query_type": "simple|complex|general_knowledge",
     "recommended_tables": ["table1", "table2"],
-    "reasoning": "brief explanation of your analysis and recommended approach",
-    "confidence": "high|medium|low",
     "suggested_sql_approach": "brief description of how to construct the query",
-    "alternative_interpretation": "if the question could mean multiple things, suggest the most likely interpretation"
+    "reasoning": "very brief explanation (max 1 sentence)"
 }}
 
 IMPORTANT GUIDELINES:
@@ -104,7 +102,7 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a database schema expert. Analyze questions deeply and respond with valid JSON only."},
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=800,
+                max_tokens=500, # Reduced for speed
                 temperature=0.1,
                 stream=False
             )
@@ -118,23 +116,38 @@ IMPORTANT GUIDELINES:
             elif "```" in analysis_text:
                 analysis_text = analysis_text.split("```")[1].split("```")[0].strip()
             
-            analysis = json.loads(analysis_text)
+            # Additional cleanup for robust parsing
+            analysis_text = analysis_text.strip()
+            if not analysis_text.endswith("}"):
+                # Try to fix truncated JSON
+                analysis_text += "}" 
+            
+            try:
+                analysis = json.loads(analysis_text)
+            except:
+                # Fallback if AI returns malformed JSON
+                print(f"⚠️ Warning: AI returned malformed JSON: {analysis_text[:100]}...")
+                return {
+                    "can_answer": True,
+                    "query_type": "simple", 
+                    "recommended_tables": [],
+                    "reasoning": "JSON parse error, proceeding anyway",
+                    "suggested_sql_approach": "Standard SQL"
+                }
             
             print(f"🔍 Deep Schema Analysis:")
             print(f"   - Can Answer: {analysis.get('can_answer', 'unknown')}")
             print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
             print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
-            print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
-            print(f"   - Reasoning: {analysis.get('reasoning', 'N/A')[:100]}...")
+            print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:100]}...")
             
             return {
                 "can_answer": analysis.get("can_answer", True),
                 "query_type": analysis.get("query_type", "unknown"),
                 "recommended_tables": analysis.get("recommended_tables", []),
                 "reasoning": analysis.get("reasoning", ""),
-                "confidence": analysis.get("confidence", "medium"),
                 "suggested_sql_approach": analysis.get("suggested_sql_approach", ""),
-                "alternative_interpretation": analysis.get("alternative_interpretation", "")
+                "confidence": analysis.get("confidence", "medium") # Optional now
             }
             
         except Exception as e:
