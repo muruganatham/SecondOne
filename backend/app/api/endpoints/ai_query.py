@@ -156,11 +156,47 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
                  if "time table" not in lower_q and "timetable" not in lower_q:
                      return {"answer": "Access Denied: Direct table queries are restricted.", "follow_ups": []}
 
-    # Construct Prompt
-    final_system_prompt = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
+    # STEP 1.5: Deep Schema Analysis
+    print(f"🧠 [DEBUG] Performing Deep Schema Analysis...")
+    analysis_result = await run_in_threadpool(
+        ai_service.analyze_question_with_schema, 
+        question, 
+        system_prompt, 
+        model
+    )
+    
+    # Construct Prompt with Analysis
+    final_system_prompt = f"""{system_prompt}
+
+{'='*20}
+{role_instruction}
+{'='*20}
+
+### EXPERT SCHEMA ANALYSIS
+The following analysis has been performed on the user's request:
+- **Query Type**: {analysis_result.get('query_type')}
+- **Can Answer**: {analysis_result.get('can_answer')}
+- **Recommended Tables**: {analysis_result.get('recommended_tables')}
+- **Strategy Needed**: {analysis_result.get('suggested_sql_approach')}
+- **Reasoning**: {analysis_result.get('reasoning')}
+
+Use this analysis to guide your SQL generation.
+
+### USER TASK
+Generate SQL for: "{question}"
+"""
     
     # STEP 2: Generate SQL
     generated_sql = await run_in_threadpool(ai_service.generate_sql, final_system_prompt, question, model)
+    
+    # Sanitize SQL (Remove Markdown)
+    generated_sql = generated_sql.replace("```sql", "").replace("```", "").strip()
+    if "SELECT" in generated_sql.upper() and not generated_sql.upper().startswith("SELECT"):
+         # Try to extract just the SQL if there are conversational prefixes
+         import re
+         match = re.search(r"(SELECT.*)", generated_sql, re.IGNORECASE | re.DOTALL)
+         if match:
+             generated_sql = match.group(1)
     
     # Intercept Knowledge/Security
     if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
@@ -174,8 +210,20 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
     execution_result = await run_in_threadpool(sql_executor.execute_query, generated_sql)
     
     if "error" in execution_result:
-        answer = "I couldn't retrieve that information. It might be missing or structured differently."
-        return {"answer": answer, "sql": None, "data": None, "follow_ups": ["Check courses", "Show student rank"]}
+        # Debugging: Return SQL and Error to Admin
+        debug_data = [{"error": execution_result.get('error')}] if current_role_id in [1, 2] else None
+        debug_sql = generated_sql if current_role_id in [1, 2] else None
+        
+        answer = "I couldn't retrieve that information. The data might not be recorded yet."
+        if "doesn't exist" in execution_result.get('error', '').lower():
+             answer = "I couldn't find the specific table or data requested."
+             
+        return {
+            "answer": answer, 
+            "sql": debug_sql, 
+            "data": debug_data, 
+            "follow_ups": ["Show my performance"]
+        }
         
     data = execution_result["data"]
     
