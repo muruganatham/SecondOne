@@ -35,30 +35,20 @@ class SchemaContext:
             # Build the prompt
             lines = []
             lines.append("You are a MySQL query expert. Your goal is to convert user questions into VALID SQL for the 'coderv4' database.")
-            lines.append("\n### CRITICAL RULES:")
-            lines.append("1. Use ONLY the tables and relationships defined below.")
-            lines.append("2. Use the EXACT numeric values for Enums (definitions provided).")
-            lines.append("3. Return ONLY the SQL query. No markdown, no explanation.")
-            
+            lines.append("\n### MANDATORY ACCURACY RULES (CRITICAL):")
+            lines.append("1. **ENROLLED COURSES**: To count courses, you MUST use `course_academic_maps` (CAM). Use `COUNT(DISTINCT course_id)`. Joint with `user_academics` to filter by the user's circle (College, Dept, Batch, Section).")
+            lines.append("2. **FORBIDDEN TABLES**: NEVER use `course_wise_segregations` for course counts; it is inaccurate and contains outdated data.")
+            lines.append("3. **WPI SCORE**: Formula = `(Total_Marks * 0.7) + (Accuracy * 0.2) + (Total_Attempts * 0.1)`.")
+            lines.append("4. **ACCURACY**: Formula = `(Solved_Count * 100.0) / Total_Attempts`.")
+            lines.append("5. **SECURITY BOUNDARY**: Every query for student analytics MUST filter by `college_id`, `department_id`, `batch_id`, and `section_id` to ensure isolation.")
+
             lines.append("\n### COMPLEX QUERY STRATEGY:")
-            lines.append("1. JOIN PATHS: For multi-table questions (e.g. 'Departments in College'), you MUST follow the Relationship Paths defined below. Do not guess foreign keys.")
-            lines.append("2. IMPLICIT RELATIONS: We have provided 70+ implicit relationships (e.g. `user_id` -> `users.id`). Use them fearlessly.")
-            lines.append("3. ACCURACY: If filtering by status/role, looking up the table below and use the EXACT numeric code (e.g. 'Student' is 7, not 'student').")
-            lines.append("4. COURSE ENROLLMENTS: To count students in a course, JOIN `users` -> `course_wise_segregations` -> `courses`. Do NOT use `user_course_enrollments` unless specifically asked. Filter by `users.status=1` ONLY if asked for 'active'.")
-            lines.append("5. COLLEGE RESULTS: Result tables are prefixed by college code (e.g., `srec_2025_2_coding_result` for SREC). If the user mentions a college, ALWAYS use their specific `{college}_%_result` table. If it DOES NOT EXIST in the list below, use generic `coding_results` or similar base tables.")
-            lines.append("6. TOPIC ANALYSIS & JOIN PATHS:")
-            lines.append("   - TO FIND TOPICS in results: Results Link to Questions -> Questions Link to Topics.")
-            lines.append("   - IF `standard_qb_id` IS NOT NULL: JOIN `standard_qb_codings` ON `standard_qb_id` = `standard_qb_codings.id` THEN JOIN `standard_qb_topics` ON `standard_qb_codings.topic_id` = `standard_qb_topics.id`.")
-            lines.append("   - IF `academic_qb_id` IS NOT NULL: JOIN `academic_qb_codings` ON `academic_qb_id` = `academic_qb_codings.id` THEN JOIN `topics` ON `academic_qb_codings.topic_id` = `topics.id`.")
-            lines.append("7. ANALYTICAL GROWTH (PRODUCT-BASED COMPANY):")
-            lines.append("   - To find 'Topics to Improve': Identify topics where the student has many attempts but NO 'Perfect Solves' (solve_status NOT 3).")
-            lines.append("   - Product-Based companies value: Data Structures, Algorithms, Dynamic Programming, and System Design.")
-            lines.append("8. ASSESSMENT/TEST DATA: For questions about 'assessments', 'tests', or 'how many done':")
-            lines.append("   - FIRST check if college-specific `{college}_coding_result` table exists (e.g., `srec_2025_2_coding_result`)")
-            lines.append("   - If college-specific table exists, use it: SELECT COUNT(DISTINCT problem_id) FROM {college}_coding_result WHERE user_id = X")
-            lines.append("   - If NO college-specific table, use generic tables: `admin_coding_result`, `admin_mcq_result`, `admin_test_data`")
-            lines.append("   - For 'my assessments' or 'assessments I done', filter by user_id from the authenticated user")
-            lines.append("   - Count DISTINCT problem_id or test_id to avoid duplicates from multiple attempts")
+            lines.append("1. JOIN PATHS: For multi-table questions, follow the Relationship Paths defined below. Do not guess foreign keys.")
+            lines.append("2. IMPLICIT RELATIONS: Use the provided 70+ implicit relationships fearlessly.")
+            lines.append("3. ACCURACY: If filtering by status/role, use the EXACT numeric code (e.g. 'Student' is 7).")
+            lines.append("4. COLLEGE RESULTS: Result tables are prefixed by college code (e.g., `srec_..._result`). Use them if they exist in the schema below.")
+            lines.append("5. TOPIC ANALYSIS: Link Results -> Questions -> Topics via the appropriate QB tables.")
+            lines.append("6. ASSESSMENT DATA: Count DISTINCT problem_id or test_id to avoid duplicates.")
 
 
             lines.append("\n### SOLVE STATUS MAPPING (IMPORTANT):")
@@ -86,9 +76,12 @@ class SchemaContext:
             
             extracted_relationships = []
             
+            # 1.5 Define Blacklist (Tables the AI should NEVER see or use)
+            blacklist = {"course_wise_segregations", "shield_logs", "failed_jobs", "otps", "migrations"}
+
             for table_name, details in schema['tables'].items():
-                # KEY FIX: Only include table if it actually exists in the DB
-                if table_name in available_tables:
+                # KEY FIX: Only include table if it actually exists AND is not blacklisted
+                if table_name in available_tables and table_name not in blacklist:
                     columns = [col['Field'] for col in details['schema']['columns']]
                     lines.append(f"- Table `{table_name}`: Columns({', '.join(columns)})")
                     
@@ -102,13 +95,12 @@ class SchemaContext:
                             'REFERENCED_COLUMN_NAME': fk['REFERENCED_COLUMN_NAME']
                         })
                 else:
-                    # Optional: Log excluded tables to verify logic
-                    pass# print(f"Skipping missing table: {table_name}")
-            
+                    # Tables missing or filtered out
+                    pass
+
             lines.append("\n### ENUM INTEL (Use these EXACT values):")
             for table, fields in mappings.items():
-                # Only include tables that actually exist in the schema to save tokens
-                if table in schema['tables']:
+                if table in schema['tables'] and table not in blacklist:
                     lines.append(f"Table `{table}`:")
                     for field, map_data in fields.items():
                         lines.append(f"  - `{field}`: {json.dumps(map_data)}")
@@ -118,8 +110,15 @@ class SchemaContext:
             for rel in extracted_relationships:
                 lines.append(f"- `{rel['TABLE_NAME']}.{rel['COLUMN_NAME']}` -> `{rel['REFERENCED_TABLE_NAME']}.{rel['REFERENCED_COLUMN_NAME']}`")
                 
+            lines.append("\n### MANDATORY ACCURACY RULES (CRITICAL):")
+            lines.append("1. **ENROLLED COURSES**: To count courses, you MUST use `course_academic_maps` (CAM). Use `COUNT(DISTINCT course_id)`. Join with `user_academics` to filter by the user's circle (College, Dept, Batch, Section).")
+            lines.append("2. **FORBIDDEN TABLES**: NEVER use `course_wise_segregations` for course counts; it is inaccurate and contains outdated data.")
+            lines.append("3. **WPI SCORE**: Formula = `(Total_Marks * 0.7) + (Accuracy * 0.2) + (Total_Attempts * 0.1)`.")
+            lines.append("4. **ACCURACY**: Formula = `(Solved_Count * 100.0) / Total_Attempts`.")
+            lines.append("5. **SECURITY BOUNDARY**: Every query for student analytics MUST filter by `college_id`, `department_id`, `batch_id`, and `section_id` to ensure isolation.")
+
             self.context_string = "\n".join(lines)
-            print("✅ AI Schema Context Loaded (Relationships Extracted from Analysis)")
+            print("✅ AI Schema Context Loaded (Accuracy Rules At Bottom)")
             
         except Exception as e:
             print(f"❌ Error loading schema context: {e}")

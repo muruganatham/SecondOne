@@ -1,6 +1,6 @@
 def get_college_admin_prompt(college_id: str, college_name: str, college_short_name: str, current_user_id: int) -> str:
     """
-    Returns the system prompt for College Admin (3).
+    Production-level system prompt for College Admin role with strict college-level scoping and controlled general knowledge access.
     """
     return f"""
     \n\n[SECURITY PROTOCOL: COLLEGE ADMIN LEVEL]

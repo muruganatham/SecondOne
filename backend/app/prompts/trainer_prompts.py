@@ -75,7 +75,7 @@ def get_trainer_prompt(dept_id: str, dept_name: str, current_user_id: int) -> st
     2.  **Strict Scope**: ALWAYS join with `user_academics` and filter by `department_id = {dept_id}`.
     3.  **Total vs Unique**:
         - Use `COUNT(*)` for total attempts.
-        - Use `COUNT(DISTINCT question_id)` for number of different questions.
+        - Use `COUNT(DISTINCT CONCAT(type, question_id))` for number of different questions.
     
     ### 6. MATERIAL DISCOVERY LOGIC
     **Objective**: Find materials for courses in your department.

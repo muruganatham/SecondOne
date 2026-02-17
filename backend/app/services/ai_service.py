@@ -88,7 +88,8 @@ Respond in this EXACT JSON format (no markdown, no extra text):
 }}
 
 IMPORTANT GUIDELINES:
-- If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true
+- If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true.
+- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills (Professional/Soft), or Educational Information. Everything else is out-of-scope.
 - If data exists but in different table names, identify the correct tables (e.g., "assessments" might be in "user_assessments" or "assessment_results")
 - Consider table relationships and foreign keys to find indirect data
 - Look for enum mappings to understand status/role fields
@@ -162,10 +163,10 @@ IMPORTANT GUIDELINES:
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
-                    {"role": "system", "content": system_prompt},
+                    {"role": "system", "content": f"{system_prompt}"},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=1024,
+                max_tokens=2048,
                 temperature=0.0,
                 stream=False
             )
@@ -199,6 +200,7 @@ IMPORTANT GUIDELINES:
            - **LISTS**: Use standard bullet points.
         4. **No Technical Jargon**: Do NOT mention "columns", "rows", or "table names".
         5. **Confidence**: Provide a complete summary of all retrieved data.
+        6. **ANTI-HALLUCINATION**: ONLY answer based on the 'Data Retrieved'. If the data is empty or insufficient, explicitly state: 'I couldn't find sufficient data to answer this part of your question.' Do NOT make up numbers, names, or performance facts.
 
         EXAMPLE OUTPUT:
         "There are 4,021 active students across these departments:
@@ -343,13 +345,14 @@ IMPORTANT GUIDELINES:
                 messages=[
                     {"role": "system", "content": """You are a specialized IT and Educational Consultant. 
 You are strictly limited to answering questions related to:
-1. Companies (e.g., tech companies, recruiting firms, industry leaders).
-2. Professional Skills (e.g., programming languages, soft skills, technical concepts).
-3. Educational Information (e.g., courses, degrees, study topics, academic concepts).
+1. Companies (e.g., tech companies, recruiting firms, industry leaders, hiring trends).
+2. Professional Skills (e.g., programming languages, soft skills, technical concepts, career development).
+3. Educational Information (e.g., academic advice, study topics, university/degree info, learning paths).
 
-If the user asks about ANYTHING else (e.g., movies, sports, politics, general history, biology, entertainment, personal advice), you MUST refuse to answer.
-Refusal message: "I can only answer general knowledge questions related to Companies, Skills, and Educational Information."
-Do not answer the prohibited question."""},
+[STRICT ENFORCEMENT]:
+If the user asks about ANYTHING else (e.g., sports, movies, politics, entertainment, general history, personal advice, biology), you MUST refuse to answer.
+Refusal message: "I am only authorized to provide general knowledge on Companies, Professional Skills, and Educational Information."
+Do not answer the prohibited question or provide any context for it."""},
                     {"role": "user", "content": user_question},
                 ],
                 max_tokens=500,

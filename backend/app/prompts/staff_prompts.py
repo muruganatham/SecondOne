@@ -69,9 +69,9 @@ def get_staff_prompt(dept_id: str, dept_name: str, current_user_id: int) -> str:
     **Protocol**:
     1.  **Tables**: Check `admin_coding_result`, `admin_mcq_result`, and `viva_result`.
     2.  **Scope**: Filter by `ua.department_id = {dept_id}` via `user_academics` join.
-    
-    ### 6. MATERIAL DISCOVERY LOGIC
-    - Search both `pdf_banks` and `topics` (columns: `study_material`, `pdf_material`).
+    3.  **Metrics**:
+        - Total Attempts: `COUNT(*)`
+        - Different Questions: `COUNT(DISTINCT CONCAT(type, question_id))`
 
     ### 4. DATA PRESENTATION & LAYOUT
     - **Format**: Use **Markdown Tables** for student lists and **Bold Headers** for summaries.

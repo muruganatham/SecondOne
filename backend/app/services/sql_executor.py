@@ -88,13 +88,49 @@ class SQLExecutor:
                 return False
         return True
 
+    def scrub_sql(self, sql: str) -> str:
+        """
+        Cleans the AI output to extract ONLY the raw SQL query.
+        Handles Markdown, preambles, and multi-statement queries.
+        """
+        import re
+        
+        # Step 1: Extract SQL from Markdown if present
+        if "```sql" in sql:
+            try:
+                sql = sql.split("```sql")[1].split("```")[0].strip()
+            except IndexError:
+                pass
+        elif "```" in sql:
+            try:
+                sql = sql.split("```")[1].split("```")[0].strip()
+            except IndexError:
+                pass
+
+        # Step 2: Handle Multi-Statement splitting
+        segments = [s.strip() for s in sql.split(';') if s.strip()]
+        if not segments:
+             return sql.strip() # Fallback to original
+        
+        # Step 3: Extract the first SELECT/SHOW/WITH from each segment
+        clean_queries = []
+        for segment in segments:
+            match = re.search(r'(SELECT|SHOW|WITH|DESCRIBE)', segment, re.IGNORECASE | re.DOTALL)
+            if match:
+                clean_queries.append(segment[match.start():].strip())
+        
+        if not clean_queries:
+             return sql.strip()
+        else:
+            # We take the LAST query as the final intended outcome
+            return clean_queries[-1]
+
     def execute_query(self, sql: str):
         """
         Executes raw SQL and returns dict results.
-        Table validation is disabled - AI will always attempt to generate and execute SQL.
         """
-        # Remove any markdown wrapping if present
-        clean_sql = sql.replace("```sql", "").replace("```", "").strip()
+        # Scrub the SQL first
+        clean_sql = self.scrub_sql(sql)
         
         if not self.is_safe(clean_sql):
              return {"error": "Unsafe query detected. Only SELECT allowed."}

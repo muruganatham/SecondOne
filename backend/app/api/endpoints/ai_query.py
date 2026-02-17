@@ -3,6 +3,7 @@ AI API Endpoint
 Exposes the Text-to-SQL functionality.
 Role-based access control enabled.
 """
+from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -24,9 +25,6 @@ from app.prompts import (
 
 router = APIRouter()
 
-# Example: Protect specific endpoints with RoleChecker
-# router = APIRouter(dependencies=[Depends(RoleChecker([1, 2]))]) # This would protect the whole router
-
 class AIQueryRequest(BaseModel):
     question: str
     model: str = "deepseek-chat"  # Default to DeepSeek
@@ -38,19 +36,6 @@ class AIQueryResponse(BaseModel):
     sql: str | None = None
     data: list | None = None
     follow_ups: list = []
-
-@router.get("/tables")
-async def get_available_tables(current_user: Users = Depends(get_current_user)):
-    """
-    Get list of available tables in the database.
-    Useful for debugging and understanding what data is available.
-    """
-    tables = sql_executor.get_available_tables()
-    return {
-        "tables": tables,
-        "count": len(tables),
-        "message": f"Found {len(tables)} tables in the database"
-    }
 
 @router.post("/ask", response_model=AIQueryResponse, response_model_exclude_none=True)
 async def ask_database(
@@ -64,8 +49,6 @@ async def ask_database(
     question = request.question
     model = request.model
     
-    # 0. Identifying the user context from payload (Frontend-only mode)
-    # We trust the frontend to provide valid user_id and user_role
     current_user = None
     
     if request.user_id:
@@ -73,8 +56,7 @@ async def ask_database(
         if current_user and request.user_role:
             current_user.role = request.user_role
             
-    # Fallback/Mock if user doesn't exist or isn't provided
-    if not current_user:
+    # Fallback/Mock if user doesn't exist or isn't provided    if not current_user:
         current_user = Users(
             id=str(request.user_id or "0"),
             email="static-frontend@app.local",
@@ -90,23 +72,27 @@ async def ask_database(
     
     # Defaults
     role_instruction = ""
+    current_role_id = request.user_role if request.user_role is not None else current_user.role
     
     # SUPER ADMIN (1) & ADMIN (2)
-    current_role_id = current_user.role
     if current_role_id in [1, 2]:
         role_instruction = get_admin_prompt(current_user.id)
     
     # STUDENT ROLE (ID: 7)
     elif current_role_id == 7:
-        # Fetch Student's Department and College Details
+        # Fetch Student's Department, College, Batch, and Section Details
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
         college_id = academics.college_id if academics else "Unknown"
+        batch_id = academics.batch_id if academics else "Unknown"
+        section_id = academics.section_id if academics else "Unknown"
         
         # Safe access to Names and Short Names
         college_short_name = "admin" 
         college_name = "Your Institution"
         dept_name = "Your Department"
+        batch_name = "Your Batch"
+        section_name = "Your Section"
         
         if academics:
             if academics.college:
@@ -118,11 +104,22 @@ async def ask_database(
                 try:
                     dept_name = str(academics.department.department_name)
                 except: pass
+            if academics.batch:
+                try:
+                    batch_name = str(academics.batch.batch_name)
+                except: pass
+            if academics.section:
+                try:
+                    section_name = str(academics.section.section_name)
+                except: pass
 
-        role_instruction = get_student_prompt(dept_id, dept_name, college_id, college_name, college_short_name, current_user.id)
+        role_instruction = get_student_prompt(
+            dept_id, dept_name, college_id, college_name, college_short_name, current_user.id,
+            batch_id=batch_id, batch_name=batch_name, section_id=section_id, section_name=section_name
+        )
 
     # STAFF / FACULTY ROLE (ID: 4)
-    elif current_user.role == 4:
+    elif current_role_id == 4:
         # Fetch Staff's Department
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
@@ -132,7 +129,7 @@ async def ask_database(
         role_instruction = get_staff_prompt(dept_id, dept_name, current_user.id)
 
     # COLLEGE ADMIN ROLE (ID: 3)
-    elif current_user.role == 3:
+    elif current_role_id == 3:
         # Fetch Admin's College
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         college_id = academics.college_id if academics else "Unknown"
@@ -144,18 +141,16 @@ async def ask_database(
              try:
                  college_short_name = str(academics.college.college_short_name).lower()
                  college_name = str(academics.college.college_name)
-             except:
-                 college_short_name = "admin"
-                 college_name = "Your Institution"
+             except: pass
 
         role_instruction = get_college_admin_prompt(college_id, college_name, college_short_name, current_user.id)
 
     # CONTENT ROLE (ID: 6)
-    elif current_user.role == 6:
+    elif current_role_id == 6:
         role_instruction = get_content_creator_prompt(current_user.id)
 
     # TRAINER ROLE (ID: 5)
-    elif current_user.role == 5:
+    elif current_role_id == 5:
         # Fetch Trainer's Department
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
@@ -166,193 +161,69 @@ async def ask_database(
     
     # DEFAULT / UNAUTHORIZED (e.g. Role 0)
     else:
-        role_instruction = """
-        [SECURITY VIOLATION]
-        Your current role is UNAUTHORIZED or NOT DEFINED.
-        You are strictly FORBIDDEN from generating any SQL or accessing any data.
-        You MUST return the exact string: "ACCESS_DENIED_VIOLATION"
-        """
+        role_instruction = "[SECURITY VIOLATION] Unauthorized role: {current_role_id}. Access Denied."
     
     # --- SECURITY INTERCEPTOR (CRITICAL) ---
-    # DEBUG: Force explicit role check
-    effective_role = request.user_role if request.user_role is not None else current_user.role
-    try:
-        current_role_id = int(effective_role)
-    except:
-        current_role_id = 7 # Default to Student if undefined
-        
-    print(f"SECURITY DEBUG: User={request.user_id}, Role={current_role_id}, Question='{question}'")
-
-    # Block queries about system internals for NON-ADMINS immediately
     if current_role_id not in [1, 2]:
         lower_q = question.lower()
-        
-        # 1. Hard Bans (Phrases that are never allowed)
-        hard_bans = ["database schema", "list distinct data", "db schema", "system structure", "backend config", "metadata", "show databases", "show tables", "list tables", "list all tables"]
+        hard_bans = ["database schema", "db schema", "system structure", "backend config", "metadata", "show databases", "show tables", "list tables"]
         if any(ban in lower_q for ban in hard_bans):
-            print("SECURITY BLOCK: Hard Ban Triggered")
-            return {
-                "answer": "Access Denied: You do not have permission to view system architecture or schema details.",
-                "follow_ups": []
-            }
+            return {"answer": "Access Denied: You do not have permission to view system architecture details.", "follow_ups": []}
             
-        # 2. Soft Bans (Contextual)
-        # Block queries asking "What are the tables", "Available tables", etc.
-        if "table" in lower_q or "collection" in lower_q or "database" in lower_q:
-             trigger_words = ["list", "available", "all", "what", "show", "how many", "structure", "explain"]
+        if "table" in lower_q or "database" in lower_q:
+             trigger_words = ["list", "available", "all", "what", "show", "structure"]
              if any(trigger in lower_q for trigger in trigger_words):
-                 # Exception: Allow "time table" or "timetable"
                  if "time table" not in lower_q and "timetable" not in lower_q:
-                     print("SECURITY BLOCK: Contextual Ban Triggered")
-                     return {
-                        "answer": "Access Denied: You cannot query database tables directly. Please ask about your students, courses, or department performance.",
-                        "follow_ups": []
-                     }
+                     return {"answer": "Access Denied: Direct table queries are restricted.", "follow_ups": []}
 
-    # Construct the Prompt
-    system_prompt_with_context = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
-    
-    # OPTIMIZATION: Skip analysis step to reduce API calls and prevent timeouts
-    # This analysis was primarily for debugging and not critical for SQL generation
-    # analysis = ai_service.analyze_question_with_schema(
-    #     user_question=question,
-    #     schema_context=system_prompt_with_context,
-    #     model=model
-    # )
-    
-    # print(f"📊 Question Analysis (Informational):")
-    # print(f"   - Can Answer: {analysis.get('can_answer', True)}")
-    # print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
-    # print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
-    # print(f"   - Confidence: {analysis.get('confidence', 'unknown')}")
-    # print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:80]}...")
-    
-    # NOTE: We don't block based on analysis - let the AI attempt to generate SQL
-    # The analysis provides insights but we trust the SQL generation phase
-    
-    # 1.9 INTEGRATE ANALYSIS INTO GENERATION PROMPT (CRITICAL FIX)
-    # OPTIMIZATION: Skip analysis integration since we're not running analysis
-    # rec_tables = analysis.get('recommended_tables', [])
-    # if isinstance(rec_tables, list):
-    #     rec_tables_str = ", ".join(rec_tables)
-    # else:
-    #     rec_tables_str = str(rec_tables)
-
-    # analysis_guidance = f"""
-    # \n{'='*20}
-    # [PRE-COMPUTED SCHEMA ANALYSIS]
-    # Use the following expert analysis to guide your SQL generation:
-    # 1. **Recommended Tables**: {rec_tables_str}
-    # 2. **Strategy**: {analysis.get('suggested_sql_approach', 'Standard SQL')}
-    # 3. **Reasoning**: {analysis.get('reasoning', 'Follow standard protocols')}
-    # 
-    # IMPORTANT: If the analysis suggests specific tables (especially college-specific ones), YOU MUST USE THEM.
-    # {'='*20}
-    # """
-    
-    final_system_prompt = system_prompt_with_context  # Use prompt without analysis
-
-    # 2. Get SQL from AI (with schema analysis insights)
+    # Construct and Execute
+    final_system_prompt = f"{system_prompt}\n\n{'='*20}{role_instruction}\n{'='*20}\n\nTask: Generate SQL for: \"{question}\""
     generated_sql = ai_service.generate_sql(final_system_prompt, question, model)
     
-    # 2.4 Intercept Knowledge Queries (General Q&A)
+    # 2.4 Intercept Knowledge Queries
     if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
         human_answer = ai_service.answer_general_question(question, model)
-        return {
-            "answer": human_answer,
-            #"sql": "-- General Knowledge Query (No DB Access)", # HIDDEN
-            #"data": [], # HIDDEN
-            "follow_ups": []
-        }
+        return {"answer": human_answer, "sql": None, "data": [], "follow_ups": []}
 
     # 2.5 Intercept Access Denied
     if "ACCESS_DENIED_VIOLATION" in generated_sql:
-        denial_reason = "Access Denied: You do not have permission to view this data."
-        if current_user.role == 7:
-            denial_reason = "Access Denied: You are restricted to your own data and Departmental Analytics."
-        elif current_user.role == 4:
-            denial_reason = "Access Denied: You are restricted to data within your Department."
-        elif current_user.role == 3:
-            denial_reason = "Access Denied: You are restricted to data within your College."
-        elif current_user.role == 6:
-            denial_reason = "Access Denied: You are restricted to Content and Assets only."
-        elif current_user.role == 5:
-            denial_reason = "Access Denied: You are restricted to Student Performance data within your Department."
-        return {
-            "answer": denial_reason,
-            #"sql": "-- Blocked by Security Protocol", # HIDDEN
-            #"data": [], # HIDDEN
-            "follow_ups": []
-        }
+        return {"answer": "Access Denied: Restricted data boundary.", "sql": None, "data": [], "follow_ups": []}
 
     # 3. Execute SQL
     execution_result = sql_executor.execute_query(generated_sql)
     
     if "error" in execution_result:
-        # Production-ready error message
-        # We don't burden the user with debug details unless it's a critical system error
-        # The AI should have used available tables. If this fails, it's a data availability issue.
-        
-        answer = "I couldn't retrieve that information from the database. This might be because the specific data hasn't been recorded yet or is structured differently."
-        
-        # Optional: Add specific note if table is missing
-        if "doesn't exist" in execution_result.get('error', '').lower():
-             answer = "I couldn't find the specific table or data you requested in the current database. I tried looking for relevant information but couldn't locate it."
-
-        return {
-            "answer": answer,
-            #"sql": generated_sql, # Keep SQL for transparency/admins # HIDDEN
-            #"data": [], # HIDDEN
-            "follow_ups": ["List available tables", "Show courses", "Show student performance"]
-        }
+        answer = "I couldn't retrieve that information from the database. It might be missing or structured differently."
+        return {"answer": answer, "sql": None, "data": None, "follow_ups": ["Check courses", "Show student rank"]}
         
     data = execution_result["data"]
     
-    # 4 & 5. Parallelize Synthesize Answer and Follow-up Generation (Optimized Latency)
+    # 4 & 5. Parallelize Synthesize Answer and Follow-up Generation
     import asyncio
-    
     async def run_parallel_tasks():
-        # Task A: Generate Human Answer
-        task_answer = asyncio.to_thread(
-            ai_service.synthesize_answer, question, generated_sql, data, model
-        )
-        
-        # Task B: Generate Follow-ups (Now independent of answer)
-        task_followups = asyncio.to_thread(
-            ai_service.generate_follow_ups, question, generated_sql, data, None, current_role_id
-        )
-        
+        task_answer = asyncio.to_thread(ai_service.synthesize_answer, question, generated_sql, data, model)
+        task_followups = asyncio.to_thread(ai_service.generate_follow_ups, question, generated_sql, data, None, current_role_id)
         return await asyncio.gather(task_answer, task_followups)
 
     try:
         human_answer, follow_ups = await run_parallel_tasks()
     except Exception as e:
         print(f"Parallel Execution Error: {e}")
-        # Fallback to serial or basic
         human_answer = "Here is the data."
         follow_ups = []
 
-    # 6. Check if query is destructive
-    is_destructive = ai_service.is_destructive_query(generated_sql)
-    affected_rows = len(data) if is_destructive else 0
-
-    # 7. Update User Stats (Skip for mock/static user ID "0")
+    # 7. Update User Stats
     if str(current_user.id) != "0":
         try:
             current_user.stats_chat_count = (current_user.stats_chat_count or 0) + 1
-            
-            # Estimate word count
             words = len(human_answer.split())
             current_user.stats_words_generated = (current_user.stats_words_generated or 0) + words
-            
             db.commit()
-        except Exception as e:
-            print(f"Failed to update stats: {e}")
-            db.rollback()
+        except: db.rollback()
 
     return {
         "answer": human_answer,
-        #"sql": generated_sql, # HIDDEN
-        #"data": data, # HIDDEN
+        "sql": None,
+        "data": None,
         "follow_ups": follow_ups
     }
