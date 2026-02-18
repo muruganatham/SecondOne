@@ -106,6 +106,7 @@ IMPORTANT GUIDELINES:
                     {"role": "user", "content": analysis_prompt},
                 ],
                 max_tokens=300, # MINIMAL TOKEN RANGE
+                max_tokens=500, # Increased for robust JSON analysis
                 temperature=0.1,
                 stream=False
             )
@@ -182,6 +183,7 @@ IMPORTANT GUIDELINES:
                     {"role": "user", "content": user_question},
                 ],
                 max_tokens=800, # Increased for reliability in complex schema
+                max_tokens=300, # Increased for complex schema queries
                 temperature=0.0,
                 seed=42,
                 stream=False
@@ -256,6 +258,8 @@ IMPORTANT GUIDELINES:
                 ],
                 temperature=0.7,
                 max_tokens=1000, # Increased for comprehensive summaries
+                temperature=0.0,
+                # max_tokens=1000, # Increased for comprehensive summaries
                 seed=42
             )
             return response.choices[0].message.content
@@ -322,6 +326,7 @@ IMPORTANT GUIDELINES:
                 ],
                 temperature=0.7,
                 max_tokens=100 # MINIMAL TOKEN RANGE for follow-ups
+                max_tokens=200 # MINIMAL TOKEN RANGE for follow-ups
             )
             
             # Parse response into list
@@ -396,6 +401,7 @@ Do not answer the prohibited question or provide any context for it."""},
                     {"role": "user", "content": user_question},
                 ],
                 max_tokens=300, # MINIMAL TOKEN RANGE
+                max_tokens=500, # MINIMAL TOKEN RANGE
                 temperature=0.7
             )
             return response.choices[0].message.content
