@@ -252,7 +252,7 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a professional assistant. Output clean, formatted text only."},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.3,
+                temperature=0.0,
                 seed=42
             )
             return response.choices[0].message.content
