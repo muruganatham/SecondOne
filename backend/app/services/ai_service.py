@@ -28,16 +28,17 @@ class AIService:
             self.deepseek_client = None
             print("⚠️ WARNING: DEEPSEEK_API_KEY is not set.")
         
-        # Create OpenAI client
-        if self.openai_api_key:
-            self.openai_client = OpenAI(
-                api_key=self.openai_api_key
-            )
-        else:
-            self.openai_client = None
-            print("⚠️ WARNING: OPENAI_API_KEY is not set.")
+        # OpenAI client disabled (as requested)
+        self.openai_client = None
+        # if self.openai_api_key:
+        #     self.openai_client = OpenAI(
+        #         api_key=self.openai_api_key
+        #     )
+        # else:
+        #     self.openai_client = None
+        #     print("⚠️ WARNING: OPENAI_API_KEY is not set.")
         
-        # For backward compatibility
+        # For backward compatibility - Always use DeepSeek
         self.client = self.deepseek_client
         
     def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat") -> dict:
@@ -86,14 +87,15 @@ Respond in this EXACT JSON format (no markdown, no extra text):
 }}
 
 IMPORTANT GUIDELINES:
+- **STRICT TABLE LIMIT**: You MUST ONLY recommend tables that are listed in the 'COMPLETE DATABASE SCHEMA' or 'AVAILABLE TABLES AND DESCRIPTIONS' provided above.
+- **NO HALLUCinations**: NEVER suggest a table name not explicitly provided (e.g., use 'standard_qb_courses' instead of 'marketplace_courses' if that's what is listed).
+- **NO PLACEHOLDERS**: Suggest literal values for filters (e.g., 'user_id=35' instead of 'user_id={{user_id}}'). NEVER use curly braces or colons for parameters.
 - If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true.
-- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills, Educational Info, or Recruitment/Interviews. Everything else is out-of-scope.
-- If data exists but in different table names, identify the correct tables (e.g., "assessments" might be in "user_assessments" or "assessment_results")
-- Consider table relationships and foreign keys to find indirect data
-- Look for enum mappings to understand status/role fields
-- Be creative in finding solutions - don't say "unanswerable" unless truly impossible
-- For user-specific questions (like "my assessments"), assume we can filter by user_id
-- College-specific tables are prefixed with college codes (e.g., srec_2025_2_coding_result)"""
+- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills, Educational Info, or Career Advice.
+- **EXCEPTION**: Questions like "Who am I?" or "My Profile" are DATABASE queries (query_type="simple"), NOT general knowledge.
+- If data exists but in different table names, find the closest match in the context.
+- Be creative in finding data within the PROVIDED schema but stay bounded by it.
+- College-specific tables are prefixed with college codes (e.g., srec_2025_2_coding_result)."""
 
         try:
             model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
@@ -103,7 +105,7 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a database schema expert. Analyze questions deeply and respond with valid JSON only."},
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=500, # Reduced for speed
+                max_tokens=300, # MINIMAL TOKEN RANGE
                 temperature=0.1,
                 stream=False
             )
@@ -179,7 +181,7 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": f"{system_prompt}"},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=2048,
+                max_tokens=800, # Increased for reliability in complex schema
                 temperature=0.0,
                 stream=False
             )
@@ -251,7 +253,8 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a professional assistant. Output clean, formatted text only."},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.7
+                temperature=0.7,
+                max_tokens=1000 # Increased for comprehensive summaries
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -316,7 +319,7 @@ IMPORTANT GUIDELINES:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,
-                max_tokens=200
+                max_tokens=100 # MINIMAL TOKEN RANGE for follow-ups
             )
             
             # Parse response into list
@@ -390,7 +393,7 @@ Refusal message: "I am only authorized to provide general knowledge on Companies
 Do not answer the prohibited question or provide any context for it."""},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=500,
+                max_tokens=300, # MINIMAL TOKEN RANGE
                 temperature=0.7
             )
             return response.choices[0].message.content

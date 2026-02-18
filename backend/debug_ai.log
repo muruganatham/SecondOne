@@ -1,0 +1,91 @@
+
+[2026-02-18 12:08:12.234117] QUESTION: Show my latest coding question scores.
+SQL: SELECT 
+    ua.assessment_id,
+    ua.assessment_name,
+    ua.assessment_type,
+    ua.course_id,
+    ua.topic_id,
+    ua.module_id,
+    ua.complexity,
+    ua.total_marks,
+    ua.obtained_marks,
+    ua.accuracy,
+    ua.total_time_taken,
+    ua.total_attempts,
+    ua.solve_status,
+    ua.submission_time,
+    acr.mark AS coding_mark,
+    acr.total_mark AS coding_total_mark,
+    acr.solve_status AS coding_solve_status,
+    acr.total_time AS coding_total_time,
+    acr.first_submission_time,
+    acr.correct_submission_time,
+    acr.errors,
+    -- Calculate WPI Score
+    ROUND((ua.obtained_marks * 0.7) + (ua.accuracy * 0.2) + (ua.total_attempts * 0.1), 2) AS wpi_score,
+    -- Question details from coding question banks
+    COALESCE(aqc.title, sqc.title) AS question_title,
+    COALESCE(aqc.complexity_type, sqc.complexity_type) AS question_complexity,
+    COALESCE(aqc.company_tags, sqc.company_tags) AS company_tags
+FROM 
+    user_assessments ua
+LEFT JOIN 
+    admin_coding_result acr 
+    ON ua.user_id = acr.user_id 
+    AND ua.question_id = acr.question_id
+    AND ua.assessment_id = acr.allocate_id
+LEFT JOIN 
+    academic_qb_codings aqc 
+    ON ua.question_id = aqc.id
+LEFT JOIN 
+    standard_qb_codings sqc 
+    ON ua.question_id = sqc.id
+WHERE 
+    ua.user_id = 35
+    AND ua.assessment_type = 'coding'
+    AND ua.status = 1
+ORDER BY 
+    ua.submission_time DESC
+LIMIT 20;
+ERROR: Table 'user_assessments' doesn't exist in the database.
+
+[2026-02-18 12:11:45.558161] QUESTION: how many courses are entrolled?
+SQL: SELECT 
+    COUNT(DISTINCT uce.course_id) AS total_courses_enrolled
+FROM 
+    user_course_enrollments uce
+WHERE 
+    uce.user_id = 2370
+    AND uce.status = 1;
+ERROR: (pymysql.err.OperationalError) (1054, "Unknown column 'uce.course_id' in 'where clause'")
+[SQL: SELECT 
+    COUNT(DISTINCT uce.course_id) AS total_courses_enrolled
+FROM 
+    user_course_enrollments uce
+WHERE 
+    uce.user_id = 2370
+    AND uce.status = 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+[2026-02-18 12:12:14.136256] QUESTION: how many market courses are entrolled?
+SQL: SELECT COUNT(DISTINCT uce.course_id) AS marketplace_courses_enrolled
+FROM user_course_enrollments uce
+INNER JOIN course_academic_maps cam ON uce.course_id = cam.course_id
+WHERE uce.user_id = 2370
+  AND cam.college_id IS NULL
+  AND cam.department_id IS NULL
+  AND cam.batch_id IS NULL
+  AND cam.section_id IS NULL
+  AND uce.status = 1;
+ERROR: (pymysql.err.OperationalError) (1054, "Unknown column 'uce.course_id' in 'on clause'")
+[SQL: SELECT COUNT(DISTINCT uce.course_id) AS marketplace_courses_enrolled
+FROM user_course_enrollments uce
+INNER JOIN course_academic_maps cam ON uce.course_id = cam.course_id
+WHERE uce.user_id = 2370
+  AND cam.college_id IS NULL
+  AND cam.department_id IS NULL
+  AND cam.batch_id IS NULL
+  AND cam.section_id IS NULL
+  AND uce.status = 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

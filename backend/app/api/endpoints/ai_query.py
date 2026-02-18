@@ -157,16 +157,25 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
                      return {"answer": "Access Denied: Direct table queries are restricted.", "follow_ups": []}
 
     # STEP 1.5: Deep Schema Analysis
-    print(f"🧠 [DEBUG] Performing Deep Schema Analysis...")
+    schema_summary = schema_context.get_schema_summary()
+    
     analysis_result = await run_in_threadpool(
         ai_service.analyze_question_with_schema, 
         question, 
-        system_prompt, 
+        schema_summary, 
         model
     )
     
-    # Construct Prompt with Analysis
-    final_system_prompt = f"""{system_prompt}
+    # Step C: Get Detailed Schema ONLY for recommended tables
+    recommended_tables = analysis_result.get('recommended_tables', [])
+    
+    detailed_schema = schema_context.get_detailed_schema(recommended_tables)
+    
+    # 1.5 Role-Based Search Control
+    # (Existing role logic preserved)
+    
+    # Construct Final Prompt with Detailed Schema
+    final_system_prompt = f"""{detailed_schema} # USE DETAILED SCHEMA FOR SQL GEN
 
 {'='*20}
 {role_instruction}
@@ -176,7 +185,7 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
 The following analysis has been performed on the user's request:
 - **Query Type**: {analysis_result.get('query_type')}
 - **Can Answer**: {analysis_result.get('can_answer')}
-- **Recommended Tables**: {analysis_result.get('recommended_tables')}
+- **Recommended Tables**: {recommended_tables}
 - **Strategy Needed**: {analysis_result.get('suggested_sql_approach')}
 - **Reasoning**: {analysis_result.get('reasoning')}
 
@@ -189,15 +198,22 @@ Generate SQL for: "{question}"
     # STEP 2: Generate SQL
     generated_sql = await run_in_threadpool(ai_service.generate_sql, final_system_prompt, question, model)
     
-    # Sanitize SQL (Remove Markdown)
-    generated_sql = generated_sql.replace("```sql", "").replace("```", "").strip()
-    if "SELECT" in generated_sql.upper() and not generated_sql.upper().startswith("SELECT"):
-         # Try to extract just the SQL if there are conversational prefixes
-         import re
-         match = re.search(r"(SELECT.*)", generated_sql, re.IGNORECASE | re.DOTALL)
-         if match:
-             generated_sql = match.group(1)
+    import re
+    # Extract only the SQL block. Robustly handles markdown, conversational prefixes/suffixes.
+    sql_match = re.search(r"SELECT\s+.*?(?:;|$)", generated_sql, re.IGNORECASE | re.DOTALL)
+    if sql_match:
+        generated_sql = sql_match.group(0).strip()
     
+    # Strip markdown if any remains
+    generated_sql = generated_sql.replace("```sql", "").replace("```", "").strip()
+    
+    # Final check: Must be a SELECT query
+    if not generated_sql.upper().startswith("SELECT"):
+        # If it's something like "Here is the query: SELECT...", retry extraction
+        second_match = re.search(r"(SELECT\s+.*)", generated_sql, re.IGNORECASE | re.DOTALL)
+        if second_match:
+            generated_sql = second_match.group(1)
+
     # Intercept Knowledge/Security
     if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
         human_answer = await run_in_threadpool(ai_service.answer_general_question, question, model)
@@ -208,6 +224,13 @@ Generate SQL for: "{question}"
 
     # STEP 3: Execute SQL
     execution_result = await run_in_threadpool(sql_executor.execute_query, generated_sql)
+    
+    # Debug logging for failures
+    if "error" in execution_result:
+        with open("debug_ai.log", "a", encoding="utf-8") as f:
+            f.write(f"\n[{datetime.now()}] QUESTION: {question}\n")
+            f.write(f"SQL: {generated_sql}\n")
+            f.write(f"ERROR: {execution_result.get('error')}\n")
     
     if "error" in execution_result:
         # Debugging: Return SQL and Error to Admin
