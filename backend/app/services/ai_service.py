@@ -105,7 +105,6 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a database schema expert. Analyze questions deeply and respond with valid JSON only."},
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=300, # MINIMAL TOKEN RANGE
                 max_tokens=500, # Increased for robust JSON analysis
                 temperature=0.1,
                 stream=False
@@ -182,7 +181,6 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": f"{system_prompt}"},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=800, # Increased for reliability in complex schema
                 max_tokens=300, # Increased for complex schema queries
                 temperature=0.0,
                 seed=42,
@@ -325,7 +323,6 @@ IMPORTANT GUIDELINES:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,
-                max_tokens=100 # MINIMAL TOKEN RANGE for follow-ups
                 max_tokens=200 # MINIMAL TOKEN RANGE for follow-ups
             )
             
@@ -400,7 +397,6 @@ Refusal message: "I am only authorized to provide general knowledge on Companies
 Do not answer the prohibited question or provide any context for it."""},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=300, # MINIMAL TOKEN RANGE
                 max_tokens=500, # MINIMAL TOKEN RANGE
                 temperature=0.7
             )
