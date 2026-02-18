@@ -37,26 +37,37 @@ Target Tables:
 3. `admin_coding_result` (for technical skills)
 Example:
 ```sql
-SELECT u.name, ua.cgpa, COUNT(distinct acr.question_id) as coding_solved
+SELECT u.name, JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) as cgpa, COUNT(distinct acr.question_id) as coding_solved
 FROM users u
 JOIN user_academics ua ON u.id = ua.user_id
 LEFT JOIN admin_coding_result acr ON u.id = acr.user_id AND acr.solve_status IN (2,3)
 WHERE u.name LIKE '%Sanjay%'
-GROUP BY u.id, u.name, ua.cgpa
+GROUP BY u.id, u.name, cgpa
 ```
 
-**TYPE C: RANKING / BEST PERFORMERS** (e.g. "Top 5 students in each college", "Best coders")
+**TYPE C: RANKING / BEST PERFORMERS** (e.g. "Top 5 students", "Best coders")
 Use `admin_coding_result` (global) if available, OR join `users` -> `user_academics` -> `colleges`.
-Calculate a score (e.g. `cgpa` or `total_marks`) and ORDER BY it.
-Example:
-```sql
-SELECT u.name, c.college_short_name, ua.cgpa 
-FROM users u 
-JOIN user_academics ua ON u.id = ua.user_id 
-JOIN colleges c ON ua.college_id = c.id 
-ORDER BY ua.cgpa DESC 
-LIMIT 5;
-```
+
+---
+
+### STRATEGY 2: DATA MAPPING & LOGIC (CRITICAL)
+
+**ACADEMIC DATA (JSON Extraction):**
+Academic scores are stored in `user_academics.academic_info` (JSON). Use `JSON_UNQUOTE(JSON_EXTRACT(...))`
+- **CGPA**: `ua.academic_info -> '$.ug'`
+- **History of Arrears**: `ua.academic_info -> '$.backlogs_history'`
+- **Current Arrears**: `ua.academic_info -> '$.current_backlogs'`
+- **10th/12th Marks**: `ua.academic_info -> '$.tenth'`, `ua.academic_info -> '$.twelth'`
+
+**PLACEMENT ELIGIBILITY LOGIC:**
+To determine if a student is "Eligible" or "Can Crack":
+1. **Academic Filter**: Check if `ug` (CGPA) > 6.0 AND `current_backlogs` = '0'.
+2. **Skill Filter**: Check `admin_coding_result` for > 50 solved problems.
+3. **Consistency**: Check `attendance_percentage` > 75.
+
+**DEPARTMENT ANALYTICS:**
+- Compare Depts: `GROUP BY ua.department_id` -> `AVG(ua.academic_info->'$.ug')`.
+- Join `departments` table for names.
 
 ---
 

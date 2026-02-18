@@ -183,6 +183,7 @@ IMPORTANT GUIDELINES:
                 ],
                 max_tokens=800, # Increased for reliability in complex schema
                 temperature=0.0,
+                seed=42,
                 stream=False
             )
             return response.choices[0].message.content
@@ -253,8 +254,8 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a professional assistant. Output clean, formatted text only."},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.7,
-                max_tokens=1000 # Increased for comprehensive summaries
+                temperature=0.0,
+                seed=42
             )
             return response.choices[0].message.content
         except Exception as e:
