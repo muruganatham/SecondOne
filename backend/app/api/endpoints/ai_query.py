@@ -229,7 +229,7 @@ Generate SQL for: "{question}"
     
     # STEP 4: Synthesize Answer
     async def run_parallel_tasks():
-        task_answer = asyncio.to_thread(ai_service.synthesize_answer, question, generated_sql, data, model)
+        task_answer = asyncio.to_thread(ai_service.synthesize_answer, question, generated_sql, data, model, current_role_id)
         task_followups = asyncio.to_thread(ai_service.generate_follow_ups, question, generated_sql, data, None, current_role_id)
         return await asyncio.gather(task_answer, task_followups)
 

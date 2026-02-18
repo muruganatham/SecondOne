@@ -87,7 +87,7 @@ Respond in this EXACT JSON format (no markdown, no extra text):
 
 IMPORTANT GUIDELINES:
 - If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true.
-- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills (Professional/Soft), or Educational Information. Everything else is out-of-scope.
+- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills, Educational Info, or Recruitment/Interviews. Everything else is out-of-scope.
 - If data exists but in different table names, identify the correct tables (e.g., "assessments" might be in "user_assessments" or "assessment_results")
 - Consider table relationships and foreign keys to find indirect data
 - Look for enum mappings to understand status/role fields
@@ -188,21 +188,38 @@ IMPORTANT GUIDELINES:
             print(f"❌ AI Error: {e}")
             return f"Error: {str(e)}"
 
-    def synthesize_answer(self, user_question: str, sql_result: str, row_data: list, model: str = "deepseek-chat") -> str:
+    def synthesize_answer(self, user_question: str, sql_result: str, row_data: list, model: str = "deepseek-chat", role_id: int = None) -> str:
         """
-        Converts detailed data into a human-readable summary
+        Converts detailed data into a human-readable summary.
+        Now supports Role-Based Personas (e.g. Admin gets Executive Summaries).
         """
         client = self._get_client(model)
         if not client:
             return f"Data found: {row_data} (AI explanation unavailable: Missing API Key)"
 
+        # Default Persona
+        persona = "You are an Executive Assistant. Summarize the data for a non-technical user."
+        guidance = ""
+        
+        # Admin Persona (Production Level)
+        if role_id in [1, 2]:
+            persona = "You are a Senior Data Analyst & Placement Director."
+            guidance = """
+            [ADMIN SPECIFIC INSTRUCTIONS]:
+            1. **Strategic Tone**: Be direct, professional, and insight-driven.
+            2. **Recruitment Focus**: If the question is about "Cracking Interviews" or "Eligibility", provide a clear ASSESSMENT (High/Medium/Low chance) based on the data.
+            3. **Actionable Insights**: Don't just list data; suggest next steps (e.g., "Recommend focused training on DSA").
+            4. **Risk Flags**: Highlight low attendance or poor performance as "Risk Factors".
+            """
+
         prompt = f"""
         User Question: "{user_question}"
+        User Role ID: {role_id}
         
         Data Retrieved: 
         {str(row_data)}
         
-        Task: You are an Executive Assistant. Summarize the data for a non-technical user.
+        Task: {persona}
         
         PRODUCTION GUIDELINES:
         1. **Professional & Informative**: Start with the direct answer.
@@ -214,12 +231,16 @@ IMPORTANT GUIDELINES:
         4. **No Technical Jargon**: Do NOT mention "columns", "rows", or "table names".
         5. **Confidence**: Provide a complete summary of all retrieved data.
         6. **ANTI-HALLUCINATION**: ONLY answer based on the 'Data Retrieved'. If the data is empty or insufficient, explicitly state: 'I couldn't find sufficient data to answer this part of your question.' Do NOT make up numbers, names, or performance facts.
+        
+        {guidance}
 
         EXAMPLE OUTPUT:
-        "There are 4,021 active students across these departments:
-        - CSE: 1,200 students
-        - ECE: 800 students
-        - MECH: 600 students"
+        "**Assessment for Sanjay**:
+        Sanjay has a **High Probability** of clearing Zoho based on:
+        - **CGPA**: 8.5 (Strong)
+        - **Coding Score**: 92% (Excellent)
+        
+        **Recommendation**: Encourage him to focus on System Design."
         """
         
         try:
@@ -358,13 +379,14 @@ IMPORTANT GUIDELINES:
                 messages=[
                     {"role": "system", "content": """You are a specialized IT and Educational Consultant. 
 You are strictly limited to answering questions related to:
-1. Companies (e.g., tech companies, recruiting firms, industry leaders, hiring trends).
+1. Companies (e.g., tech companies like Zoho, recurring firms, industry leaders, hiring trends, company culture).
 2. Professional Skills (e.g., programming languages, soft skills, technical concepts, career development).
 3. Educational Information (e.g., academic advice, study topics, university/degree info, learning paths).
+4. Recruitment & Interviews (e.g., interview process, common questions, aptitude tests, technical rounds, preparation tips).
 
 [STRICT ENFORCEMENT]:
-If the user asks about ANYTHING else (e.g., sports, movies, politics, entertainment, general history, personal advice, biology), you MUST refuse to answer.
-Refusal message: "I am only authorized to provide general knowledge on Companies, Professional Skills, and Educational Information."
+If the user asks about ANYTHING unrelated to the above (e.g., sports, movies, politics, entertainment, general history, biology), you MUST refuse to answer.
+Refusal message: "I am only authorized to provide general knowledge on Companies, Professional Skills, Educational Information, and Recruitment."
 Do not answer the prohibited question or provide any context for it."""},
                     {"role": "user", "content": user_question},
                 ],
