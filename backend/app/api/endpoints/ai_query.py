@@ -69,9 +69,10 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
     # 1. Get Schema Context
     system_prompt = schema_context.get_system_prompt()
     
-    # 1.5 Role-Based Search Control
+    # STEP 1: Role-Based Search Control & Context Construction
     role_instruction = ""
     current_role_id = int(str(current_user.role or 7))
+    user_context_str = f"User ID: {current_user.id}, Role ID: {current_role_id}"
     
     if current_role_id in [1, 2]: # Admin
         role_instruction = get_admin_prompt(current_user.id)
@@ -90,6 +91,12 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
         section_name = "Your Section"
         
         if academics:
+            user_context_str += f"""
+            - College ID: {college_id}
+            - Department ID: {dept_id}
+            - Batch ID: {batch_id}
+            - Section ID: {section_id}
+            """
             if academics.college:
                 try: 
                     college_short_name = str(academics.college.college_short_name).lower()
@@ -114,8 +121,10 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
         dept_name = "Your Department"
-        if academics and academics.department:
-            dept_name = str(academics.department.department_name)
+        if academics:
+            user_context_str += f"\n- Department ID: {dept_id}"
+            if academics.department:
+                dept_name = str(academics.department.department_name)
         role_instruction = get_staff_prompt(dept_id, dept_name, current_user.id)
 
     elif current_role_id == 3: # College Admin
@@ -123,11 +132,13 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
         college_id = academics.college_id if academics else "Unknown"
         college_short_name = "admin"
         college_name = "Your Institution"
-        if academics and academics.college:
-             try:
-                 college_short_name = str(academics.college.college_short_name).lower()
-                 college_name = str(academics.college.college_name)
-             except: pass
+        if academics:
+            user_context_str += f"\n- College ID: {college_id}"
+            if academics.college:
+                 try:
+                     college_short_name = str(academics.college.college_short_name).lower()
+                     college_name = str(academics.college.college_name)
+                 except: pass
         role_instruction = get_college_admin_prompt(college_id, college_name, college_short_name, current_user.id)
 
     elif current_role_id == 6: # Content
@@ -137,8 +148,10 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
         academics = db.query(UserAcademics).filter(UserAcademics.user_id == current_user.id).first()
         dept_id = academics.department_id if academics else "Unknown"
         dept_name = "Your Department"
-        if academics and academics.department:
-            dept_name = str(academics.department.department_name)
+        if academics:
+            user_context_str += f"\n- Department ID: {dept_id}"
+            if academics.department:
+                dept_name = str(academics.department.department_name)
         role_instruction = get_trainer_prompt(dept_id, dept_name, current_user.id)
     
     else:
@@ -163,7 +176,8 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
         ai_service.analyze_question_with_schema, 
         question, 
         schema_summary, 
-        model
+        model,
+        user_context_str=user_context_str
     )
     
     # Step C: Get Detailed Schema ONLY for recommended tables
@@ -194,7 +208,7 @@ Use this analysis to guide your SQL generation.
 ### USER TASK
 Generate SQL for: "{question}"
 """
-    
+#extra 01
     # STEP 2: Generate SQL
     generated_sql = await run_in_threadpool(ai_service.generate_sql, final_system_prompt, question, model)
     

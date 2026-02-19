@@ -89,3 +89,473 @@ WHERE uce.user_id = 2370
   AND cam.section_id IS NULL
   AND uce.status = 1]
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+[2026-02-19 09:39:49.095703] QUESTION: Who am I?
+SQL: SELECT 
+    u.id AS user_id,
+    u.name,
+    u.email,
+    u.roll_no,
+    u.dob,
+    CASE u.gender
+        WHEN 1 THEN 'Male'
+        WHEN 2 THEN 'Female'
+        WHEN 3 THEN 'Other'
+        ELSE 'Not specified'
+    END AS gender,
+    CASE u.role
+        WHEN 1 THEN 'super admin'
+        WHEN 2 THEN 'admin'
+        WHEN 3 THEN 'college admin'
+        WHEN 4 THEN 'staff'
+        WHEN 5 THEN 'Trainer'
+        WHEN 6 THEN 'content'
+        WHEN 7 THEN 'student'
+        ELSE 'Unknown'
+    END AS role,
+    u.contact_number,
+    u.profile,
+    CASE u.status
+        WHEN 0 THEN 'inactive'
+        WHEN 1 THEN 'active'
+        ELSE 'Unknown'
+    END AS account_status,
+    c.college_name,
+    c.college_short_name,
+    d.department_name,
+    d.department_short_name,
+    b.batch_name,
+    s.section_name
+FROM users u
+LEFT JOIN user_academics ua ON u.id = ua.user_id
+LEFT JOIN colleges c ON ua.college_id = c.id
+LEFT JOIN departments d ON ua.department_id = d.id
+LEFT JOIN batches b ON ua.batch_id = b.id
+LEFT JOIN sections s ON
+ERROR: (pymysql.err.ProgrammingError) (1064, 'You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 41 column 24 near "" ')
+[SQL: SELECT 
+    u.id AS user_id,
+    u.name,
+    u.email,
+    u.roll_no,
+    u.dob,
+    CASE u.gender
+        WHEN 1 THEN 'Male'
+        WHEN 2 THEN 'Female'
+        WHEN 3 THEN 'Other'
+        ELSE 'Not specified'
+    END AS gender,
+    CASE u.role
+        WHEN 1 THEN 'super admin'
+        WHEN 2 THEN 'admin'
+        WHEN 3 THEN 'college admin'
+        WHEN 4 THEN 'staff'
+        WHEN 5 THEN 'Trainer'
+        WHEN 6 THEN 'content'
+        WHEN 7 THEN 'student'
+        ELSE 'Unknown'
+    END AS role,
+    u.contact_number,
+    u.profile,
+    CASE u.status
+        WHEN 0 THEN 'inactive'
+        WHEN 1 THEN 'active'
+        ELSE 'Unknown'
+    END AS account_status,
+    c.college_name,
+    c.college_short_name,
+    d.department_name,
+    d.department_short_name,
+    b.batch_name,
+    s.section_name
+FROM users u
+LEFT JOIN user_academics ua ON u.id = ua.user_id
+LEFT JOIN colleges c ON ua.college_id = c.id
+LEFT JOIN departments d ON ua.department_id = d.id
+LEFT JOIN batches b ON ua.batch_id = b.id
+LEFT JOIN sections s ON]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+[2026-02-19 09:48:48.021084] QUESTION: tell about me?
+SQL: SELECT 
+    u.name,
+    u.email,
+    u.roll_no,
+    u.dob,
+    u.gender,
+    u.role_id,
+    ua.college_id,
+    ua.department_id,
+    ua.batch_id,
+    ua.section_id,
+    c.name AS college_name,
+    d.name AS department_name,
+    b.name AS batch_name,
+    s.name AS section_name
+FROM 
+    users u
+JOIN 
+    user_academics ua ON u.id = ua.user_id
+LEFT JOIN 
+    colleges c ON ua.college_id = c.id
+LEFT JOIN 
+    departments d ON ua.department_id = d.id
+LEFT JOIN 
+    batches b ON ua.batch_id = b.id
+LEFT JOIN 
+    sections s ON ua.section_id = s.id
+WHERE 
+    u.id = 35;
+ERROR: (pymysql.err.OperationalError) (1054, "Unknown column 'u.role_id' in 'field list'")
+[SQL: SELECT 
+    u.name,
+    u.email,
+    u.roll_no,
+    u.dob,
+    u.gender,
+    u.role_id,
+    ua.college_id,
+    ua.department_id,
+    ua.batch_id,
+    ua.section_id,
+    c.name AS college_name,
+    d.name AS department_name,
+    b.name AS batch_name,
+    s.name AS section_name
+FROM 
+    users u
+JOIN 
+    user_academics ua ON u.id = ua.user_id
+LEFT JOIN 
+    colleges c ON ua.college_id = c.id
+LEFT JOIN 
+    departments d ON ua.department_id = d.id
+LEFT JOIN 
+    batches b ON ua.batch_id = b.id
+LEFT JOIN 
+    sections s ON ua.section_id = s.id
+WHERE 
+    u.id = 35]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+[2026-02-19 09:49:36.739388] QUESTION: who is muruganantham?
+SQL: Error: Connection error.
+ERROR: (pymysql.err.ProgrammingError) (1064, 'You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 1 column 5 near "Error: Connection error." ')
+[SQL: Error: Connection error.]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+[2026-02-19 10:32:56.990214] QUESTION: show me the course names?
+SQL: SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN c.type = '1' THEN 'Prepare'
+        WHEN c.type = '2' THEN 'Assessment'
+        WHEN c.type = '3' THEN 'Lab'
+        WHEN c.type = '4' THEN 'Event'
+        WHEN c.type = '5' THEN 'Drive'
+        ELSE 'Unknown'
+    END AS course_type_name,
+    'Direct Enrollment' AS enrollment_type
+FROM courses c
+INNER JOIN user_course_enrollments uce ON c.id = (
+    SELECT course_id 
+    FROM course_academic_maps cam 
+    WHERE cam.id = uce.course_allocation_id
+)
+WHERE uce.user_id = 35
+AND uce.status = '1'
+
+UNION
+
+-- Get course names through hierarchical allocations (college, department, batch, section)
+SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN c.type = '1' THEN 'Prepare'
+        WHEN c.type = '2' THEN 'Assessment'
+        WHEN c.type = '3' THEN 'Lab'
+        WHEN c.type = '4' THEN 'Event'
+        WHEN c.type = '5' THEN 'Drive'
+        ELSE 'Unknown'
+    END AS course_type_name,
+    'Hierarchical Allocation' AS enrollment_type
+FROM courses c
+INNER JOIN course_academic_maps cam ON c.id = cam.course_id
+WHERE cam.college_id = 4
+    AND cam.department_id = 3
+    AND cam.batch_id = 4
+    AND cam.section_id = 3
+    AND cam.status = '1'
+    AND cam.course_id NOT IN (
+        -- Exclude courses already captured in direct enrollments
+        SELECT DISTINCT c2.id
+        FROM courses c2
+        INNER JOIN user_course_enrollments uce2 ON c2.id = (
+            SELECT course_id 
+            FROM course_academic_maps cam2 
+            WHERE cam2.id = uce2.course_allocation_id
+        )
+        WHERE uce2.user_id = 35
+        AND uce2.status = '1'
+    )
+
+ORDER BY course_name;
+ERROR: (pymysql.err.OperationalError) (1105, "ON condition doesn't support subqueries yet")
+[SQL: SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN c.type = '1' THEN 'Prepare'
+        WHEN c.type = '2' THEN 'Assessment'
+        WHEN c.type = '3' THEN 'Lab'
+        WHEN c.type = '4' THEN 'Event'
+        WHEN c.type = '5' THEN 'Drive'
+        ELSE 'Unknown'
+    END AS course_type_name,
+    'Direct Enrollment' AS enrollment_type
+FROM courses c
+INNER JOIN user_course_enrollments uce ON c.id = (
+    SELECT course_id 
+    FROM course_academic_maps cam 
+    WHERE cam.id = uce.course_allocation_id
+)
+WHERE uce.user_id = 35
+AND uce.status = '1'
+
+UNION
+
+-- Get course names through hierarchical allocations (college, department, batch, section)
+SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN c.type = '1' THEN 'Prepare'
+        WHEN c.type = '2' THEN 'Assessment'
+        WHEN c.type = '3' THEN 'Lab'
+        WHEN c.type = '4' THEN 'Event'
+        WHEN c.type = '5' THEN 'Drive'
+        ELSE 'Unknown'
+    END AS course_type_name,
+    'Hierarchical Allocation' AS enrollment_type
+FROM courses c
+INNER JOIN course_academic_maps cam ON c.id = cam.course_id
+WHERE cam.college_id = 4
+    AND cam.department_id = 3
+    AND cam.batch_id = 4
+    AND cam.section_id = 3
+    AND cam.status = '1'
+    AND cam.course_id NOT IN (
+        -- Exclude courses already captured in direct enrollments
+        SELECT DISTINCT c2.id
+        FROM courses c2
+        INNER JOIN user_course_enrollments uce2 ON c2.id = (
+            SELECT course_id 
+            FROM course_academic_maps cam2 
+            WHERE cam2.id = uce2.course_allocation_id
+        )
+        WHERE uce2.user_id = 35
+        AND uce2.status = '1'
+    )
+
+ORDER BY course_name]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+[2026-02-19 10:34:08.831035] QUESTION: show me the course names?
+SQL: SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN uce.id IS NOT NULL THEN 'Direct Enrollment'
+        WHEN cam.id IS NOT NULL THEN 'Hierarchical Allocation'
+    END AS access_type
+FROM courses c
+LEFT JOIN user_course_enrollments uce ON uce.course_allocation_id IS NOT NULL 
+    AND uce.user_id = 35 
+    AND uce.status = 1
+    AND EXISTS (
+        SELECT 1 FROM course_academic_maps cam2 
+        WHERE cam2.id = uce.course_allocation_id 
+        AND cam2.course_id = c.id
+    )
+LEFT JOIN course_academic_maps cam ON cam.course_id = c.id 
+    AND cam.college_id = 4 
+    AND cam.department_id = 3 
+    AND cam.batch_id = 4 
+    AND cam.section_id = 3 
+    AND cam.status = 1
+WHERE (uce.id IS NOT NULL OR cam.id IS NOT NULL)
+    AND c.status = 1
+ORDER BY c.course_name;
+ERROR: (pymysql.err.OperationalError) (1105, "ON condition doesn't support subqueries yet")
+[SQL: SELECT DISTINCT 
+    c.id AS course_id,
+    c.course_name,
+    c.course_short_name,
+    c.type AS course_type,
+    CASE 
+        WHEN uce.id IS NOT NULL THEN 'Direct Enrollment'
+        WHEN cam.id IS NOT NULL THEN 'Hierarchical Allocation'
+    END AS access_type
+FROM courses c
+LEFT JOIN user_course_enrollments uce ON uce.course_allocation_id IS NOT NULL 
+    AND uce.user_id = 35 
+    AND uce.status = 1
+    AND EXISTS (
+        SELECT 1 FROM course_academic_maps cam2 
+        WHERE cam2.id = uce.course_allocation_id 
+        AND cam2.course_id = c.id
+    )
+LEFT JOIN course_academic_maps cam ON cam.course_id = c.id 
+    AND cam.college_id = 4 
+    AND cam.department_id = 3 
+    AND cam.batch_id = 4 
+    AND cam.section_id = 3 
+    AND cam.status = 1
+WHERE (uce.id IS NOT NULL OR cam.id IS NOT NULL)
+    AND c.status = 1
+ORDER BY c.course_name]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+[2026-02-19 10:54:18.276861] QUESTION: Show my current rank and average score for all my courses, and how do I compare to others in my batch?
+SQL: SELECT 
+    cws.course_id,
+    cam.course_name,
+    cws.progress,
+    cws.score AS your_score,
+    ROUND(AVG(cws2.score) OVER (PARTITION BY cws.course_id), 2) AS batch_avg_score,
+    cws.rank AS your_rank_in_course,
+    COUNT(DISTINCT cws2.user_id) AS total_students_in_batch_course,
+    ROUND((cws.score - AVG(cws2.score) OVER (PARTITION BY cws.course_id)) / 
+          NULLIF(AVG(cws2.score) OVER (PARTITION BY cws.course_id), 0) * 100, 2) AS percent_above_below_avg,
+    CASE 
+        WHEN cws.score > AVG(cws2.score) OVER (PARTITION BY cws.course_id) THEN 'Above Average'
+        WHEN cws.score < AVG(cws2.score) OVER (PARTITION BY cws.course_id) THEN 'Below Average'
+        ELSE 'At Average'
+    END AS performance_status
+FROM 
+    course_wise_se
+ERROR: Table 'course_wise_se' doesn't exist in the database.
+
+[2026-02-19 10:58:19.705897] QUESTION: Show my current rank and average score for all my courses, and how do I compare to others in my batch?
+SQL: SELECT 
+    cws.course_id,
+    cam.course_name,
+    cws.score AS your_score,
+    cws.progress AS your_progress_percentage,
+    cws.rank AS your_rank_in_course,
+    -- Calculate batch average score for this course
+    (SELECT AVG(score) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND score IS NOT NULL) AS batch_average_score,
+    -- Calculate total students in your batch for this course
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3) AS total_students_in_batch,
+    -- Calculate how many students you're ahead of
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND
+ERROR: (pymysql.err.ProgrammingError) (1064, 'You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 26 column 9 near "" ')
+[SQL: SELECT 
+    cws.course_id,
+    cam.course_name,
+    cws.score AS your_score,
+    cws.progress AS your_progress_percentage,
+    cws.rank AS your_rank_in_course,
+    -- Calculate batch average score for this course
+    (SELECT AVG(score) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND score IS NOT NULL) AS batch_average_score,
+    -- Calculate total students in your batch for this course
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3) AS total_students_in_batch,
+    -- Calculate how many students you're ahead of
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+[2026-02-19 11:25:35.410493] QUESTION: Show my current rank and average score for all my courses, and how do I compare to others in my batch?
+SQL: SELECT 
+    cws.course_id,
+    cam.course_name,
+    cws.score AS your_score,
+    cws.progress AS your_progress_percentage,
+    cws.rank AS your_rank_in_course,
+    -- Calculate batch average score for this course
+    (SELECT AVG(score) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND score IS NOT NULL) AS batch_average_score,
+    -- Calculate total students in your batch for this course
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3) AS total_students_in_batch,
+    -- Calculate how many students you're ahead of
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND
+ERROR: (pymysql.err.ProgrammingError) (1064, 'You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 26 column 9 near "" ')
+[SQL: SELECT 
+    cws.course_id,
+    cam.course_name,
+    cws.score AS your_score,
+    cws.progress AS your_progress_percentage,
+    cws.rank AS your_rank_in_course,
+    -- Calculate batch average score for this course
+    (SELECT AVG(score) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND score IS NOT NULL) AS batch_average_score,
+    -- Calculate total students in your batch for this course
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3) AS total_students_in_batch,
+    -- Calculate how many students you're ahead of
+    (SELECT COUNT(DISTINCT user_id) 
+     FROM course_wise_segregations 
+     WHERE course_id = cws.course_id 
+     AND batch_id = 4 
+     AND section_id = 3
+     AND]
+(Background on this error at: https://sqlalche.me/e/20/f405)

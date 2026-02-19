@@ -10,38 +10,24 @@ class AIService:
     def __init__(self):
         # Initialize DeepSeek client
         self.deepseek_api_key = settings.DEEPSEEK_API_KEY or os.getenv("DEEPSEEK_API_KEY")
-        self.deepseek_base_url = "https://api.deepseek.com"
-        
-        # Initialize OpenAI client
-        self.openai_api_key = settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY")
         
         print(f"DEBUG: DeepSeek API Key: {self.deepseek_api_key[:20]}..." if self.deepseek_api_key else "No DeepSeek key")
-        print(f"DEBUG: OpenAI API Key: {self.openai_api_key[:20]}..." if self.openai_api_key else "No OpenAI key")
 
         # Create DeepSeek client
         if self.deepseek_api_key:
             self.deepseek_client = OpenAI(
                 api_key=self.deepseek_api_key,
-                base_url=self.deepseek_base_url
+                base_url="https://api.deepseek.com"
             )
         else:
             self.deepseek_client = None
             print("⚠️ WARNING: DEEPSEEK_API_KEY is not set.")
         
-        # OpenAI client disabled (as requested)
-        self.openai_client = None
-        # if self.openai_api_key:
-        #     self.openai_client = OpenAI(
-        #         api_key=self.openai_api_key
-        #     )
-        # else:
-        #     self.openai_client = None
-        #     print("⚠️ WARNING: OPENAI_API_KEY is not set.")
-        
-        # For backward compatibility - Always use DeepSeek
+        # Always use DeepSeek
         self.client = self.deepseek_client
         
-    def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat") -> dict:
+    #second update
+    def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat", user_context_str: str = "") -> dict:
         """
         Deep analysis of the question with FULL schema context.
         The AI analyzes:
@@ -64,48 +50,46 @@ class AIService:
             return {"can_answer": True, "error": "AI client not available, proceeding anyway"}
         
         # Enhanced analysis prompt with FULL schema context
-        analysis_prompt = f"""You are an expert database analyst. Your job is to help answer the user's question by identifying relevant tables and query strategies.
+        analysis_prompt = f"""You are an expert database analyst. Your job is to help answer the user's question by identifying the correct tables and query strategies.
 
-COMPLETE DATABASE SCHEMA:
+BIRD'S-EYE VIEW OF DATABASE:
 {schema_context}
 
 USER QUESTION: "{user_question}"
 
-Your task:
-1. Understand what data the user is asking for
-2. Identify which tables and relationships can provide this data
-3. Suggest the best query approach
-4. Be OPTIMISTIC - if there's any way to answer the question with available data, identify it
+USER CONTEXT:
+{user_context_str}
+
+YOUR TASK:
+1. Identify EVERYTHING the user is asking for.
+2. Search the "AVAILABLE TABLES" list for ANY table that could contain this data.
+3. CRITICAL: Data might be stored:
+   - DIRECTLY (e.g. user_id is in the table).
+   - HIERARCHICALLY (e.g. table is linked to a College, Dept, Batch, or Section mapping).
+   - If one table (like user_course_enrollments) is empty, a mapping table (like course_academic_maps) almost certainly contains the data.
+4. RECOMMENDED TABLES: List ALL tables needed for JOINs to answer the question accurately within the user's scope.
+5. BE OPTIMISTIC: If it sounds like data that should be in an LMS, it likely is. Find the closest match.
 
 Respond in this EXACT JSON format (no markdown, no extra text):
 {{
     "can_answer": true/false,
     "query_type": "simple|complex|general_knowledge",
-    "recommended_tables": ["table1", "table2"],
-    "suggested_sql_approach": "brief description of how to construct the query",
-    "reasoning": "very brief explanation (max 1 sentence)"
+    "recommended_tables": ["table1", "table2", ...],
+    "suggested_sql_approach": "concise description of JOINs and filters",
+    "reasoning": "brief explanation"
 }}
 
-IMPORTANT GUIDELINES:
-- **STRICT TABLE LIMIT**: You MUST ONLY recommend tables that are listed in the 'COMPLETE DATABASE SCHEMA' or 'AVAILABLE TABLES AND DESCRIPTIONS' provided above.
-- **NO HALLUCinations**: NEVER suggest a table name not explicitly provided (e.g., use 'standard_qb_courses' instead of 'marketplace_courses' if that's what is listed).
-- **NO PLACEHOLDERS**: Suggest literal values for filters (e.g., 'user_id=35' instead of 'user_id={{user_id}}'). NEVER use curly braces or colons for parameters.
-- If the question is about general knowledge (not database-related), set query_type to "general_knowledge" and can_answer to true.
-- CATEGORIZATION: General knowledge is ONLY allowed if it relates to: Companies, Skills, Educational Info, or Career Advice.
-- **EXCEPTION**: Questions like "Who am I?" or "My Profile" are DATABASE queries (query_type="simple"), NOT general knowledge.
-- If data exists but in different table names, find the closest match in the context.
-- Be creative in finding data within the PROVIDED schema but stay bounded by it.
-- College-specific tables are prefixed with college codes (e.g., srec_2025_2_coding_result)."""
+IMPORTANT: Only recommend tables that exist in the 'BIRD'S-EYE VIEW' provided above."""
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
                     {"role": "system", "content": "You are a database schema expert. Analyze questions deeply and respond with valid JSON only."},
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=500, # Increased for robust JSON analysis
+                max_tokens=1500, # Increased per user request for complex queries
                 temperature=0.1,
                 stream=False
             )
@@ -142,7 +126,7 @@ IMPORTANT GUIDELINES:
             print(f"   - Can Answer: {analysis.get('can_answer', 'unknown')}")
             print(f"   - Query Type: {analysis.get('query_type', 'unknown')}")
             print(f"   - Recommended Tables: {analysis.get('recommended_tables', [])}")
-            print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')[:100]}...")
+            print(f"   - SQL Approach: {analysis.get('suggested_sql_approach', 'N/A')}")
             
             return {
                 "can_answer": analysis.get("can_answer", True),
@@ -174,14 +158,14 @@ IMPORTANT GUIDELINES:
             return f"Error: API Key for {model} is missing."
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
                     {"role": "system", "content": f"{system_prompt}"},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=300, # Increased for complex schema queries
+                max_tokens=1200, # Increased per user request for complex SQL
                 temperature=0.0,
                 seed=42,
                 stream=False
@@ -247,7 +231,7 @@ IMPORTANT GUIDELINES:
         """
         
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
@@ -315,8 +299,9 @@ IMPORTANT GUIDELINES:
         """
         
         try:
+            model_name = "deepseek-chat"
             response = self.client.chat.completions.create(
-                model="deepseek-chat",
+                model=model_name,
                 messages=[
                     {"role": "system", "content": "You are a helpful data analyst assistant. Generate only the questions, one per line."},
                     {"role": "user", "content": prompt},
@@ -346,11 +331,8 @@ IMPORTANT GUIDELINES:
 
 
     def _get_client(self, model: str):
-        """Get the appropriate client based on model name"""
-        if "gpt" in model.lower():
-            return self.openai_client
-        else:
-            return self.deepseek_client
+        """Get the DeepSeek client (OpenAI is removed)"""
+        return self.deepseek_client
 
     def is_destructive_query(self, sql: str) -> bool:
         """
@@ -379,7 +361,7 @@ IMPORTANT GUIDELINES:
             return "I cannot answer this question as the AI service is unavailable."
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[

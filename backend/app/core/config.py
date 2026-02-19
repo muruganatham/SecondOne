@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     # API Keys (Required in production, no defaults)
     GROQ_API_KEY: Optional[str] = None
     DEEPSEEK_API_KEY: Optional[str] = None
-    OPENAI_API_KEY: Optional[str] = None
 
     # JWT Configuration
     SECRET_KEY: str = "temporary-secret-key-change-this-in-env"
