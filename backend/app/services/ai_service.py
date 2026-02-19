@@ -254,7 +254,6 @@ IMPORTANT GUIDELINES:
                     {"role": "system", "content": "You are a professional assistant. Output clean, formatted text only."},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.7,
                 max_tokens=1000, # Increased for comprehensive summaries
                 temperature=0.0,
                 # max_tokens=1000, # Increased for comprehensive summaries
