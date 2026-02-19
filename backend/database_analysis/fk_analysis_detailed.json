@@ -1,0 +1,2726 @@
+{
+  "total_tables": 163,
+  "total_existing_fks": 87,
+  "missing_fk_candidates": 331,
+  "orphan_columns": 57,
+  "candidates": [
+    {
+      "table": "2025_submission_tracks",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "2026_submission_tracks",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "a_i_high_lights",
+      "column": "course_id",
+      "referenced_table": "courses",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_pdf_material_banks",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_qb_coding_validations",
+      "column": "course_id",
+      "referenced_table": "courses",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_qb_coding_validations",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_qb_coding_validations",
+      "column": "l_id",
+      "referenced_table": "languages",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_qb_mcqs",
+      "column": "l_id",
+      "referenced_table": "languages",
+      "column_type": "bigint",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "academic_study_material_banks",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "admin_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "audits",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "b2c_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "ciet_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "course_academic_maps",
+      "column": "title_id",
+      "referenced_table": "titles",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "course_academic_maps",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "course_wise_segregations",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "demolab_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "dotlab_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "exception_reports",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "exception_reports",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "exception_reports",
+      "column": "course_id",
+      "referenced_table": "courses",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "exception_reports",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "jpc_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kclas_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "kits_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "languages",
+      "column": "language_id",
+      "referenced_table": "languages",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_batches",
+      "column": "link_id",
+      "referenced_table": "link_tests",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_colleges",
+      "column": "link_id",
+      "referenced_table": "link_tests",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_departments",
+      "column": "link_id",
+      "referenced_table": "link_tests",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_sections",
+      "column": "link_id",
+      "referenced_table": "link_tests",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_test_users",
+      "column": "batch_id",
+      "referenced_table": "batches",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_test_users",
+      "column": "section_id",
+      "referenced_table": "sections",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "link_tests",
+      "column": "test_id",
+      "referenced_table": "tests",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mcet_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "mec_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "niet_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "nit_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "otps",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "varchar(255)",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "pdf_banks",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "sessions",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skacas_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skasc_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skcet_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "skct_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2025_2_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "srec_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "staff_trainer_feedback",
+      "column": "course_id",
+      "referenced_table": "courses",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "standard_qb_coding_validations",
+      "column": "course_id",
+      "referenced_table": "courses",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "standard_qb_coding_validations",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "standard_qb_coding_validations",
+      "column": "l_id",
+      "referenced_table": "languages",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "standard_qb_mcqs",
+      "column": "l_id",
+      "referenced_table": "languages",
+      "column_type": "bigint",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "study_material_banks",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "telescope_entries",
+      "column": "batch_id",
+      "referenced_table": "batches",
+      "column_type": "char(36)",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "tep_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_coding_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_coding_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_coding_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_coding_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_mcq_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_mcq_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_mcq_result",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_mcq_result",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_test_data",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_test_data",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_test_data",
+      "column": "topic_test_id",
+      "referenced_table": "tests",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "uit_2026_1_test_data",
+      "column": "module_id",
+      "referenced_table": "test_modules",
+      "column_type": "int unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "user_course_enrollments",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "video_banks",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "viva_result",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "viva_result",
+      "column": "course_allocation_id",
+      "referenced_table": "course_academic_maps",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "viva_result",
+      "column": "topic_id",
+      "referenced_table": "topics",
+      "column_type": "int",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_college_stats",
+      "column": "college_id",
+      "referenced_table": "colleges",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_student_details",
+      "column": "user_id",
+      "referenced_table": "users",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_student_details",
+      "column": "college_id",
+      "referenced_table": "colleges",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_student_details",
+      "column": "department_id",
+      "referenced_table": "departments",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_student_details",
+      "column": "batch_id",
+      "referenced_table": "batches",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    },
+    {
+      "table": "vw_student_details",
+      "column": "section_id",
+      "referenced_table": "sections",
+      "column_type": "bigint unsigned",
+      "confidence": "pattern-match"
+    }
+  ],
+  "orphans": [
+    {
+      "table": "academic_pdf_material_banks",
+      "column": "subject_id",
+      "referenced_table": "subjects",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "academic_qb_coding_validations",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "academic_study_material_banks",
+      "column": "subject_id",
+      "referenced_table": "subjects",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "admin_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "admin_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "b2c_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "b2c_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "ciet_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "ciet_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "demolab_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "demolab_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "demolab_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "demolab_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "dotlab_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "dotlab_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "dotlab_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "dotlab_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "jpc_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "jpc_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "kclas_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "kclas_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "kits_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "kits_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "link_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "link_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mcet_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mcet_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mcet_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mcet_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mec_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "mec_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "niet_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "niet_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "nit_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "nit_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "pdf_banks",
+      "column": "subject_id",
+      "referenced_table": "subjects",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "practice_question_maps",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skacas_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skacas_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skasc_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skasc_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skcet_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skcet_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skct_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "skct_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "srec_2025_2_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "srec_2025_2_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "srec_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "srec_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "standard_qb_coding_validations",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "study_material_banks",
+      "column": "subject_id",
+      "referenced_table": "subjects",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "tep_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "tep_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "test_question_maps",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "uit_2026_1_coding_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "int unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "uit_2026_1_mcq_result",
+      "column": "question_id",
+      "referenced_table": "questions",
+      "column_type": "bigint unsigned",
+      "reason": "Referenced table does not exist"
+    },
+    {
+      "table": "video_banks",
+      "column": "subject_id",
+      "referenced_table": "subjects",
+      "column_type": "int",
+      "reason": "Referenced table does not exist"
+    }
+  ]
+}
