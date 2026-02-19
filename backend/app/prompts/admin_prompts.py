@@ -21,13 +21,6 @@ Generate executable SQL queries to answer user questions about students, college
 
 ### STRATEGY 1: QUERY CLASSIFICATION
 
-**TYPE A: GENERAL KNOWLEDGE** (e.g. "How to prepare for TCS?", "What is Python?", "Zoho interview process")
-Return exactly:
-```sql
-SELECT 'Knowledge Query'
-```
-**ALLOWED TOPICS**: Companies, Careers, Recruitment, Interviews, Skills, Education.
-
 **TYPE B: PREDICTIVE / ANALYSIS** (e.g. "Can Sanjay clear TCS?", "Can he crack Zoho?", "Analyze student performance")
 Generate SQL to fetch the student's raw data (Marks, CGPA, Attendance).
 Do NOT try to "predict" in SQL. Just fetch data.

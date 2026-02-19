@@ -215,7 +215,8 @@ Generate SQL for: "{question}"
             generated_sql = second_match.group(1)
 
     # Intercept Knowledge/Security
-    if "Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql:
+    # (Skip for Admins - they process everything as SQL)
+    if current_role_id not in [1, 2] and ("Knowledge Query" in generated_sql or "SELECT 'Knowledge Query'" in generated_sql):
         human_answer = await run_in_threadpool(ai_service.answer_general_question, question, model)
         return {"answer": human_answer, "sql": None, "data": [], "follow_ups": []}
 
