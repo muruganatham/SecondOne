@@ -15,14 +15,19 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify password using bcrypt hashing. No plaintext fallback for security."""
     try:
         # Handle PHP/Laravel $2y$ bcrypt format by converting to $2b$
         if hashed_password and hashed_password.startswith('$2y$'):
             hashed_password = hashed_password.replace('$2y$', '$2b$', 1)
         return pwd_context.verify(plain_password, hashed_password)
-    except Exception:
-        # Fallback for plain text passwords in dev/legacy
-        return plain_password == str(hashed_password)
+    except Exception as e:
+        # ✅ SECURITY: Deny access on any verification failure
+        # Don't fallback to plaintext - always require proper bcrypt hashes
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Password verification failed: {type(e).__name__}")
+        return False
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)

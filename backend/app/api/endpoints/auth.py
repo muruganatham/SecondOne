@@ -27,27 +27,37 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Streak Logic
+    # Streak Logic with Transaction Management
     now = datetime.utcnow()
     today = now.date()
     
-    if user.last_active_date:
-        last_date = user.last_active_date.date()
-        diff = (today - last_date).days
-        
-        if diff == 1:
-            # Consecutive day, increment streak
-            user.active_streak = (user.active_streak or 0) + 1
-        elif diff > 1:
-            # Broken streak, reset to 1
+    try:
+        if user.last_active_date:
+            last_date = user.last_active_date.date()
+            diff = (today - last_date).days
+            
+            if diff == 1:
+                # Consecutive day, increment streak
+                user.active_streak = (user.active_streak or 0) + 1
+            elif diff > 1:
+                # Broken streak, reset to 1
+                user.active_streak = 1
+            # If diff == 0, same day, do nothing (keep current streak)
+        else:
+            # First time login or no history
             user.active_streak = 1
-        # If diff == 0, same day, do nothing (keep current streak)
-    else:
-        # First time login or no history
-        user.active_streak = 1
-        
-    user.last_active_date = now
-    db.commit()
+            
+        user.last_active_date = now
+        # ✅ Explicit commit with error handling
+        db.commit()
+    except Exception as e:
+        # ✅ Rollback on any error to prevent data inconsistency
+        db.rollback()
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to update user streak for {user.email}: {str(e)}")
+        # Continue with login even if streak update fails - authentication is more important
+        pass
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(

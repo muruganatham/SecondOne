@@ -128,6 +128,7 @@ class SQLExecutor:
     def execute_query(self, sql: str):
         """
         Executes raw SQL and returns dict results.
+        ✅ With explicit transaction management (commit/rollback)
         """
         # Scrub the SQL first
         clean_sql = self.scrub_sql(sql)
@@ -162,9 +163,13 @@ class SQLExecutor:
             # Form list of dicts
             data = [dict(zip(keys, row)) for row in rows]
             
+            # ✅ Explicit commit (idempotent for SELECT queries)
+            db.commit()
             return {"data": data, "count": len(data), "sql": clean_sql}
             
         except Exception as e:
+            # ✅ Explicit rollback on error (prevents connection leaks)
+            db.rollback()
             error_msg = str(e)
             
             # Enhanced error message with suggestions
@@ -183,6 +188,7 @@ class SQLExecutor:
             
             return {"error": error_msg, "sql": clean_sql}
         finally:
+            # ✅ Always close session to prevent resource leaks
             db.close()
     
     def get_available_tables(self) -> list:

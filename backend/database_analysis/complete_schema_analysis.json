@@ -36795,6 +36795,12 @@
           "REFERENCED_TABLE_NAME": "users",
           "REFERENCED_COLUMN_NAME": "id",
           "CONSTRAINT_NAME": "user_course_enrollments_user_id_foreign"
+        },
+        {
+          "COLUMN_NAME": "course_allocation_id",
+          "REFERENCED_TABLE_NAME": "course_academic_maps",
+          "REFERENCED_COLUMN_NAME": "id",
+          "CONSTRAINT_NAME": "user_course_enrollments_course_allocation_id_foreign"
         }
       ],
       "enum_fields": {
