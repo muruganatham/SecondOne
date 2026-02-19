@@ -6,8 +6,8 @@ import json
 import os
 from datetime import datetime
 from app.models.enums import * 
+from app.core.sql_validator import sql_validator
 from app.services.sql_executor import sql_executor
-
 class SchemaContext:
     def __init__(self):
         # Paths
@@ -16,41 +16,29 @@ class SchemaContext:
         self.complete_schema_path = os.path.join(self.base_path, "database_analysis", "complete_schema_analysis.json")
         
         # Cache
-        self.context_string = ""
-        self.extracted_relationships = []
-        self.available_tables = set()
         self.schema_data = {}
+        self.mappings = {}
+        self.available_tables = set()
+        self.context_string = "" # Basic rules
         self.load_context()
 
     def load_context(self):
-        """Loads and formats the schema context for the AI, filtering for EXISTING tables only"""
+        """Loads the schema metrics into memory but NOT the full string."""
         try:
-            # 1. Get Live Tables from DB
+            # 1. Get Live Tables
             self.available_tables = set(sql_executor.get_available_tables())
-            print(f"✅ Schema Context: Found {len(self.available_tables)} available tables in DB")
+            print(f"✅ Schema Context: Found {len(self.available_tables)} tables")
 
-            # 2. Load Mapping and Schema Meta
+            # 2. Load JSONs
             with open(self.manual_mappings_path, 'r', encoding='utf-8') as f:
                 self.mappings = json.load(f)
                 
             with open(self.complete_schema_path, 'r', encoding='utf-8') as f:
                 self.schema_data = json.load(f)
-            
-            # 3. Pre-extract relationships for speed
-            self.extracted_relationships = []
-            for t_name, details in self.schema_data['tables'].items():
-                if t_name in self.available_tables:
-                    for fk in details.get('foreign_keys', []):
-                        self.extracted_relationships.append({
-                            'TABLE_NAME': t_name,
-                            'COLUMN_NAME': fk['COLUMN_NAME'],
-                            'REFERENCED_TABLE_NAME': fk['REFERENCED_TABLE_NAME'],
-                            'REFERENCED_COLUMN_NAME': fk['REFERENCED_COLUMN_NAME']
-                        })
 
-            # 4. Set default system prompt (Rules Only, no tables by default for token efficiency)
-            self.context_string = self.build_context_string([])
-            print("✅ AI Schema Context Manager Initialized (Two-Step Optimization Active)")
+            # 3. Base Rules Prompt (No Tables)
+            self.context_string = self.build_rules_prompt()
+            print("✅ AI Schema Context Manager Initialized (Smart Retrieval Mode)")
             
         except Exception as e:
             print(f"❌ Error loading schema context: {e}")
@@ -61,103 +49,95 @@ class SchemaContext:
 
     def get_schema_summary(self) -> str:
         """
-        Returns a summary of tables for Phase 1 Analysis.
+        Returns a LIGHTWEIGHT summary of all tables for the 'Analysis' phase.
+        Format: - table_name (Rows: N) [Description if available]
         """
         lines = []
-        lines.append("AVAILABLE TABLES AND DESCRIPTIONS:")
+        lines.append("AVAILABLE TABLES & METRICS:")
         
-        # Identity
-        lines.append("- users: Profile, name, email and roles (Student role_id=7)")
-        lines.append("- user_academics: Links students to college_id, department_id, batch_id, section_id")
-        lines.append("- colleges, departments, batches, sections: Institutional hierarchy")
+        # Logic to group or list tables
+        # for t_name, details in self.schema_data['tables'].items():
+        #     if t_name in self.available_tables:
+        #         row_count = details['schema'].get('row_count', 0)
+        #         lines.append(f"- {t_name} (Rows: {row_count})")
         
-        # LMS & Progress
-        lines.append("- courses: Master list of all academic and local courses")
-        lines.append("- user_course_enrollments: Direct mapping of students to courses")
-        lines.append("- course_academic_maps: Group-based course allocations to batches/sections")
-        lines.append("- course_wise_segregations: PRIMARY table for student PROGRESS, scores, and rankings")
-        lines.append("- topics, sub_topics: Course content hierarchy")
-        lines.append("- academic_study_material_banks, video_banks: PDF and Video lesson files")
+        # Use our curated category list for better semantic understanding
+        categories = {
+            "Identity": ["users", "user_academics", "colleges", "departments", "batches", "sections"],
+            "LMS": ["courses", "user_course_enrollments", "course_academic_maps", "course_wise_segregations", "topics", "sub_topics"],
+            "Assessments": ["tests", "user_assessments", "submission_tracks", "2025_submission_tracks", "2026_submission_tracks"],
+            "Questions": ["academic_qb_codings", "academic_qb_mcqs", "standard_qb_codings", "standard_qb_mcqs"],
+            "Results": ["[college]_coding_result", "[college]_mcq_result"], # Generic placeholders
+            "Engagement": ["certificates", "discussions", "staff_trainer_feedback"]
+        }
         
-        # Marketplace & Global Courses
-        lines.append("- course_academic_maps: Marketplace courses are those where college_id, department_id, batch_id, and section_id are ALL NULL.")
-        lines.append("- standard_qb_courses: Catalog of standard/standard question bank courses")
-        lines.append("- standard_qb_topics: Topics for standard courses")
-        lines.append("- package_billings: Student purchase history and marketplace orders")
+        for category, tables in categories.items():
+            lines.append(f"\n[{category}]:")
+            for t in tables:
+                if "[" in t: # Dynamic placeholder
+                     lines.append(f"- {t}: College-specific results (e.g., srec_2025_2_coding_result)")
+                elif t in self.available_tables:
+                     details = self.schema_data['tables'].get(t, {})
+                     rows = details.get('schema', {}).get('row_count', '?')
+                     lines.append(f"- {t} (Rows: {rows})")
         
-        # Assessments
-        lines.append("- tests, test_modules: Exam metadata and definitions")
-        lines.append("- standard_qb_codings, academic_qb_codings: Coding question pools")
-        lines.append("- standard_qb_mcqs, academic_qb_mcqs: MCQ question pools")
-        lines.append("- user_assessments: Record of test attempts and solved status (DO NOT CONFUSE WITH PROGRESS)")
-        lines.append("- submission_tracks, 2025_submission_tracks: Student submitted code content and execution errors")
-        
-        # Results
-        lines.append("- admin_coding_result, admin_mcq_result: Global student performance marks")
-        lines.append("- [college_short_name]_coding_result: Local student result (e.g. srec_2025_2_coding_result)")
-        lines.append("- placed_students: Placement company name, packages and status")
-        
-        # Engagement
-        lines.append("- verify_certificates: List of earned student certificates")
-        lines.append("- academic_qb_projects: Assigned student projects and tasks")
-        lines.append("- course_staff_trainer_allocations: PRIMARY table for trainer/staff assignments to batches/sections")
-        lines.append("- staff_trainer_feedback: Student ratings for trainers")
-        lines.append("- discussions: Community Q&A forum posts")
-        
+        # Add any other large tables not in categories
+        lines.append("\n[Others]:")
+        known = set(t for cat in categories.values() for t in cat)
+        for t_name in sorted(self.available_tables):
+            if t_name not in known and "failed" not in t_name and "migration" not in t_name:
+                lines.append(f"- {t_name}")
+
         return "\n".join(lines)
 
     def get_detailed_schema(self, table_names: list) -> str:
         """
-        Generates detailed schema ONLY for requested tables to save tokens.
+        Extracts FULL JSON schema ONLY for the requested tables.
+        This provides the AI with deep context for the chosen tables.
         """
-        # Always include identity/hierarchy tables for student-centric JOINs
-        mandatory = {
-            "users", "user_academics", "colleges", "departments", "batches", "sections",
-            "course_academic_maps", "user_course_enrollments", "course_wise_segregations"
-        }
-        target_tables = set(table_names).union(mandatory)
-        return self.build_context_string(list(target_tables))
+        # 1. Expand wildcards (e.g., 'srec_2025_2_coding_result')
+        real_tables = set()
+        for name in table_names:
+            if name in self.available_tables:
+                real_tables.add(name)
+            else:
+                # fuzzy match?
+                pass
+        
+        # 2. Always add Core Tables
+        mandatory = {"users", "user_academics", "colleges", "departments", "course_wise_segregations", "courses"}
+        real_tables.update(mandatory.intersection(self.available_tables))
+        
+        # 3. Build JSON Dump for these tables
+        extracted_schema = {"tables": {}}
+        for t in real_tables:
+            if t in self.schema_data['tables']:
+                extracted_schema['tables'][t] = self.schema_data['tables'][t]
+                
+        # 4. Add Mappings for these tables
+        extracted_mappings = {}
+        for t in real_tables:
+            if t in self.mappings:
+                extracted_mappings[t] = self.mappings[t]
+                
+        # 5. Construct Prompt
+        lines = []
+        lines.append("### SELECTED TABLE SCHEMAS (FULL DEFINITION):")
+        lines.append(json.dumps(extracted_schema, indent=2))
+        
+        lines.append("\n### RELEVANT ENUM MAPPINGS:")
+        lines.append(json.dumps(extracted_mappings, indent=2))
+        
+        return "\n".join(lines)
 
-    def build_context_string(self, table_list: list) -> str:
-        """Constructs the high-accuracy prompt with specific table columns and Enums"""
+    def build_rules_prompt(self) -> str:
+        """Constructs the high-level rules (NO TABLES)."""
         lines = []
         lines.append("You are a MySQL query expert for the 'coderv4' database.")
-        
-        lines.append("\n### MANDATORY ACCURACY RULES (CRITICAL):")
-        lines.append("1. **STUDENT PROGRESS**: ALWAYS use `course_wise_segregations`. It contains `progress` (decimal) and `score`.")
-        lines.append("2. **ENROLLED COURSES**: Access via `user_course_enrollments` (direct) OR `course_academic_maps` (allocated).")
-        lines.append("3. **WPI SCORE**: `(Total_Marks * 0.7) + (Accuracy * 0.2) + (Total_Attempts * 0.1)`.")
-        lines.append("4. **SOLVED STATUS**: 'Solved' in coding results is `solve_status IN (2, 3)`. 'Fully Solved' is 3.")
-        lines.append("5. **SUBMISSIONS**: `submission_tracks` (and 2025/2026 variants) contains `code_content` and `error` columns.")
-        lines.append("6. **MARKETPLACE**: Identification rule: A course is a MARKETPLACE course if in `course_academic_maps`, the fields `college_id`, `department_id`, `batch_id`, and `section_id` are ALL NULL.")
-        lines.append("7. **FOR STUDENTS**: Every academic query MUST filter by `college_id`, `department_id`, `batch_id`, `section_id` if available in the table. NEVER query academic data outside your assigned IDs.")
-        lines.append("8. **FOR ADMINS**: You can query any data across all institutions and departments. Do NOT apply restrictive filters unless explicitly asked by the user.")
-        lines.append("9. **NO PLACEHOLDERS**: NEVER use `{user_id}` or `:user_id`. Use the literal value provided in the instructions.")
-
-        if not table_list:
-            return "\n".join(lines)
-
-        lines.append("\n### DETAILED TABLE SCHEMAS:")
-        included_tables = set()
-        blacklist = {"failed_jobs", "otps", "migrations", "shield_logs"}
-
-        for t_name in table_list:
-            if t_name in self.available_tables and t_name in self.schema_data['tables'] and t_name not in blacklist:
-                included_tables.add(t_name)
-                details = self.schema_data['tables'][t_name]
-                columns = [col['Field'] for col in details['schema']['columns']]
-                lines.append(f"- Table `{t_name}`: Columns({', '.join(columns)})")
-                
-                # Add Enums if exist
-                if t_name in self.mappings:
-                    for field, map_data in self.mappings[t_name].items():
-                        lines.append(f"  - Enum `{field}`: {json.dumps(map_data)}")
-
-        lines.append("\n### RELATIONSHIP PATHS (JOIN PATHS):")
-        for rel in self.extracted_relationships:
-            if rel['TABLE_NAME'] in included_tables and rel['REFERENCED_TABLE_NAME'] in included_tables:
-                lines.append(f"- `{rel['TABLE_NAME']}.{rel['COLUMN_NAME']}` -> `{rel['REFERENCED_TABLE_NAME']}.{rel['REFERENCED_COLUMN_NAME']}`")
-        
+        lines.append("\n### MANDATORY RULES:")
+        lines.append("1. **Analyze First**: Use the provided schema JSON to understand columns and types.")
+        lines.append("2. **No Hallucinations**: Only use tables provided in the 'SELECTED TABLE SCHEMAS'.")
+        lines.append("3. **JSON Handling**: Use `JSON_UNQUOTE(JSON_EXTRACT(col, '$.key'))` for JSON fields.")
         return "\n".join(lines)
 
 # Singleton
