@@ -18,6 +18,9 @@ else:
     # Fallback to certifi for cross-platform support (especially Windows)
     connect_args["ssl"] = {"ca": certifi.where()}
 
+# Add connection timeout
+connect_args["connect_timeout"] = 10
+
 engine = create_engine(
     settings.DATABASE_URL,
     connect_args=connect_args,

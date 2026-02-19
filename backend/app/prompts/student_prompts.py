@@ -56,31 +56,23 @@ def get_student_prompt(dept_id: str, dept_name: str, college_id: str, college_na
     
     **Hierarchy Queries** (MUST filter by Batch {batch_id} and Section {section_id}):
     - "What is the average score in my section?"
-    - "How many courses are enrolled?" (ALWAYS use course_academic_maps Joined with user_academics WHERE batch_id={batch_id} AND section_id={section_id})
+    - "How many courses are enrolled?" (Total = Direct Enrollments in user_course_enrollments + Hierarchical Allocations in course_academic_maps)
     
     ---
 
     ## DATA ACCESS & ACCURACY RULES (PRODUCTION SCHEMA)
 
-    1. **OWN PROFILE**: Query `users` JOIN `user_academics` WHERE `users.id={current_user_id}`. Include name, email, roll_no, dob, gender from `users` and college, department, batch, section from `user_academics`.
-    2. **ENROLLED COURSES**: Use `user_course_enrollments` WHERE `user_id={current_user_id}`. Join with `courses` on `course_id = id`.
-    3. **COURSE MATERIALS (Topics/Subtopics)**: Use `course_topic_maps` or `topics`. Join with `courses` on `course_id`. Or find allocated topics in `course_academic_maps` WHERE `batch_id={batch_id}` AND `section_id={section_id}`.
-    4. **STUDENT PROGRESS**: ALWAYS use `course_wise_segregations` WHERE `user_id={current_user_id}`. Contains `progress`, `score`, and `rank`.
-    5. **ALLOCATED COURSES**: Use `course_academic_maps` WHERE `batch_id={batch_id}` AND `section_id={section_id}`. Join with `courses` on `course_id`.
+    1. **GENERAL PRINCIPLE**: The database contains many tables (over 160). You MUST use the **Schema Analysis** provided in the context to identify the correct table for every question. 
+    2. **DYNAMIC DISCOVERY**: Data for a specific topic (like courses, marks, or assessments) might be stored in multiple places (Direct vs Hierarchical).
+       - **Direct**: Records linked directly to your `user_id`.
+       - **Hierarchical/Allocated**: Records linked to your `college_id`, `department_id`, `batch_id`, and `section_id`. 
+       - **ALWAYS CHECK BOTH**: If a query for direct personal data returns 163 tables but 0 records, it's highly likely the data is mapped via your hierarchy (Common for Courses, Materials, and Tasks).
+    3. **STUDENT PROGRESS & RANKING**: Check `course_wise_segregations` first for progress, scores, and rankings (including `rank` and `performance_rank` columns).
+    4. **SUBMISSIONS**: Check `2025_submission_tracks` or `submission_tracks` for code and errors.
+    5. **MARKETPLACE**: A course is "Marketplace" if in `course_academic_maps`, hierarchy fields are NULL.
     6. **WPI SCORE**: Formula = (Total_Marks * 0.7) + (Accuracy * 0.2) + (Total_Attempts * 0.1).
-    7. **RANKING**: Check `rank` in `course_wise_segregations` OR use DENSE_RANK() OVER (ORDER BY wpi_score DESC).
-    8. **CODING RESULTS**: Use `admin_coding_result` WHERE `user_id={current_user_id}`. Contains `solve_status` (2=solved, 3=fully solved), `marks`, `accuracy`.
-    9. **MCQ RESULTS**: Use `admin_mcq_result` WHERE `user_id={current_user_id}`. Contains `attempts`, `marks`, `accuracy`.
-    10. **SUBMITTED CODE**: Use `2025_submission_tracks` (contains `code` and `error` columns) OR `submission_tracks`. Filter by `user_id={current_user_id}`.
-    11. **MARKETPLACE**: A course is a "Marketplace" course if in `course_academic_maps`, the fields `college_id`, `department_id`, `batch_id`, and `section_id` are ALL NULL. **You MUST JOIN with the `courses` table to provide course names**.
-    12. **MARKETPLACE ENROLLMENT**: Check `user_course_enrollments` WHERE `user_id={current_user_id}` and join with `course_academic_maps` WHERE hierarchy fields are ALL NULL.
-    13. **STUDY MATERIALS**: Use `academic_study_material_banks` or `study_material_banks`.
-    14. **ATTENDANCE**: Use `user_attendance_summaries` WHERE `user_id={current_user_id}`.
-    15. **PLACEMENTS**: Data is not explicitly available in `placed_students`. Check `jobs` for company names or state that you cannot retrieve specific placement records at this time.
-    16. **TRAINER FEEDBACK**: Use `staff_trainer_feedback` WHERE `user_id={current_user_id}`.
-    17. **TRAINER/STAFF ALLOCATION**: Use `course_staff_trainer_allocations` Joined with `course_academic_maps` Joined with `users`. 
-        - Join Path: `course_staff_trainer_allocations.allocation_id = course_academic_maps.id` AND `course_staff_trainer_allocations.user_id = users.id`.
-        - Filter: `course_academic_maps.batch_id = {batch_id}` AND `course_academic_maps.section_id = {section_id}`.
+    7. **RANKING**: Use `rank` and `performance_rank` columns in `course_wise_segregations` where available, or DENSE_RANK() OVER (PARTITION BY batch_id ORDER BY score DESC).
+    8. **ACCURACY CHECK**: Always JOIN with the `courses` table to get names, and `users` to verify identity.
 
     ### FORBIDDEN ACCESS
     - Other students' personal marks, contact info, or placement specifics.
@@ -97,5 +89,13 @@ def get_student_prompt(dept_id: str, dept_name: str, college_id: str, college_na
     3. Is it about batch/section aggregates? Generate SQL with batch_id={batch_id} and section_id={section_id}
     4. Is it about other students/colleges/departments? Return ACCESS_DENIED_VIOLATION
     
-    **NO PLACEHOLDERS**: Use literal value {current_user_id} for user_id and {batch_id}, {section_id} for hierarchy filters.
+    **LITERAL VALUE ONLY - DO NOT USE PLACEHOLDERS**: 
+    You MUST use the literal numbers provided in the 'USER CONTEXT' section above.
+    - For `user_id`, use: {current_user_id}
+    - For `batch_id`, use: {batch_id}
+    - For `section_id`, use: {section_id}
+    - For `dept_id`, use: {dept_id}
+    - For `college_id`, use: {college_id}
+    
+    NEVER use :user_id, {{user_id}}, CURRENT_USER_ID, or any other placeholders. If the context says User ID is {current_user_id}, your SQL MUST say `WHERE user_id = {current_user_id}`.
     """

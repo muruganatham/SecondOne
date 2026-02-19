@@ -107,227 +107,43 @@ class AIService:
 
     def __init__(self):
         self.deepseek_api_key = settings.DEEPSEEK_API_KEY or os.getenv("DEEPSEEK_API_KEY")
-        self.deepseek_base_url = "https://api.deepseek.com"
-        self.openai_api_key = settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY")
+        
+        print(f"DEBUG: DeepSeek API Key: {self.deepseek_api_key[:20]}..." if self.deepseek_api_key else "No DeepSeek key")
 
+        # Create DeepSeek client
         if self.deepseek_api_key:
             logger.info("DeepSeek API key configured")
             self.deepseek_client = OpenAI(
                 api_key=self.deepseek_api_key,
+                base_url="https://api.deepseek.com"
                 base_url=self.deepseek_base_url,
             )
         else:
             logger.warning("DeepSeek API key not found")
             self.deepseek_client = None
-
-        self.openai_client = None
+            print("⚠️ WARNING: DEEPSEEK_API_KEY is not set.")
+        
+        # Always use DeepSeek
         self.client = self.deepseek_client
-
-        # Column cache: { table_name: { col_name: dtype } }
-        self._column_cache: dict = {}
-
-    # ────────────────────────────────────────────
-    # Client Selector
-    # ────────────────────────────────────────────
-
-    def _get_client(self, model: str):
-        """Return the correct API client based on model name."""
-        if "gpt" in model.lower():
-            return self.openai_client
-        return self.deepseek_client
-
-    # ────────────────────────────────────────────
-    # Dynamic Column Resolution
-    # ────────────────────────────────────────────
-
-    def _get_table_columns(self, table_name: str) -> dict:
+        
+    #second update
+    def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat", user_context_str: str = "") -> dict:
         """
-        Returns { col_name: col_type } for a table.
-        Uses CONFIRMED_SCHEMAS first, then DESCRIBE, then cache.
-        Returns empty dict if table doesn't exist.
-        """
-        if table_name in self._column_cache:
-            return self._column_cache[table_name]
-
-        # Use confirmed schema if available (avoids DB call)
-        if table_name in CONFIRMED_SCHEMAS:
-            self._column_cache[table_name] = CONFIRMED_SCHEMAS[table_name]
-            return CONFIRMED_SCHEMAS[table_name]
-
-        db = SessionLocal()
-        try:
-            result = db.execute(text(f"DESCRIBE `{table_name}`"))
-            cols = {row[0]: row[1] for row in result.fetchall()}
-            self._column_cache[table_name] = cols
-            logger.debug(f"DESCRIBE '{table_name}': {list(cols.keys())}")
-            return cols
-        except Exception as e:
-            logger.warning(f"Could not DESCRIBE '{table_name}': {e}")
-            self._column_cache[table_name] = {}
-            return {}
-        finally:
-            db.close()
-
-    def resolve_result_table_columns(self, table_name: str) -> dict:
-        """
-        Maps generic metric names to actual column names in a college result table.
-
-        Handles naming variations across colleges:
-          solved_count | solve_count | solved | total_solved
-          total_coding_score | total_score | score | mark | total_mark
-          solve_status | status | submission_status
-          user_id | uid | student_id
-
-        Returns:
-          {
-            "exists":       bool,
-            "solved_count": str | None,
-            "total_score":  str | None,
-            "solve_status": str | None,
-            "user_id":      str | None,
-            "all_columns":  [str, ...]
-          }
-        """
-        cols = self._get_table_columns(table_name)
-
-        if not cols:
-            return {
-                "exists": False,
-                "solved_count": None,
-                "total_score": None,
-                "solve_status": None,
-                "user_id": None,
-                "all_columns": [],
-            }
-
-        col_names = set(cols.keys())
-
-        def pick(candidates: list):
-            for c in candidates:
-                if c in col_names:
-                    return c
-            return None
-
-        resolved = {
-            "exists":       True,
-            "solved_count": pick(["solved_count", "solve_count", "solved", "total_solved"]),
-            "total_score":  pick(["total_coding_score", "total_score", "score", "mark", "total_mark"]),
-            "solve_status": pick(["solve_status", "status", "submission_status"]),
-            "user_id":      pick(["user_id", "uid", "student_id"]),
-            "all_columns":  sorted(col_names),
+        Deep analysis of the question with FULL schema context.
+        The AI analyzes:
+        1. Question intent and what data is needed
+        2. Which tables and relationships can provide that data
+        3. Whether the query is answerable with available schema
+        4. Recommended query strategy
+        
+        Returns: {
+            "can_answer": bool,
+            "query_type": str,
+            "recommended_tables": [...],
+            "reasoning": str,
+            "confidence": str,
+            "suggested_sql_approach": str
         }
-
-        logger.info(
-            f"Resolved '{table_name}' → "
-            f"solved={resolved['solved_count']}, "
-            f"score={resolved['total_score']}, "
-            f"status={resolved['solve_status']}, "
-            f"uid={resolved['user_id']}"
-        )
-        return resolved
-
-    def _build_result_table_schema_hint(self, table_name: str) -> str:
-        """
-        Builds a schema comment block injected into the AI system prompt
-        so the AI uses real column names instead of guessing.
-        """
-        info = self.resolve_result_table_columns(table_name)
-
-        if not info["exists"]:
-            return f"-- ⚠️ Table '{table_name}' does not exist in the database.\n"
-
-        lines = [
-            f"-- ✅ ACTUAL columns in `{table_name}`:",
-            f"--    All columns  : {', '.join(info['all_columns'])}",
-            f"--    solved count  → {info['solved_count'] or 'N/A (not found)'}",
-            f"--    total score   → {info['total_score']  or 'N/A (not found)'}",
-            f"--    solve status  → {info['solve_status'] or 'N/A (not found)'}",
-            f"--    user ref      → {info['user_id']      or 'N/A (not found)'}",
-        ]
-        if info["solve_status"]:
-            lines.append(f"--    solved filter → {info['solve_status']} = 2")
-        lines.append("-- ⚠️  Only use columns listed above — never assume column names.")
-        return "\n".join(lines)
-
-    # ────────────────────────────────────────────
-    # Truncation Detection
-    # ────────────────────────────────────────────
-
-    def _is_sql_truncated(self, sql: str) -> bool:
-        """
-        Detects if AI-generated SQL was cut off before completion.
-        Checks: parenthesis balance, CASE/END balance, dangling keywords.
-        """
-        if not sql or not sql.strip():
-            return True
-
-        # 1. Unbalanced parentheses
-        open_p  = sql.count("(")
-        close_p = sql.count(")")
-        if open_p != close_p:
-            logger.warning(f"Truncation: {open_p} '(' vs {close_p} ')'")
-            return True
-
-        sql_upper = sql.upper().strip()
-
-        # 2. CASE without END
-        case_count = len(re.findall(r'\bCASE\b', sql_upper))
-        end_count  = len(re.findall(r'\bEND\b',  sql_upper))
-        if case_count != end_count:
-            logger.warning(f"Truncation: {case_count} CASE vs {end_count} END")
-            return True
-
-        # 3. Dangling keyword at end of string
-        dangling_patterns = [
-            r'\bWHEN\s*$',  r'\bTHEN\s*$',    r'\bAND\s*$',
-            r'\bOR\s*$',    r'\bON\s*$',       r'\bWHERE\s*$',
-            r'\bSELECT\s*$', r'\bFROM\s*$',   r'\bJOIN\s*$',
-            r'\bCOALESCE\s*\($',               r'\bCAST\s*\($',
-        ]
-        for pattern in dangling_patterns:
-            if re.search(pattern, sql_upper):
-                logger.warning(f"Truncation: dangling pattern '{pattern}'")
-                return True
-
-        return False
-
-    def _build_simplified_prompt(self, user_question: str) -> str:
-        """Simplified retry prompt — forces shorter, simpler SQL."""
-        return (
-            f"Generate a SHORT, SIMPLE SQL query for: {user_question}\n\n"
-            "STRICT RULES:\n"
-            "1. Maximum 3 JOINs\n"
-            "2. NO correlated subqueries — use LEFT JOINs instead\n"
-            "3. NO complex CASE statements — use simple WHERE filters\n"
-            "4. LIMIT 50\n"
-            "5. Return ONLY complete, syntactically valid SQL\n"
-            "6. Every '(' must have a matching ')'\n"
-            "7. Every CASE must have a matching END\n"
-        )
-
-    # ────────────────────────────────────────────
-    # Schema Analysis
-    # ────────────────────────────────────────────
-
-    def analyze_question_with_schema(
-        self,
-        user_question: str,
-        schema_context: str,
-        model: str = "deepseek-chat",
-    ) -> dict:
-        """
-        Analyzes the user question against the full DB schema.
-        Determines: query type, recommended tables, and SQL approach.
-
-        Returns:
-          {
-            "can_answer":             bool,
-            "query_type":             "simple|complex|general_knowledge",
-            "recommended_tables":     [str, ...],
-            "suggested_sql_approach": str,
-            "reasoning":              str,
-            "confidence":             str,
-          }
         """
         client = self._get_client(model)
         if not client:
@@ -340,6 +156,20 @@ DATABASE SCHEMA:
 
 USER QUESTION: "{user_question}"
 
+USER CONTEXT:
+{user_context_str}
+
+YOUR TASK:
+1. Identify EVERYTHING the user is asking for.
+2. Search the "AVAILABLE TABLES" list for ANY table that could contain this data.
+3. CRITICAL: Data might be stored:
+   - DIRECTLY (e.g. user_id is in the table).
+   - HIERARCHICALLY (e.g. table is linked to a College, Dept, Batch, or Section mapping).
+   - If one table (like user_course_enrollments) is empty, a mapping table (like course_academic_maps) almost certainly contains the data.
+4. RECOMMENDED TABLES: List ALL tables needed for JOINs to answer the question accurately within the user's scope.
+5. BE OPTIMISTIC: If it sounds like data that should be in an LMS, it likely is. Find the closest match.
+
+Respond in this EXACT JSON format (no markdown, no extra text):
 Reply ONLY in this exact JSON format (no markdown, no extra text):
 {{
     "can_answer": true/false,
@@ -360,7 +190,7 @@ RULES:
 - College result tables follow: [college]_[year]_[sem]_coding_result"""
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
@@ -370,7 +200,7 @@ RULES:
                     },
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=800,       # ✅ FIXED: was 500
+                max_tokens=1500, # Increased per user request for complex queries
                 temperature=0.1,
                 stream=False,
             )
@@ -737,7 +567,7 @@ Output Guidelines:
 """
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[
@@ -829,8 +659,9 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
 """
 
         try:
+            model_name = "deepseek-chat"
             response = self.client.chat.completions.create(
-                model="deepseek-chat",
+                model=model_name,
                 messages=[
                     {
                         "role": "system",
@@ -923,7 +754,7 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
             return "I cannot answer this question as the AI service is unavailable."
 
         try:
-            model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
+            model_name = "deepseek-chat"
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[

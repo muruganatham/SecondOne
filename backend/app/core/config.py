@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     # API Keys (Required in production, no defaults)
     GROQ_API_KEY: Optional[str] = None
     DEEPSEEK_API_KEY: Optional[str] = None
-    OPENAI_API_KEY: Optional[str] = None
 
     # JWT Configuration
     SECRET_KEY: str = "temporary-secret-key-change-this-in-env"
@@ -28,8 +27,8 @@ class Settings(BaseSettings):
 
     MAX_TOKEN_LIMIT: int = 4096
 
-    # Frontend Bearer Token (Long-lived)
-    FRONTEND_BEARER_TOKEN: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyb250ZW5kLWFwcCIsInR5cGUiOiJsb25nLWxpdmVkIiwiZ2VuZXJhdGVkIjoiMjAyNS0xMi0yMlQwNToyNzo0My41NTdaIiwiZGVzY3JpcHRpb24iOiJMb25nLWxpdmVkIHRva2VuIGZvciBmcm9udGVuZCBoYXJkY29kZWQgYXV0aGVudGljYXRpb24iLCJpYXQiOjE3NjYzODEyNjMsImV4cCI6MTc2NjQ2NzY2M30.ODSSeKFydOGsdK_uh-jmlF37I2vbNBMKmVcdRjtgxIs"
+    # Frontend Bearer Token (Long-lived) - MUST be set in environment variables
+    FRONTEND_BEARER_TOKEN: Optional[str] = None
 
     @property
     def DATABASE_URL(self) -> str:

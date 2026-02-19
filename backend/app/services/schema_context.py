@@ -49,8 +49,8 @@ class SchemaContext:
 
     def get_schema_summary(self) -> str:
         """
-        Returns a LIGHTWEIGHT summary of all tables for the 'Analysis' phase.
-        Format: - table_name (Rows: N) [Description if available]
+        Returns a summary of ALL available tables for Phase 1 Analysis.
+        Dynamically generated from schema data.
         """
         lines = []
         lines.append("AVAILABLE TABLES & METRICS:")
@@ -127,6 +127,62 @@ class SchemaContext:
         
         lines.append("\n### RELEVANT ENUM MAPPINGS:")
         lines.append(json.dumps(extracted_mappings, indent=2))
+        Generates detailed schema ONLY for requested tables to save tokens.
+        """
+        # Always include identity/hierarchy tables for student-centric JOINs
+        mandatory = {
+            "users", "user_academics", "colleges", "departments", "batches", "sections",
+            "course_academic_maps", "user_course_enrollments", "course_wise_segregations"
+        }
+        target_tables = set(table_names).union(mandatory)
+        return self.build_context_string(list(target_tables))
+
+    def build_context_string(self, table_list: list) -> str:
+        """Constructs the high-accuracy prompt with specific table columns and Enums"""
+        lines = []
+        lines.append("You are a MySQL query expert for the 'coderv4' database.")
+        
+        lines.append("\n### MANDATORY ACCURACY RULES (CRITICAL):")
+        lines.append("1. **STUDENT PROGRESS & RANK**: ALWAYS use `course_wise_segregations`. It contains `progress`, `score`, `rank`, and `performance_rank`. Use these for ANY question about 'how do I compare', 'my rank', or 'average marks'.")
+        lines.append("2. **ENROLLED COURSES**: Access via `user_course_enrollments` (direct) OR `course_academic_maps` (allocated).")
+        lines.append("3. **WPI SCORE**: `(Total_Marks * 0.7) + (Accuracy * 0.2) + (Total_Attempts * 0.1)`.")
+        lines.append("4. **SOLVED STATUS**: 'Solved' in coding results is `solve_status IN (2, 3)`. 'Fully Solved' is 3.")
+        lines.append("5. **SUBMISSIONS**: `submission_tracks` (and 2025/2026 variants) contains `code_content` and `error` columns.")
+        lines.append("6. **MARKETPLACE**: Identification rule: A course is a MARKETPLACE course if in `course_academic_maps`, the fields `college_id`, `department_id`, `batch_id`, and `section_id` are ALL NULL.")
+        lines.append("7. **FOR STUDENTS**: Every academic query MUST filter by `college_id`, `department_id`, `batch_id`, `section_id` if available in the table. NEVER query academic data outside your assigned IDs.")
+        lines.append("8. **ENROLLMENT JOIN**: To link direct enrollments to course details, join `user_course_enrollments.course_allocation_id` with `course_academic_maps.id` (NOT directly with `courses`).")
+        lines.append("9. **PROGRESS JOIN**: To link your hierarchy to progress data, join `user_academics.user_id` with `course_wise_segregations.user_id`.")
+        lines.append("10. **FOR ADMINS**: You can query any data across all institutions and departments. Do NOT apply restrictive filters unless explicitly asked by the user.")
+        lines.append("11. **NO PLACEHOLDERS**: NEVER use `{user_id}` or `:user_id`. Use the literal value provided in the instructions.")
+        
+        lines.append("\n### GOLDEN JOIN PATHS (USE THESE):")
+        lines.append("- **Student Hierarchy**: `users` -> `user_academics` (on user_id) -> `colleges/departments/batches/sections` (on respective ids)")
+        lines.append("- **Course Performance**: `users` -> `course_wise_segregations` (on user_id) -> `courses` (on course_id)")
+        lines.append("- **Enrollment Strategy**: `user_course_enrollments` -> `course_academic_maps` (on course_allocation_id) -> `courses` (on course_id)")
+
+        if not table_list:
+            return "\n".join(lines)
+
+        lines.append("\n### DETAILED TABLE SCHEMAS:")
+        included_tables = set()
+        blacklist = {"failed_jobs", "otps", "migrations", "shield_logs"}
+
+        for t_name in table_list:
+            if t_name in self.available_tables and t_name in self.schema_data['tables'] and t_name not in blacklist:
+                included_tables.add(t_name)
+                details = self.schema_data['tables'][t_name]
+                columns = [col['Field'] for col in details['schema']['columns']]
+                lines.append(f"- Table `{t_name}`: Columns({', '.join(columns)})")
+                
+                # Add Enums if exist
+                if t_name in self.mappings:
+                    for field, map_data in self.mappings[t_name].items():
+                        lines.append(f"  - Enum `{field}`: {json.dumps(map_data)}")
+
+        lines.append("\n### RELATIONSHIP PATHS (JOIN PATHS):")
+        for rel in self.extracted_relationships:
+            if rel['TABLE_NAME'] in included_tables and rel['REFERENCED_TABLE_NAME'] in included_tables:
+                lines.append(f"- `{rel['TABLE_NAME']}.{rel['COLUMN_NAME']}` -> `{rel['REFERENCED_TABLE_NAME']}.{rel['REFERENCED_COLUMN_NAME']}`")
         
         return "\n".join(lines)
 
