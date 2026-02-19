@@ -1,97 +1,234 @@
 
-[2026-02-19 15:29:07.882251] QUESTION: how many marketplace courses ongoing?
-SQL: SELECT COUNT(*) AS ongoing_marketplace_courses
-FROM courses
-WHERE course_type = 5
-  AND status = 1
+[2026-02-19 17:08:54.482208] QUESTION: what courses are available in SREC?
+SQL: Error: 'AIService' object has no attribute '_is_sql_truncated'
+ERROR: Query rejected: Only SELECT queries are allowed. Destructive operations (INSERT, UPDATE, DELETE, DROP) are not permitted.
+
+[2026-02-19 17:21:50.711092] QUESTION: how many active users are there?
+SQL: SELECT COUNT(DISTINCT u.id) AS active_user_count
+FROM users u
+INNER JOIN user_login_activities ula ON u.id = ula.user_id
+WHERE u.status = 1
+  AND ula.login_time >= DATE_SUB(NOW(), INTERVAL 30 DAY)
 LIMIT 1;
 ERROR: An error occurred while executing the query. Please try a simpler question.
 
-[2026-02-19 15:35:05.448900] QUESTION: what are the courses are going in Dr Mahalingam College of Engineering and Technology?
-SQL: SELECT DISTINCT
-    c.id,
-    c.course_code,
-    c.course_name,
-    c.course_type,
-    c.description,
-    COUNT(DISTINCT cws.id) AS sections_count
+[2026-02-19 17:22:20.716856] QUESTION: how many actice users are there?
+SQL: SELECT COUNT(DISTINCT u.id) AS active_users_count
+FROM users u
+INNER JOIN user_login_activities ula ON u.id = ula.user_id
+WHERE ula.login_time >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+  AND u.status = 1
+LIMIT 1;
+ERROR: An error occurred while executing the query. Please try a simpler question.
+
+[2026-02-19 17:27:14.196231] QUESTION: how many students under this course 'CST001 - Ai For Cybersecurity'?
+SQL: SELECT COUNT(DISTINCT uce.user_id) AS student_count
+FROM user_course_enrollments uce
+INNER JOIN courses c ON uce.course_allocation_id = c.id
+WHERE (c.course_code = 'CST001' OR c.course_name LIKE '%Ai For Cybersecurity%')
+  AND uce.status = 1
+LIMIT 1;
+ERROR: An error occurred while executing the query. Please try a simpler question.
+
+[2026-02-19 17:32:07.767495] QUESTION: what are the courses in MCET?
+SQL: SELECT DISTINCT c.course_code, c.course_name, c.course_type, c.description
 FROM courses c
-LEFT JOIN course_academic_maps cam ON c.id = cam.course_id
-LEFT JOIN course_wise_segregations cws ON c.id = cws.course_id
-WHERE cam.college_id = (
-    SELECT id FROM colleges
-    WHERE college_name LIKE '%Dr Mahalingam College of Engineering and Technology%'
-    LIMIT 1
-)
-GROUP BY c.id, c.course_code, c.course_name, c.course_type, c.description
+INNER JOIN course_academic_maps cam ON c.id = cam.course_id
+INNER JOIN colleges col ON cam.college_id = col.id
+WHERE col.college_short_name = 'MCET'
+  AND c.status = 1
 ORDER BY c.course_name
 LIMIT 100;
 ERROR: An error occurred while executing the query. Please try a simpler question.
 
-[2026-02-19 15:35:41.077700] QUESTION: what are the courses are going in mcet?
-SQL: SELECT DISTINCT
-    c.id,
-    c.course_code,
-    c.course_name,
-    c.course_type,
-    c.description,
-    COUNT(DISTINCT cws.id) AS sections_count
-FROM courses c
-LEFT JOIN course_academic_maps cam ON c.id = cam.course_id
-LEFT JOIN course_wise_segregations cws ON c.id = cws.course_id
-WHERE cam.college_id = (SELECT id FROM colleges WHERE college_name LIKE '%mcet%' LIMIT 1)
-GROUP BY c.id, c.course_code, c.course_name, c.course_type, c.description
-ORDER BY c.course_name
+[2026-02-19 17:56:58.735748] QUESTION: whom can crack the ZOHO interveiw in srec? 
+SQL: SELECT DISTINCT 
+    u.id AS user_id,
+    u.name AS student_name,
+    u.email,
+    u.contact_number,
+    ua.college_id,
+    c.college_name,
+    ua.department_id,
+    d.department_name,
+    ua.batch_id,
+    b.batch_name,
+    ua.section_id,
+    s.section_name,
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) AS cgpa,
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) AS current_backlogs,
+    COALESCE(coding_agg.total_coding_score, 0) AS total_coding_score,
+    COALESCE(coding_agg.avg_coding_mark_percentage, 0) AS avg_coding_mark_percentage,
+    COALESCE(mcq_agg.total_mcq_score, 0) AS total_mcq_score,
+    COALESCE(mcq_agg.avg_mcq_mark_percentage, 0) AS avg_mcq_mark_percentage,
+    CASE 
+        WHEN CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) >= 7.5 
+             AND CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) = 0 
+             AND COALESCE(coding_agg.avg_coding_mark_percentage, 0) >= 70 
+             AND COALESCE(mcq_agg.avg_mcq_mark_percentage, 0) >= 70 
+        THEN 'Highly Likely'
+        WHEN CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) >= 7.0 
+             AND CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) <= 1 
+             AND COALESCE(coding_agg.avg_coding_mark_percentage, 0) >= 60 
+             AND COALESCE(mcq_agg.avg_mcq_mark_percentage, 0) >= 60 
+        THEN 'Moderately Likely'
+        ELSE 'Needs Improvement'
+    END AS zoho_interview_readiness
+FROM users u
+INNER JOIN user_academics ua ON u.id = ua.user_id AND ua.status = 1
+INNER JOIN colleges c ON ua.college_id = c.id AND c.college_short_name = 'srec'
+INNER JOIN departments d ON ua.department_id = d.id
+INNER JOIN batches b ON ua.batch_id = b.id
+INNER JOIN sections s ON ua.section_id = s.id
+LEFT JOIN (
+    SELECT 
+        user_id,
+        SUM(mark) AS total_coding_score,
+        AVG((mark / NULLIF(total_mark, 0)) * 100) AS avg_coding_mark_percentage
+    FROM srec_2026_1_coding_result
+    WHERE solve_status = 2
+    GROUP BY user_id
+) coding_agg ON u.id = coding_agg.user_id
+LEFT JOIN (
+    SELECT 
+        user_id,
+        SUM(mark) AS total_mcq_score,
+        AVG((mark / NULLIF(total_mark, 0)) * 100) AS avg_mcq_mark_percentage
+    FROM srec_2026_1_mcq_result
+    WHERE solve_status = 2
+    GROUP BY user_id
+) mcq_agg ON u.id = mcq_agg.user_id
+WHERE u.role = 7 
+    AND u.status = 1
+    AND ua.status = 1
+ORDER BY 
+    CASE 
+        WHEN CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) >= 7.5 
+             AND CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) = 0 
+             AND COALESCE(coding_agg.avg_coding_mark_percentage, 0) >= 70 
+             AND COALESCE(mcq_agg.avg_mcq_mark_percentage, 0) >= 70 
+        THEN 1
+        WHEN CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) >= 7.0 
+             AND CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) <= 1 
+             AND COALESCE(coding_agg.avg_coding_mark_percentage, 0) >= 60 
+             AND COALESCE(mcq_agg.avg_mcq_mark_percentage, 0) >= 60 
+        THEN 2
+        ELSE 3
+    END,
+    cgpa DESC,
+    avg_coding_mark_percentage DESC,
+    avg_mcq_mark_percentage DESC
 LIMIT 100;
 ERROR: An error occurred while executing the query. Please try a simpler question.
 
-[2026-02-19 15:42:25.772905] QUESTION: what are the courses are going in mcet?
-SQL: SELECT DISTINCT
-    c.id,
-    c.course_code,
-    c.course_name,
-    c.course_type,
-    c.description,
-    COUNT(DISTINCT cws.id) AS sections_count
-FROM courses c
-LEFT JOIN course_academic_maps cam ON c.id = cam.course_id
-LEFT JOIN course_wise_segregations cws ON c.id = cws.course_id
-WHERE cam.college_id = (SELECT id FROM colleges WHERE college_name LIKE '%mcet%' LIMIT 1)
-GROUP BY c.id, c.course_code, c.course_name, c.course_type, c.description
-ORDER BY c.course_name
-LIMIT 100;
-ERROR: An error occurred while executing the query. Please try a simpler question.
-
-[2026-02-19 15:42:46.039502] QUESTION: what are the courses are going in mcet?
-SQL: SELECT DISTINCT
-    c.id,
-    c.course_code,
-    c.course_name,
-    c.course_type,
-    c.description,
-    COUNT(DISTINCT cws.id) AS sections_count
-FROM courses c
-LEFT JOIN course_academic_maps cam ON c.id = cam.course_id
-LEFT JOIN course_wise_segregations cws ON c.id = cws.course_id
-WHERE cam.college_id = (SELECT id FROM colleges WHERE college_name LIKE '%mcet%' LIMIT 1)
-GROUP BY c.id, c.course_code, c.course_name, c.course_type, c.description
-ORDER BY c.course_name
-LIMIT 100;
-ERROR: An error occurred while executing the query. Please try a simpler question.
-
-[2026-02-19 15:43:50.547111] QUESTION: what are the courses are going in mcet?
-SQL: SELECT DISTINCT
-    c.id,
-    c.course_code,
-    c.course_name,
-    c.course_type,
-    c.description,
-    COUNT(DISTINCT cws.id) AS sections_count
-FROM courses c
-LEFT JOIN course_academic_maps cam ON c.id = cam.course_id
-LEFT JOIN course_wise_segregations cws ON c.id = cws.course_id
-WHERE cam.college_id = (SELECT id FROM colleges WHERE college_name LIKE '%mcet%' LIMIT 1)
-GROUP BY c.id, c.course_code, c.course_name, c.course_type, c.description
-ORDER BY c.course_name
+[2026-02-19 18:08:16.249245] QUESTION: which students have high problem-solving ability but low attendance — potential risk? 
+SQL: SELECT 
+    u.id AS student_id,
+    u.name AS student_name,
+    u.email,
+    c.college_name,
+    d.department_name,
+    b.batch_name,
+    s.section_name,
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)) AS cgpa,
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED) AS backlogs,
+    COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) AS total_attended,
+    COALESCE(att_2025.solved_count, 0) + COALESCE(att_2026.solved_count, 0) AS total_solved,
+    COALESCE(coding_agg.avg_mark_pct, 0) AS avg_mark_percentage,
+    COALESCE(coding_agg.total_solved_questions, 0) AS total_solved_questions,
+    CASE 
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 10 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 70 
+        THEN 'High Risk: High skill, Very Low Attendance'
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 20 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 60 
+        THEN 'Medium Risk: Good skill, Low Attendance'
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 30 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 50 
+        THEN 'Low Risk: Moderate skill, Below Average Attendance'
+        ELSE 'Normal'
+    END AS risk_level,
+    CASE 
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 10 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 70 
+        THEN 1
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 20 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 60 
+        THEN 2
+        WHEN COALESCE(att_2025.attended_count, 0) + COALESCE(att_2026.attended_count, 0) < 30 
+             AND COALESCE(coding_agg.avg_mark_pct, 0) > 50 
+        THEN 3
+        ELSE 4
+    END AS risk_priority
+FROM users u
+INNER JOIN user_academics ua ON ua.user_id = u.id
+INNER JOIN colleges c ON c.id = ua.college_id
+LEFT JOIN departments d ON d.id = ua.department_id
+LEFT JOIN batches b ON b.id = ua.batch_id
+LEFT JOIN sections s ON s.id = ua.section_id
+LEFT JOIN (
+    SELECT 
+        user_id,
+        SUM(attended_count) AS attended_count,
+        SUM(solved_count) AS solved_count
+    FROM (
+        SELECT 
+            user_id,
+            JSON_UNQUOTE(JSON_EXTRACT(attended_count_details, '$.total')) AS attended_count,
+            JSON_UNQUOTE(JSON_EXTRACT(solved_count_details, '$.total')) AS solved_count
+        FROM `2025_submission_tracks`
+        WHERE type = 1
+        UNION ALL
+        SELECT 
+            user_id,
+            JSON_UNQUOTE(JSON_EXTRACT(attended_count_details, '$.total')) AS attended_count,
+            JSON_UNQUOTE(JSON_EXTRACT(solved_count_details, '$.total')) AS solved_count
+        FROM `2026_submission_tracks`
+        WHERE type = 1
+    ) combined
+    GROUP BY user_id
+) attendance_summary ON attendance_summary.user_id = u.id
+LEFT JOIN (
+    SELECT 
+        user_id,
+        COUNT(*) AS total_solved_questions,
+        ROUND(AVG((mark / NULLIF(total_mark, 0)) * 100), 2) AS avg_mark_pct
+    FROM (
+        SELECT user_id, mark, total_mark FROM srec_2025_2_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM srec_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM skcet_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM mcet_2025_2_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM mcet_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM dotlab_2025_2_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM dotlab_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM demolab_2025_2_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM demolab_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM skct_2025_2_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM ciet_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM niet_2026_1_coding_result WHERE solve_status = 2
+        UNION ALL
+        SELECT user_id, mark, total_mark FROM mec_2026_1_coding_result WHERE solve_status = 2
+    ) all_coding
+    GROUP BY user_id
+) coding_agg ON coding_agg.user_id = u.id
+WHERE u.role = 7
+    AND u.status = 1
+    AND (
+        (COALESCE(attendance_summary.attended_count, 0) < 30 AND COALESCE(coding_agg.avg_mark_pct, 0) > 50)
+        OR (COALESCE(attendance_summary.attended_count, 0) < 20 AND COALESCE(coding_agg.avg_mark_pct, 0) > 60)
+        OR (COALESCE(attendance_summary.attended_count, 0) < 10 AND COALESCE(coding_agg.avg_mark_pct, 0) > 70)
+    )
+ORDER BY risk_priority ASC, avg_mark_percentage DESC, total_attended ASC
 LIMIT 100;
 ERROR: An error occurred while executing the query. Please try a simpler question.

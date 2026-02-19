@@ -35,7 +35,7 @@ logger = get_logger("ai_service")
 CONFIRMED_SCHEMAS = {
     "tests": {
         "id": "bigint unsigned",
-        "testName": "varchar(50)",        # ← camelCase! NOT test_name
+        "testName": "varchar(50)",  # ← camelCase! NOT test_name
         "clone_id": "int",
         "is_edited": "tinyint",
         "creator_college_id": "int",
@@ -48,15 +48,15 @@ CONFIRMED_SCHEMAS = {
         "user_id": "bigint unsigned",
         "allocate_id": "int unsigned",
         "course_allocation_id": "bigint unsigned",
-        "topic_test_id": "bigint unsigned",   # ← FK to tests.id
-        "topic_type": "int unsigned",          # 1 = coding
+        "topic_test_id": "bigint unsigned",  # ← FK to tests.id
+        "topic_type": "int unsigned",  # 1 = coding
         "module_id": "bigint unsigned",
-        "question_id": "int unsigned",         # ← FK to standard_qb_codings.id
+        "question_id": "int unsigned",  # ← FK to standard_qb_codings.id
         "type": "int unsigned",
         "complexity": "int",
         "mark": "float",
         "total_mark": "float",
-        "main_solution": "text",               # ← student's submitted code
+        "main_solution": "text",  # ← student's submitted code
         "sub_solutions": "json",
         "test_cases": "json",
         "compile_id": "int",
@@ -66,7 +66,7 @@ CONFIRMED_SCHEMAS = {
         "errors": "json",
         "action_counts": "json",
         "report_metrics": "json",
-        "solve_status": "int",                # 0=unsolved 1=partial 2=solved
+        "solve_status": "int",  # 0=unsolved 1=partial 2=solved
         "status": "tinyint",
         "created_at": "timestamp",
         "updated_at": "timestamp",
@@ -75,18 +75,31 @@ CONFIRMED_SCHEMAS = {
 
 # Verified via SHOW TABLES LIKE '%coding%'
 COLLEGE_CODING_TABLES = [
-    "academic_qb_codings", "admin_coding_result", "b2c_coding_result",
-    "ciet_2026_1_coding_result", "demolab_2025_2_coding_result",
-    "demolab_2026_1_coding_result", "dotlab_2025_2_coding_result",
-    "dotlab_2026_1_coding_result", "jpc_2026_1_coding_result",
-    "kclas_2026_1_coding_result", "kits_2026_1_coding_result",
-    "link_coding_result", "mcet_2025_2_coding_result",
-    "mcet_2026_1_coding_result", "mec_2026_1_coding_result",
-    "niet_2026_1_coding_result", "nit_2026_1_coding_result",
-    "skacas_2025_2_coding_result", "skasc_2026_1_coding_result",
-    "skcet_2026_1_coding_result", "skct_2025_2_coding_result",
-    "srec_2025_2_coding_result", "srec_2026_1_coding_result",
-    "standard_qb_coding_validations", "tep_2026_1_coding_result",
+    "academic_qb_codings",
+    "admin_coding_result",
+    "b2c_coding_result",
+    "ciet_2026_1_coding_result",
+    "demolab_2025_2_coding_result",
+    "demolab_2026_1_coding_result",
+    "dotlab_2025_2_coding_result",
+    "dotlab_2026_1_coding_result",
+    "jpc_2026_1_coding_result",
+    "kclas_2026_1_coding_result",
+    "kits_2026_1_coding_result",
+    "link_coding_result",
+    "mcet_2025_2_coding_result",
+    "mcet_2026_1_coding_result",
+    "mec_2026_1_coding_result",
+    "niet_2026_1_coding_result",
+    "nit_2026_1_coding_result",
+    "skacas_2025_2_coding_result",
+    "skasc_2026_1_coding_result",
+    "skcet_2026_1_coding_result",
+    "skct_2025_2_coding_result",
+    "srec_2025_2_coding_result",
+    "srec_2026_1_coding_result",
+    "standard_qb_coding_validations",
+    "tep_2026_1_coding_result",
     "uit_2026_1_coding_result",
 ]
 
@@ -94,7 +107,7 @@ COLLEGE_CODING_TABLES = [
 QUESTION_TABLES = [
     "feedback_questions",
     "practice_question_maps",
-    "test_question_maps",       # ← bridge between tests and standard_qb_codings
+    "test_question_maps",  # ← bridge between tests and standard_qb_codings
     "viva_question_bank",
 ]
 
@@ -103,31 +116,88 @@ QUESTION_TABLES = [
 #  AI SERVICE
 # ════════════════════════════════════════════════════════════════
 
+
 class AIService:
 
     def __init__(self):
-        self.deepseek_api_key = settings.DEEPSEEK_API_KEY or os.getenv("DEEPSEEK_API_KEY")
-        
-        print(f"DEBUG: DeepSeek API Key: {self.deepseek_api_key[:20]}..." if self.deepseek_api_key else "No DeepSeek key")
+        self.deepseek_api_key = settings.DEEPSEEK_API_KEY or os.getenv(
+            "DEEPSEEK_API_KEY"
+        )
+
+        print(
+            f"DEBUG: DeepSeek API Key: {self.deepseek_api_key[:20]}..."
+            if self.deepseek_api_key
+            else "No DeepSeek key"
+        )
 
         # Create DeepSeek client
         if self.deepseek_api_key:
             logger.info("DeepSeek API key configured")
             self.deepseek_client = OpenAI(
                 api_key=self.deepseek_api_key,
-                base_url="https://api.deepseek.com"
-                base_url=self.deepseek_base_url,
+                base_url="https://api.deepseek.com",
             )
         else:
             logger.warning("DeepSeek API key not found")
             self.deepseek_client = None
             print("⚠️ WARNING: DEEPSEEK_API_KEY is not set.")
-        
+
         # Always use DeepSeek
         self.client = self.deepseek_client
-        
-    #second update
-    def analyze_question_with_schema(self, user_question: str, schema_context: str, model: str = "deepseek-chat", user_context_str: str = "") -> dict:
+
+    def _get_client(self, model: str):
+        """Get the appropriate OpenAI client for the specified model"""
+        # For now, we only support DeepSeek
+        return self.deepseek_client
+
+    def _is_sql_truncated(self, sql: str) -> bool:
+        """
+        Check if the SQL query appears to be truncated/incomplete.
+        Signs of truncation:
+        - Missing closing parentheses
+        - Missing semicolon at end
+        - Ends with incomplete syntax (AND, OR, comma, etc.)
+        """
+        if not sql:
+            return True
+
+        sql = sql.strip()
+
+        # Check for unbalanced parentheses
+        if sql.count("(") != sql.count(")"):
+            return True
+
+        # Check for incomplete FROM/WHERE/JOIN (ends with keyword)
+        incomplete_endings = [" FROM", " WHERE", " AND", " OR", " JOIN", " ON", ","]
+        for ending in incomplete_endings:
+            if sql.upper().endswith(ending.upper()):
+                return True
+
+        # Query should end with semicolon or just be valid
+        if not sql.upper().startswith("SELECT"):
+            return True
+
+        return False
+
+    def _build_simplified_prompt(self, user_question: str) -> str:
+        """Build a simplified prompt for retry with fewer JOINs and simpler structure"""
+        return f"""
+You are a MySQL expert. Generate a SIMPLE, DIRECT SQL query for this question.
+Use minimal JOINs (max 2), no subqueries, no window functions.
+
+QUESTION: {user_question}
+
+Return ONLY the SELECT statement. Start with SELECT, end with semicolon.
+"""
+
+    # second update
+    def analyze_question_with_schema(
+        self,
+        user_question: str,
+        schema_context: str,
+        model: str = "deepseek-chat",
+        user_context_str: str = "",
+    ) -> dict:
         """
         Deep analysis of the question with FULL schema context.
         The AI analyzes:
@@ -135,7 +205,7 @@ class AIService:
         2. Which tables and relationships can provide that data
         3. Whether the query is answerable with available schema
         4. Recommended query strategy
-        
+
         Returns: {
             "can_answer": bool,
             "query_type": str,
@@ -200,7 +270,7 @@ RULES:
                     },
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=1500, # Increased per user request for complex queries
+                max_tokens=1500,  # Increased per user request for complex queries
                 temperature=0.1,
                 stream=False,
             )
@@ -237,12 +307,12 @@ RULES:
             )
 
             return {
-                "can_answer":             analysis.get("can_answer", True),
-                "query_type":             analysis.get("query_type", "unknown"),
-                "recommended_tables":     analysis.get("recommended_tables", []),
-                "reasoning":              analysis.get("reasoning", ""),
+                "can_answer": analysis.get("can_answer", True),
+                "query_type": analysis.get("query_type", "unknown"),
+                "recommended_tables": analysis.get("recommended_tables", []),
+                "reasoning": analysis.get("reasoning", ""),
                 "suggested_sql_approach": analysis.get("suggested_sql_approach", ""),
-                "confidence":             analysis.get("confidence", "medium"),
+                "confidence": analysis.get("confidence", "medium"),
             }
 
         except Exception as e:
@@ -345,9 +415,9 @@ RULES:
                 model=model_name,
                 messages=[
                     {"role": "system", "content": safe_system_prompt},
-                    {"role": "user",   "content": user_question},
+                    {"role": "user", "content": user_question},
                 ],
-                max_tokens=2000,      # ✅ FIXED: was 500 — root cause of all truncation
+                max_tokens=2000,  # ✅ FIXED: was 500 — root cause of all truncation
                 temperature=0.0,
                 seed=42,
                 stream=False,
@@ -371,7 +441,9 @@ RULES:
             logger.debug(f"SQL attempt 1: {generated[:150]}")
 
             if self._is_sql_truncated(generated):
-                logger.warning("SQL truncated on attempt 1 — retrying with simplified prompt")
+                logger.warning(
+                    "SQL truncated on attempt 1 — retrying with simplified prompt"
+                )
                 return self._generate_sql_retry(
                     client, model_name, user_question, safe_system_prompt
                 )
@@ -402,7 +474,7 @@ RULES:
                 model=model_name,
                 messages=[
                     {"role": "system", "content": safe_system_prompt},
-                    {"role": "user",   "content": simplified},
+                    {"role": "user", "content": simplified},
                 ],
                 max_tokens=1200,
                 temperature=0.0,
@@ -418,7 +490,9 @@ RULES:
                 )
 
             if self._is_sql_truncated(generated):
-                logger.error("SQL still truncated after retry — returning error to caller")
+                logger.error(
+                    "SQL still truncated after retry — returning error to caller"
+                )
                 return (
                     "Error: Unable to generate a complete SQL query for this request. "
                     "Please try a simpler or more specific question."
@@ -447,42 +521,43 @@ RULES:
         """
         if not row_data:
             return {
-                "is_complete":    False,
-                "data_quality":   "empty",
-                "record_count":   0,
+                "is_complete": False,
+                "data_quality": "empty",
+                "record_count": 0,
                 "has_aggregates": False,
-                "insights":       "No data found. Query may need refinement.",
+                "insights": "No data found. Query may need refinement.",
             }
 
         record_count = len(row_data) if isinstance(row_data, list) else 1
 
         has_aggregates = any(
             isinstance(row, dict)
-            and any(k in str(row) for k in ["count_", "sum_", "avg_", "total_", "COUNT"])
+            and any(
+                k in str(row) for k in ["count_", "sum_", "avg_", "total_", "COUNT"]
+            )
             for row in (row_data if isinstance(row_data, list) else [row_data])
         )
 
         is_course_query = (
-            "course" in user_question.lower()
-            and "what" in user_question.lower()
+            "course" in user_question.lower() and "what" in user_question.lower()
         )
 
         if is_course_query and record_count < 5:
-            quality  = "partial"
+            quality = "partial"
             insights = f"⚠️ Only {record_count} courses found — full list may have more."
         elif record_count == 1 and not has_aggregates:
-            quality  = "partial"
+            quality = "partial"
             insights = "⚠️ Only 1 record found — query may be too restrictive."
         else:
-            quality  = "complete"
+            quality = "complete"
             insights = f"✅ Retrieved {record_count} records."
 
         return {
-            "is_complete":    quality == "complete",
-            "data_quality":   quality,
-            "record_count":   record_count,
+            "is_complete": quality == "complete",
+            "data_quality": quality,
+            "record_count": record_count,
             "has_aggregates": has_aggregates,
-            "insights":       insights,
+            "insights": insights,
         }
 
     # ────────────────────────────────────────────
@@ -543,8 +618,10 @@ RULES:
                 else f"\n>>> ✅ **COMPLETE RESULTS**: {validation['record_count']} records\n\n"
             )
         else:
-            persona       = "You are a helpful assistant. Summarize the data clearly for the user."
-            guidance      = ""
+            persona = (
+                "You are a helpful assistant. Summarize the data clearly for the user."
+            )
+            guidance = ""
             result_prefix = ""
 
         prompt = f"""
@@ -615,12 +692,19 @@ Output Guidelines:
 
         q = user_question.lower()
 
-        is_assessment  = any(k in q for k in ["assessment", "test", "question", "asked", "exam"])
-        is_trainer     = any(k in q for k in ["trainer", "staff"])
-        is_course      = "course" in q
-        is_student     = any(k in q for k in ["student", "top", "best", "performer"])
-        is_recruitment = any(k in q for k in ["eligible", "placement", "company", "zoho", "amazon", "tcs"])
-        is_analytics   = any(k in q for k in ["performance", "department", "average", "rank"])
+        is_assessment = any(
+            k in q for k in ["assessment", "test", "question", "asked", "exam"]
+        )
+        is_trainer = any(k in q for k in ["trainer", "staff"])
+        is_course = "course" in q
+        is_student = any(k in q for k in ["student", "top", "best", "performer"])
+        is_recruitment = any(
+            k in q
+            for k in ["eligible", "placement", "company", "zoho", "amazon", "tcs"]
+        )
+        is_analytics = any(
+            k in q for k in ["performance", "department", "average", "rank"]
+        )
 
         data_preview = (
             f"Retrieved {len(data)} records"
@@ -631,13 +715,16 @@ Output Guidelines:
         admin_note = (
             "[ADMIN]: Generate strategic institutional follow-ups — "
             "drill into subgroups, cross-reference metrics, suggest comparisons."
-            if role_id in [1, 2] else ""
+            if role_id in [1, 2]
+            else ""
         )
 
         if is_assessment:
             ctx = "ASSESSMENT: question difficulty, student scores, submission patterns, topic gaps"
         elif is_trainer:
-            ctx = "TRAINER: course assignments, active vs inactive, workload distribution"
+            ctx = (
+                "TRAINER: course assignments, active vs inactive, workload distribution"
+            )
         elif is_course:
             ctx = "COURSE: enrollment stats, completion rates, student performance per course"
         elif is_student:
@@ -687,22 +774,22 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
         except Exception as e:
             logger.error(f"Follow-up generation error: {e}")
             fallbacks = {
-                "assessment":  [
+                "assessment": [
                     "Which students scored highest in this assessment?",
                     "Show questions that most students failed",
                     "Compare this assessment with the previous one",
                 ],
-                "trainer":     [
+                "trainer": [
                     "Show trainer-wise course assignments",
                     "Which trainers are currently inactive?",
                     "Show trainer workload by number of batches",
                 ],
-                "course":      [
+                "course": [
                     "Show enrollment numbers for these courses",
                     "Which course has the lowest completion rate?",
                     "List students who haven't started any course",
                 ],
-                "student":     [
+                "student": [
                     "Show performance breakdown by department",
                     "List at-risk students needing support",
                     "Which skills do top performers have in common?",
@@ -712,17 +799,22 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
                     "What training would improve eligibility rates?",
                     "Department-wise eligibility breakdown",
                 ],
-                "analytics":   [
+                "analytics": [
                     "Show trends over the past two semesters",
                     "Identify underperforming departments",
                     "Compare batch-wise performance",
                 ],
             }
-            if is_assessment:  return fallbacks["assessment"]
-            if is_trainer:     return fallbacks["trainer"]
-            if is_course:      return fallbacks["course"]
-            if is_student:     return fallbacks["student"]
-            if is_recruitment: return fallbacks["recruitment"]
+            if is_assessment:
+                return fallbacks["assessment"]
+            if is_trainer:
+                return fallbacks["trainer"]
+            if is_course:
+                return fallbacks["course"]
+            if is_student:
+                return fallbacks["student"]
+            if is_recruitment:
+                return fallbacks["recruitment"]
             return fallbacks["analytics"]
 
     # ────────────────────────────────────────────

@@ -515,9 +515,17 @@ class SQLExecutor:
 
             elif "syntax" in error_msg.lower():
                 error_code = "SQL_SYNTAX_ERROR"
+                # Extract the specific syntax issue from error message
+                syntax_detail = ""
+                if "near" in error_msg.lower():
+                    # Try to extract what's near the error
+                    near_match = re.search(r"near '([^']+)'", error_msg, re.IGNORECASE)
+                    if near_match:
+                        syntax_detail = f" (near '{near_match.group(1)}')"
                 friendly_msg = (
-                    "SQL syntax error detected during execution. "
-                    "The generated query may be malformed. Please try again."
+                    f"SQL syntax error: {syntax_detail or 'Check query formatting'}. "
+                    "Ensure all keywords have proper spacing (e.g., 'FROM table INNER JOIN' not 'FROM tableINNER'). "
+                    "Check that all parentheses, quotes, and commas are balanced."
                 )
 
             elif "access denied" in error_msg.lower():
