@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     # Frontend Bearer Token (Long-lived) - MUST be set in environment variables
     FRONTEND_BEARER_TOKEN: Optional[str] = None
 
+    # Security: Allowed Hosts for TrustedHostMiddleware
+    ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "*.onrender.com", "192.168.0.125"]
+
     @property
     def DATABASE_URL(self) -> str:
         from urllib.parse import quote_plus

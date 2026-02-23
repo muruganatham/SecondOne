@@ -51,7 +51,7 @@ app.add_middleware(
 
 # Add security headers middleware
 app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "192.168.0.125"]
+    TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS
 )
 
 # Custom middleware for logging and security headers
