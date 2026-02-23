@@ -33,6 +33,8 @@ logger = get_logger("ai_query")
 JOB_STORE: Dict[str, Any] = {}
 
 
+from app.models.saved_queries import SavedQuery
+
 class AIQueryRequest(BaseModel):
     question: str
     model: str = "deepseek-chat"
@@ -40,11 +42,19 @@ class AIQueryRequest(BaseModel):
     user_role: Optional[int] = None
 
 
+class SaveQueryRequest(BaseModel):
+    job_id: str
+    name: str
+    description: Optional[str] = None
+    slug: str
+
+
 class AIQueryResponse(BaseModel):
     answer: str
     sql: str | None = None
     data: list | None = None
     follow_ups: list = []
+    job_id: Optional[str] = None # Added for saving later
     execution_time_ms: Optional[int] = None
     cached: Optional[bool] = None
 
@@ -263,67 +273,57 @@ Use this analysis to guide your SQL generation.
 Generate SQL for: "{question}"
 """
     print('final_system_prompt', final_system_prompt)
-    # STEP 2: Generate SQL
-    generated_sql = await run_in_threadpool(
-        ai_service.generate_sql, final_system_prompt, question, model
-    )
+    # STEP 2 & 3: Generate and Execute SQL (with Self-Correction Loop)
+    max_retries = 2
+    generated_sql = ""
+    execution_result = {}
+    error_message = None
 
-    import re
-
-    # Extract only the SQL block. Robustly handles markdown, conversational prefixes/suffixes.
-    sql_match = re.search(
-        r"SELECT\s+.*?(?:;|$)", generated_sql, re.IGNORECASE | re.DOTALL
-    )
-    if sql_match:
-        generated_sql = sql_match.group(0).strip()
-
-    # Strip markdown if any remains
-    generated_sql = generated_sql.replace("```sql", "").replace("```", "").strip()
-
-    # Final check: Must be a SELECT query
-    if not generated_sql.upper().startswith("SELECT"):
-        # If it's something like "Here is the query: SELECT...", retry extraction
-        second_match = re.search(
-            r"(SELECT\s+.*)", generated_sql, re.IGNORECASE | re.DOTALL
+    for attempt in range(max_retries):
+        generated_sql = await run_in_threadpool(
+            ai_service.generate_sql, 
+            final_system_prompt, 
+            question, 
+            model,
+            None, # result_table
+            error_message
         )
-        if second_match:
-            generated_sql = second_match.group(1)
 
-    # Intercept Knowledge/Security
-    # (Skip for Admins - they process everything as SQL)
-    if current_role_id not in [1, 2] and (
-        "Knowledge Query" in generated_sql
-        or "SELECT 'Knowledge Query'" in generated_sql
-    ):
-        human_answer = await run_in_threadpool(
-            ai_service.answer_general_question, question, model
+        import re
+        # Extract only the SQL block
+        sql_match = re.search(
+            r"SELECT\s+.*?(?:;|$)", generated_sql, re.IGNORECASE | re.DOTALL
         )
-        return {"answer": human_answer, "sql": None, "data": [], "follow_ups": []}
+        if sql_match:
+            generated_sql = sql_match.group(0).strip()
 
-    if "ACCESS_DENIED_VIOLATION" in generated_sql:
-        return {
-            "answer": "Access Denied: Restricted data boundary.",
-            "sql": None,
-            "data": [],
-            "follow_ups": [],
-        }
+        # Clean markdown
+        generated_sql = generated_sql.replace("```sql", "").replace("```", "").strip()
 
-    # STEP 3: Execute SQL
-    execution_result = await run_in_threadpool(
-        sql_executor.execute_query, generated_sql
-    )
+        # STEP 3: Execute SQL
+        execution_result = await run_in_threadpool(
+            sql_executor.execute_query, generated_sql
+        )
 
-    # Debug logging for failures
+        # If success, break loop
+        if "error" not in execution_result:
+            logger.info(f"✅ SQL execution succeeded on attempt {attempt + 1}")
+            break
+        
+        # If error, log and prepare for correction
+        error_message = execution_result.get("error")
+        logger.warning(f"⚠️ SQL Attempt {attempt + 1} failed: {error_message}. Retrying with correction...")
+
+    # Final Failure Handling
     if "error" in execution_result:
+        # Debug logging for persistent failures
         with open("debug_ai.log", "a", encoding="utf-8") as f:
-            f.write(f"\n[{datetime.now()}] QUESTION: {question}\n")
-            f.write(f"SQL: {generated_sql}\n")
-            f.write(f"ERROR: {execution_result.get('error')}\n")
+            f.write(f"\n[{datetime.now()}] PERSISTENT FAILURE | QUESTION: {question}\n")
+            f.write(f"LAST SQL: {generated_sql}\n")
+            f.write(f"LAST ERROR: {error_message}\n")
 
-    if "error" in execution_result:
-        # Debugging: Return SQL and Error to Admin
         debug_data = (
-            [{"error": execution_result.get("error")}]
+            [{"error": error_message}]
             if current_role_id in [1, 2]
             else None
         )
@@ -332,7 +332,7 @@ Generate SQL for: "{question}"
         answer = (
             "I couldn't retrieve that information. The data might not be recorded yet."
         )
-        if "doesn't exist" in execution_result.get("error", "").lower():
+        if "doesn't exist" in error_message.lower():
             answer = "I couldn't find the specific table or data requested."
 
         return {
@@ -382,11 +382,22 @@ Generate SQL for: "{question}"
         except:
             db.rollback()
 
+    # Final Job Storage for persistence (Saved Queries)
+    job_id = str(uuid.uuid4())
+    JOB_STORE[job_id] = {
+        "status": "completed",
+        "sql": generated_sql,
+        "question": question,
+        "data_count": len(data) if isinstance(data, list) else 0,
+        "created_at": time.time(),
+    }
+
     return {
         "answer": human_answer,
         "sql": generated_sql if current_role_id in [1, 2] else None,
         "data": data if current_role_id in [1, 2] else None,
         "follow_ups": follow_ups,
+        "job_id": job_id,
     }
 
 
@@ -448,3 +459,68 @@ async def get_job_status(job_id: str):
     if job_id not in JOB_STORE:
         raise HTTPException(status_code=404, detail="Job not found")
     return JOB_STORE[job_id]
+
+
+@router.post("/save-query")
+async def save_verified_query(
+    request: SaveQueryRequest,
+    db: Session = Depends(get_db),
+    current_user: Users = Depends(get_current_user),
+):
+    """Save a successful query from the Job Store to the permanent database."""
+    if request.job_id not in JOB_STORE:
+        raise HTTPException(
+            status_code=404, detail="Original query job not found or expired"
+        )
+
+    job_data = JOB_STORE[request.job_id]
+
+    # Create saved query entry
+    new_saved = SavedQuery(
+        name=request.name,
+        slug=request.slug,
+        description=request.description,
+        sql_query=job_data["sql"],
+        creator_id=current_user.id,
+    )
+
+    try:
+        db.add(new_saved)
+        db.commit()
+        db.refresh(new_saved)
+        return {
+            "status": "success",
+            "slug": new_saved.slug,
+            "message": "Query saved as API endpoint",
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Failed to save query: {str(e)}")
+
+
+@router.get("/query/{slug}")
+async def execute_saved_query(
+    slug: str,
+    db: Session = Depends(get_db),
+    current_user: Users = Depends(get_current_user),
+):
+    """Execute a previously saved query by its slug."""
+    saved = db.query(SavedQuery).filter(SavedQuery.slug == slug).first()
+    if not saved:
+        raise HTTPException(status_code=404, detail="Saved query not found")
+
+    # Execute the saved SQL
+    execution_result = await run_in_threadpool(
+        sql_executor.execute_query, saved.sql_query
+    )
+
+    if "error" in execution_result:
+        raise HTTPException(
+            status_code=500, detail=f"Execution error: {execution_result['error']}"
+        )
+
+    return {
+        "name": saved.name,
+        "data": execution_result["data"],
+        "count": len(execution_result["data"]),
+    }

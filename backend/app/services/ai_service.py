@@ -398,6 +398,7 @@ RULES:
         user_question: str,
         model: str = "deepseek-chat",
         result_table: str = None,
+        error_message: str = None,
     ) -> str:
         """
         Generates SQL from a natural language question.
@@ -409,6 +410,8 @@ RULES:
             result_table:   Optional college result table name.
                             When provided, real columns are injected into
                             the prompt so AI never guesses column names.
+            error_message:  Optional error message from a failed DB execution 
+                            to trigger self-correction.
 
         Returns:
             A complete, valid SQL SELECT string — or "Error: ..." on failure.
@@ -425,7 +428,17 @@ RULES:
                 f"{self._build_result_table_schema_hint(result_table)}\n"
             )
 
-        safe_system_prompt = f"""{system_prompt}{schema_hint}
+        correction_hint = ""
+        if error_message:
+            correction_hint = (
+                f"\n\n### ⚠️ SELF-CORRECTION REQUIRED:\n"
+                f"Your previous attempt failed with the following error from the database:\n"
+                f"'{error_message}'\n\n"
+                f"Please analyze the error (e.g., missing column, syntax error, GROUP BY issue) "
+                f"and provide a corrected SQL query that resolves it."
+            )
+
+        safe_system_prompt = f"""{system_prompt}{schema_hint}{correction_hint}
 
 ### CONFIRMED TABLE FACTS (always follow — verified via DESCRIBE):
 
