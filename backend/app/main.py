@@ -34,14 +34,6 @@ print("✅ FastAPI App initialized.")
 # CORS Configuration (Production-Safe)
 allowed_origins = list(settings.ALLOWED_CORS_ORIGINS)
 
-if settings.PROJECT_NAME.lower() == "development":
-    allowed_origins = ["*"]  # Allow all for development only
-
-# Add security headers middleware
-app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS
-)
-
 # Custom middleware for logging and security headers
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
@@ -69,15 +61,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 
-# CORS Configuration (Production-Safe)
-# We add this LAST so it handles the request FIRST (crucial for preflight)
+# CORS Configuration
+# We apply this LAST so it is the FIRST to execute
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https?://.*\.onrender\.com",
+    allow_origin_regex=r"https?://(demolab\.amypo\.ai|.*\.onrender\.com)",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["*"], # Allow all headers to prevent preflight rejection
 )
 
 
