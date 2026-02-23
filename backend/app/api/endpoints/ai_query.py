@@ -51,8 +51,6 @@ class SaveQueryRequest(BaseModel):
 
 class AIQueryResponse(BaseModel):
     answer: str
-    sql: str | None = None
-    data: list | None = None
     follow_ups: list = []
     job_id: Optional[str] = None # Added for saving later
     execution_time_ms: Optional[int] = None
@@ -394,8 +392,6 @@ Generate SQL for: "{question}"
 
     return {
         "answer": human_answer,
-        "sql": generated_sql if current_role_id in [1, 2] else None,
-        "data": data if current_role_id in [1, 2] else None,
         "follow_ups": follow_ups,
         "job_id": job_id,
     }
