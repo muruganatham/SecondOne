@@ -40,7 +40,8 @@ class Settings(BaseSettings):
         "http://localhost:3001",
         "http://127.0.0.1:3000",
         "http://192.168.0.125:3000",
-        "*.onrender.com"
+        "https://demolab.amypo.ai",
+        "http://demolab.amypo.ai"
     ]
 
     @property
