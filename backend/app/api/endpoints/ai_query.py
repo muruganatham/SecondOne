@@ -81,6 +81,7 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
     
     # 1.5 Role-Based Search Control
     role_instruction = ""
+    user_context_str = ""
     current_role_id = int(str(current_user.role or 7))
     
     if current_role_id in [1, 2]: # Admin
@@ -223,13 +224,13 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
                         "follow_ups": [],
                     }
 
-    # STEP 1.5: Deep Schema Analysis
-    schema_summary = schema_context.get_schema_summary()
+    # STEP 1.5: Deep Schema Analysis (Analyzing ALL Table Names)
+    all_table_names = schema_context.get_all_table_names()
 
     analysis_result = await run_in_threadpool(
         ai_service.analyze_question_with_schema, 
         question, 
-        schema_summary, 
+        all_table_names, 
         model
     )
 
@@ -261,7 +262,7 @@ Use this analysis to guide your SQL generation.
 ### USER TASK
 Generate SQL for: "{question}"
 """
-    
+    print('final_system_prompt', final_system_prompt)
     # STEP 2: Generate SQL
     generated_sql = await run_in_threadpool(
         ai_service.generate_sql, final_system_prompt, question, model

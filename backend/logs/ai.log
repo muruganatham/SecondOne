@@ -1,0 +1,59 @@
+2026-02-19 17:08:54 | ai_service | ERROR | generate_sql:414 | SQL generation error: 'AIService' object has no attribute '_is_sql_truncated'
+2026-02-19 17:08:54 | ai_service | ERROR | generate_sql:414 | SQL generation error: 'AIService' object has no attribute '_is_sql_truncated'
+2026-02-20 09:46:28 | ai_service | ERROR | analyze_question_with_schema:322 | Schema Analysis Error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:46:28 | ai_service | ERROR | analyze_question_with_schema:322 | Schema Analysis Error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:46:28 | ai_service | ERROR | generate_sql:457 | SQL generation error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:46:28 | ai_service | ERROR | generate_sql:457 | SQL generation error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:47:03 | ai_service | ERROR | analyze_question_with_schema:322 | Schema Analysis Error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:47:03 | ai_service | ERROR | analyze_question_with_schema:322 | Schema Analysis Error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:47:03 | ai_service | ERROR | generate_sql:457 | SQL generation error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 09:47:03 | ai_service | ERROR | generate_sql:457 | SQL generation error: 'Settings' object has no attribute 'AI_MAX_OUTPUT_TOKENS'
+2026-02-20 12:07:29 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:07:29 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:09:37 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:09:37 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:10:36 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:10:36 | ai_service | ERROR | generate_sql:535 | SQL generation error: name 'prompt' is not defined
+2026-02-20 12:13:41 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 12:13:41 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 12:16:10 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 12:16:10 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 13:05:43 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 13:05:43 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 14:14:13 | ai_service | WARNING | generate_sql:525 | SQL truncated on attempt 1 — retrying with simplified prompt
+2026-02-20 14:14:13 | ai_service | WARNING | generate_sql:525 | SQL truncated on attempt 1 — retrying with simplified prompt
+2026-02-20 14:14:42 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-20 14:14:42 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:01:10 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:01:10 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:04:28 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:04:28 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:05:45 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:05:45 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:11:34 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:11:34 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:16:17 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:16:17 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:19:30 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:19:30 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:20:32 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:20:32 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:22:54 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:22:54 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:24:05 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:24:05 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:31:52 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:31:52 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:32:39 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:32:39 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:33:20 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 11:33:20 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:09:23 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:09:23 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:13:51 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:13:51 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:15:45 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:15:45 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:18:01 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 12:18:01 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-23 13:02:04 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined

@@ -18,6 +18,7 @@ FIXES & CHANGES:
 import os
 import re
 import json
+from datetime import datetime
 from openai import OpenAI
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -145,6 +146,45 @@ class AIService:
         # Always use DeepSeek
         self.client = self.deepseek_client
 
+    def _estimate_tokens(self, text: str) -> int:
+        """Estimate token count (approx 4 chars per token)."""
+        if not text:
+            return 0
+        return len(text) // 4
+
+    def _log_token_usage(
+        self, 
+        interaction_type: str, 
+        usage, 
+        user_question: str, 
+        model: str,
+        input_breakdown: dict = None
+    ):
+        """Log token usage with optional breakdown."""
+        if not usage:
+            return
+
+        try:
+            breakdown_str = ""
+            if input_breakdown:
+                parts = [f"{k}: ~{v}" for k, v in input_breakdown.items()]
+                breakdown_str = f" ({', '.join(parts)})"
+
+            log_entry = (
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | {interaction_type.upper():<15} | "
+                f"Total: {usage.total_tokens:<5} "
+                f"(Input: {usage.prompt_tokens:<5}{breakdown_str}, Output: {usage.completion_tokens:<5}) | "
+                f"Model: {model:<15} | Q: {user_question[:50]}..."
+            )
+            
+            # Append to token_usage.log in the backend directory
+            with open("token_usage.log", "a", encoding="utf-8") as f:
+                f.write(log_entry + "\n")
+                
+        except Exception as e:
+            logger.error(f"Failed to log token usage: {e}")
+
+
     def _get_client(self, model: str):
         """Get the appropriate OpenAI client for the specified model"""
         # For now, we only support DeepSeek
@@ -231,7 +271,10 @@ USER CONTEXT:
 
 YOUR TASK:
 1. Identify EVERYTHING the user is asking for.
-2. Search the "AVAILABLE TABLES" list for ANY table that could contain this data.
+2. **DEEP SEARCH MODE**: The user requires a thorough analysis. Do not stop at the first match.
+   - Search for indirect relationships.
+   - If a table seems empty or irrelevant, check for mapping tables.
+   - If the data is not in the obvious table, look for related tables (e.g. `colleges` -> `users` -> `results`).
 3. CRITICAL: Data might be stored:
    - DIRECTLY (e.g. user_id is in the table).
    - HIERARCHICALLY (e.g. table is linked to a College, Dept, Batch, or Section mapping).
@@ -246,7 +289,7 @@ Reply ONLY in this exact JSON format (no markdown, no extra text):
     "query_type": "simple|complex|general_knowledge",
     "recommended_tables": ["table1", "table2"],
     "suggested_sql_approach": "one-line description",
-    "reasoning": "one sentence max"
+    "reasoning": "detailed reasoning allowing for deep analysis"
 }}
 
 RULES:
@@ -270,12 +313,31 @@ RULES:
                     },
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=1500,  # Increased per user request for complex queries
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),  # Fallback to 2000 if not set
                 temperature=0.1,
                 stream=False,
             )
 
             raw = response.choices[0].message.content.strip()
+
+            # Log token usage
+            if response.usage:
+                # Estimate breakdown
+                sys_tokens = self._estimate_tokens(analysis_prompt.split("USER QUESTION")[0])
+                q_tokens = self._estimate_tokens(user_question)
+                schema_tokens = self._estimate_tokens(schema_context)
+                
+                self._log_token_usage(
+                    "SCHEMA_ANALYSIS", 
+                    response.usage, 
+                    user_question, 
+                    model_name,
+                    input_breakdown={
+                        "Schema": schema_tokens,
+                        "System": sys_tokens,
+                        "Q": q_tokens
+                    }
+                )
 
             # Strip markdown fences if present
             if "```json" in raw:
@@ -417,7 +479,7 @@ RULES:
                     {"role": "system", "content": safe_system_prompt},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=2000,  # ✅ FIXED: was 500 — root cause of all truncation
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),  # Fallback to 2000 if not set
                 temperature=0.0,
                 seed=42,
                 stream=False,
@@ -428,13 +490,32 @@ RULES:
             # Log token usage
             if hasattr(response, "usage") and response.usage:
                 u = response.usage
+                
+                # Estimate breakdown for SQL Gen
+                # prompt contains: detailed schema, role instruction, analysis result
+                # roughly:
+                schema_part = safe_system_prompt.split("===")[0] if "===" in safe_system_prompt else ""
+                sys_part = safe_system_prompt.split("===")[1] if "===" in safe_system_prompt else ""
+                
+                self._log_token_usage(
+                    "SQL_GENERATION", 
+                    u, 
+                    user_question, 
+                    model_name,
+                    input_breakdown={
+                        "Schema": self._estimate_tokens(schema_part),
+                        "System": self._estimate_tokens(sys_part),
+                        "Q": self._estimate_tokens(user_question)
+                    }
+                )
                 logger.info(
                     f"SQL tokens | prompt={u.prompt_tokens} "
                     f"completion={u.completion_tokens} total={u.total_tokens}"
                 )
-                if u.completion_tokens > 1800:
+                limit = getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000)
+                if u.completion_tokens > (limit * 0.9):
                     logger.warning(
-                        f"⚠️ Completion near limit ({u.completion_tokens}/2000) — "
+                        f"Completion near limit ({u.completion_tokens}/{limit}) - "
                         "consider simplifying question or raising max_tokens further."
                     )
 
@@ -485,6 +566,9 @@ RULES:
             generated = response.choices[0].message.content
 
             if hasattr(response, "usage") and response.usage:
+                self._log_token_usage(
+                    "SQL_RETRY", response.usage, user_question, model_name
+                )
                 logger.info(
                     f"SQL retry tokens | completion={response.usage.completion_tokens}/1200"
                 )
@@ -658,10 +742,23 @@ Output Guidelines:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                max_tokens=2000,
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),
                 temperature=0.2,
                 seed=42,
             )
+            # Log token usage
+            if response.usage:
+                self._log_token_usage(
+                    "ANSWER_SYNTHESIS", 
+                    response.usage, 
+                    user_question, 
+                    model_name,
+                    input_breakdown={
+                        "Data": self._estimate_tokens(json.dumps(data, default=str)),
+                        "SQL": self._estimate_tokens(sql_query),
+                        "System": 800  # Approx
+                    }
+                )
             return result_prefix + response.choices[0].message.content
 
         except Exception as e:
@@ -759,11 +856,25 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
                     },
                     {"role": "user", "content": prompt},
                 ],
-                max_tokens=300,
+                max_tokens=1000,
                 temperature=0.6,
             )
 
             lines = response.choices[0].message.content.strip().split("\n")
+            
+            # Log token usage
+            if response.usage:
+                self._log_token_usage(
+                    "FOLLOW_UPS", 
+                    response.usage, 
+                    user_question, 
+                    model_name,
+                    input_breakdown={
+                       "Context": 50,
+                       "DataPreview": 20
+                    }
+                )
+
             cleaned = [
                 re.sub(r"^[\d\.\-\)\:\s]*", "", line).strip()
                 for line in lines

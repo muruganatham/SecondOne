@@ -249,6 +249,18 @@ R10 AGGREGATION IN SUBQUERY PATTERN (for eligibility/performance with aggregates
     - Join subquery result to users/user_academics
     - This avoids GROUP BY conflicts with JSON fields and ONLY_FULL_GROUP_BY errors
 
+R11 TiDB COMPATIBILITY (LIMIT IN SUBQUERIES)
+    - NEVER use LIMIT inside a subquery that is part of an IN, ANY, ALL, or SOME clause.
+    - When using LIMIT in a derived table (FROM subquery), ALWAYS include an ORDER BY inside the subquery to ensure determinism, and ensure the alias is outside the parentheses.
+    - ✅ SELECT * FROM (SELECT id FROM users ORDER BY id LIMIT 5) AS u
+    - ❌ WHERE id IN (SELECT id FROM users LIMIT 5)
+
+R12 ALIAS VISIBILITY & CONSISTENCY IN ORDER BY
+    - MySQL/TiDB will fail with 'Unknown column' if the name in ORDER BY does not EXACTLY match a name in the SELECT list.
+    - ✅ SELECT COUNT(*) AS issue_count ... ORDER BY issue_count
+    - ❌ SELECT COUNT(*) AS sugge ... ORDER BY issue_count (Name Mismatch Error 1054)
+    - If the query has subqueries, prefer re-calculating the expression `ORDER BY COUNT(*)` or ensuring the alias is bubbled up to the final SELECT.
+
 ---
 
 ## FORBIDDEN TABLES

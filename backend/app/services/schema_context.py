@@ -56,81 +56,44 @@ class SchemaContext:
     def get_system_prompt(self) -> str:
         return self.context_string
 
-    def get_schema_summary(self) -> str:
+    def get_all_table_names(self) -> str:
         """
-        Returns a summary of ALL available tables for Phase 1 Analysis.
-        Dynamically generated from schema data.
+        Returns a flat list of ALL available tables with row counts and descriptions.
+        Provides the AI with rich context for Stage 1 analysis while keeping tokens relatively low.
         """
         lines = []
-        lines.append("AVAILABLE TABLES & METRICS:")
-
-        # Logic to group or list tables
-        # for t_name, details in self.schema_data['tables'].items():
-        #     if t_name in self.available_tables:
-        #         row_count = details['schema'].get('row_count', 0)
-        #         lines.append(f"- {t_name} (Rows: {row_count})")
-
-        # Use our curated category list for better semantic understanding
-        categories = {
-            "Identity": [
-                "users",
-                "user_academics",
-                "colleges",
-                "departments",
-                "batches",
-                "sections",
-            ],
-            "LMS": [
-                "courses",
-                "user_course_enrollments",
-                "course_academic_maps",
-                "course_wise_segregations",
-                "topics",
-                "sub_topics",
-            ],
-            "Assessments": [
-                "tests",
-                "user_assessments",
-                "submission_tracks",
-                "2025_submission_tracks",
-                "2026_submission_tracks",
-            ],
-            "Questions": [
-                "academic_qb_codings",
-                "academic_qb_mcqs",
-                "standard_qb_codings",
-                "standard_qb_mcqs",
-            ],
-            "Results": [
-                "[college]_coding_result",
-                "[college]_mcq_result",
-            ],  # Generic placeholders
-            "Engagement": ["certificates", "discussions", "staff_trainer_feedback"],
-        }
-
-        for category, tables in categories.items():
-            lines.append(f"\n[{category}]:")
-            for t in tables:
-                if "[" in t:  # Dynamic placeholder
-                    lines.append(
-                        f"- {t}: College-specific results (e.g., srec_2025_2_coding_result)"
-                    )
-                elif t in self.available_tables:
-                    details = self.schema_data["tables"].get(t, {})
-                    rows = details.get("schema", {}).get("row_count", "?")
-                    lines.append(f"- {t} (Rows: {rows})")
-
-        # Add any other large tables not in categories
-        lines.append("\n[Others]:")
-        known = set(t for cat in categories.values() for t in cat)
-        for t_name in sorted(self.available_tables):
-            if (
-                t_name not in known
-                and "failed" not in t_name
-                and "migration" not in t_name
-            ):
-                lines.append(f"- {t_name}")
-
+        lines.append("DATABASE TABLES (ALL NAMES + CONTEXT):")
+        
+        # 1. Filter out system/migration tables
+        filtered_tables = [
+            t for t in self.available_tables 
+            if "migration" not in t.lower() and "failed_jobs" not in t.lower()
+        ]
+        
+        # 2. Add as a detailed list
+        for t in sorted(filtered_tables):
+            details = self.schema_data.get("tables", {}).get(t, {})
+            rows = details.get("schema", {}).get("row_count", 0)
+            
+            # Semantic Hinting based on table name patterns
+            context = ""
+            if "_coding_result" in t: context = "Student coding test scores and solutions"
+            elif "_mcq_result" in t: context = "Student MCQ/Fillup test scores"
+            elif "_test_data" in t: context = "Test metadata and settings"
+            elif "user_academics" == t: context = "Student academic hierarchy (College, Dept, Batch, Section)"
+            elif "users" == t: context = "User profiles, roles, and emails"
+            elif "courses" == t: context = "LMS course list and titles"
+            elif "topics" == t: context = "Syllabus topics for courses"
+            elif "academic_qb" in t: context = "Question bank for academic assessments"
+            elif "standard_qb" in t: context = "Standard question bank (coding/mcq)"
+            elif "placement" in t: context = "Recruitment and company eligibility data"
+            elif "enrollment" in t: context = "Course and student mapping"
+            elif "test_question_maps" == t: context = "Bridge between tests and questions"
+            elif "tests" == t: context = "Main assessment metadata"
+            
+            hint = f" | Context: {context}" if context else ""
+            lines.append(f"- {t} (Rows: {rows}){hint}")
+                
         return "\n".join(lines)
 
     def get_detailed_schema(self, table_names: list) -> str:
@@ -147,40 +110,8 @@ class SchemaContext:
                 # fuzzy match?
                 pass
 
-        # 2. Always add Core Tables
-        mandatory = {
-            "users",
-            "user_academics",
-            "colleges",
-            "departments",
-            "course_wise_segregations",
-            "courses",
-        }
-        real_tables.update(mandatory.intersection(self.available_tables))
-
-        # 3. Build JSON Dump for these tables
-        extracted_schema = {"tables": {}}
-        for t in real_tables:
-            if t in self.schema_data["tables"]:
-                extracted_schema["tables"][t] = self.schema_data["tables"][t]
-
-        # 4. Add Mappings for these tables
-        extracted_mappings = {}
-        for t in real_tables:
-            if t in self.mappings:
-                extracted_mappings[t] = self.mappings[t]
-
-        # 5. Construct Prompt
-        lines = []
-        lines.append("### SELECTED TABLE SCHEMAS (FULL DEFINITION):")
-        lines.append(json.dumps(extracted_schema, indent=2))
-
-        lines.append("\n### RELEVANT ENUM MAPPINGS:")
-        lines.append(json.dumps(extracted_mappings, indent=2))
-
-        return "\n".join(lines)
-
-        # Always include identity/hierarchy tables for student-centric JOINs
+        # 2. Smart Table Injection (Core vs. Contextual)
+        # Identity tables are universal (always needed for role-based scoping)
         mandatory = {
             "users",
             "user_academics",
@@ -188,12 +119,84 @@ class SchemaContext:
             "departments",
             "batches",
             "sections",
+            "courses",
             "course_academic_maps",
-            "user_course_enrollments",
-            "course_wise_segregations",
         }
-        target_tables = set(table_names).union(mandatory)
-        return self.build_context_string(list(target_tables))
+        
+        # Assessment/Result infrastructure is only added if relevant
+        # (e.g., if AI recommended a result table or a test-related table)
+        is_assessment_query = any(
+            "result" in t.lower() or 
+            "test" in t.lower() or 
+            "qb" in t.lower() or 
+            "segregation" in t.lower() or
+            "enrollment" in t.lower()
+            for t in real_tables
+        )
+        
+        if is_assessment_query:
+            mandatory.update({
+                "tests",
+                "test_question_maps",
+                "standard_qb_codings",
+                "standard_qb_mcqs",
+                "course_wise_segregations",
+                "user_course_enrollments",
+                "academic_qb_codings",
+                "academic_qb_mcqs"
+            })
+
+        real_tables.update(mandatory.intersection(self.available_tables))
+
+        # 3. Build JSON Dump for these tables
+        extracted_schema = {"tables": {}}
+        for t in real_tables:
+            if t in self.schema_data["tables"]:
+                raw_table = self.schema_data["tables"][t]
+                
+                # Simplify Columns
+                simple_columns = []
+                for col in raw_table.get("schema", {}).get("columns", []):
+                    simple_columns.append(
+                        f"{col['Field']} ({col['Type']})" + 
+                        (f" [PK]" if col['Key'] == 'PRI' else "") +
+                        (f" [FK]" if col['Key'] == 'MUL' else "")
+                    )
+
+                # Simplify Enums
+                simple_enums = {}
+                for col, data in raw_table.get("enum_fields", {}).items():
+                    # Extract just the values, ignore counts
+                    if isinstance(data, dict) and "values" in data:
+                        simple_enums[col] = [
+                            v["value"] for v in data["values"] 
+                            if isinstance(v, dict) and "value" in v
+                        ]
+                
+                extracted_schema["tables"][t] = {
+                    "columns": simple_columns,
+                    "row_count": raw_table.get("schema", {}).get("row_count", 0),
+                    "enums": simple_enums
+                }
+
+        # 4. Add Mappings for these tables (keep as is, usually small)
+        extracted_mappings = {}
+        for t in real_tables:
+            if t in self.mappings:
+                extracted_mappings[t] = self.mappings[t]
+
+        # 5. Construct Prompt
+        lines = []
+        lines.append("### SELECTED TABLE SCHEMAS (SIMPLIFIED):")
+        lines.append(json.dumps(extracted_schema, indent=2))
+
+        if extracted_mappings:
+            lines.append("\n### RELEVANT MANUAL MAPPINGS:")
+            lines.append(json.dumps(extracted_mappings, indent=2))
+
+        return "\n".join(lines)
+
+
 
     def build_context_string(self, table_list: list) -> str:
         """Constructs the high-accuracy prompt with specific table columns and Enums"""

@@ -1,0 +1,4 @@
+2026-02-23 10:10:46 | ai_app | ERROR | health_check:132 | Health check failed: name 'datetime' is not defined
+2026-02-23 10:10:46 | ai_app | ERROR | health_check:132 | Health check failed: name 'datetime' is not defined
+2026-02-23 10:22:19 | ai_app | INFO | health_check:129 | Health check: healthy
+2026-02-23 10:22:19 | ai_app | INFO | health_check:129 | Health check: healthy

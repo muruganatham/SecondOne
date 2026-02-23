@@ -25,7 +25,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 Hours
     MASTER_BEARER_TOKEN: str = "master-key-must-be-set-in-env"
 
-    MAX_TOKEN_LIMIT: int = 4096
+    MAX_TOKEN_LIMIT: int = 32000
+    AI_MAX_OUTPUT_TOKENS: int = 8000
 
     # Frontend Bearer Token (Long-lived) - MUST be set in environment variables
     FRONTEND_BEARER_TOKEN: Optional[str] = None
