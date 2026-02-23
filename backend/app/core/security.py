@@ -56,7 +56,7 @@ async def get_current_user(token: str = Depends(api_key_header), db: Session = D
     )
     
     # Support Master API Key for internal access
-    master_key = getattr(settings, "MASTER_BEARER_TOKEN", None)
+    master_key = getattr(settings, "MASTER_API_KEY", None)
     static_token = getattr(settings, "FRONTEND_BEARER_TOKEN", None)
     
     if master_key and token == master_key:

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     # Database Configuration (Must be defined in .env or Environment)
     DB_HOST: str 
+    
     DB_PORT: int 
     DB_USER: str 
     DB_PASSWORD: str 
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "temporary-secret-key-change-this-in-env"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 Hours
-    MASTER_BEARER_TOKEN: str = "master-key-must-be-set-in-env"
+    MASTER_API_KEY: str = "master-key-must-be-set-in-env"
 
     MAX_TOKEN_LIMIT: int = 32000
     AI_MAX_OUTPUT_TOKENS: int = 8000
