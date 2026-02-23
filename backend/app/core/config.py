@@ -34,6 +34,15 @@ class Settings(BaseSettings):
     # Security: Allowed Hosts for TrustedHostMiddleware
     ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "*.onrender.com", "192.168.0.125"]
 
+    # Security: CORS Origins
+    ALLOWED_CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://192.168.0.125:3000",
+        "*.onrender.com"
+    ]
+
     @property
     def DATABASE_URL(self) -> str:
         from urllib.parse import quote_plus

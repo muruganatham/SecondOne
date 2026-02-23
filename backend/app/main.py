@@ -32,22 +32,10 @@ app = FastAPI(
 print("✅ FastAPI App initialized.")
 
 # CORS Configuration (Production-Safe)
-allowed_origins = [
-    "http://192.168.0.125:3000",
-    "http://localhost:3000",
-    "http://localhost:3001",
-]
+allowed_origins = list(settings.ALLOWED_CORS_ORIGINS)
 
 if settings.PROJECT_NAME.lower() == "development":
-    allowed_origins.append("*")  # Allow all for development only
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
-)
+    allowed_origins = ["*"]  # Allow all for development only
 
 # Add security headers middleware
 app.add_middleware(
@@ -80,6 +68,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(SecurityHeadersMiddleware)
+
+# CORS Configuration (Production-Safe)
+# We add this LAST so it handles the request FIRST (crucial for preflight)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 
 @app.get("/")
