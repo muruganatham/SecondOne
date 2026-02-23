@@ -34,42 +34,22 @@ print("✅ FastAPI App initialized.")
 # CORS Configuration (Production-Safe)
 allowed_origins = list(settings.ALLOWED_CORS_ORIGINS)
 
-# Custom middleware for logging and security headers
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
-
-
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Add security headers to all responses"""
-
-    async def dispatch(self, request, call_next):
-        response: Response = await call_next(request)
-
-        # Security headers
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Strict-Transport-Security"] = (
-            "max-age=31536000; includeSubDomains"
-        )
-
-        # Remove server info
-        del response.headers["server"]
-
-        return response
-
-
-app.add_middleware(SecurityHeadersMiddleware)
-
 # CORS Configuration
 # We apply this LAST so it is the FIRST to execute
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_origin_regex=r"https?://(demolab\.amypo\.ai|.*\.onrender\.com)",
+    allow_origins=[
+        "https://demolab.amypo.ai",
+        "http://demolab.amypo.ai",
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000"
+    ],
+    allow_origin_regex=r"https?://.*\.onrender\.com",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"], # Allow all headers to prevent preflight rejection
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
