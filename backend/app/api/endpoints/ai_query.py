@@ -25,6 +25,7 @@ from app.prompts import (
 )
 
 from app.services import sql_executor
+from app.services.query_classifier import query_classifier
 
 router = APIRouter()
 logger = get_logger("ai_query")
@@ -52,9 +53,13 @@ class SaveQueryRequest(BaseModel):
 class AIQueryResponse(BaseModel):
     answer: str
     follow_ups: list = []
-    job_id: Optional[str] = None # Added for saving later
+    job_id: Optional[str] = None
     execution_time_ms: Optional[int] = None
     cached: Optional[bool] = None
+    confidence: Optional[float] = None      # 1.0 = first-attempt success, degrades on retries
+    data_quality: Optional[str] = None     # "complete" | "partial" | "empty" | "estimated"
+    row_count: Optional[int] = None        # number of rows returned
+    attempt_count: Optional[int] = None    # how many SQL attempts were needed
 
 
 # --- CORE LOGIC ---
@@ -232,50 +237,75 @@ async def _process_ai_query(request: AIQueryRequest, db: Session) -> dict:
                         "follow_ups": [],
                     }
 
-    # STEP 1.5: Deep Schema Analysis (Analyzing ALL Table Names)
-    all_table_names = schema_context.get_all_table_names()
+    # STEP 1.5: Query Intent Classification (zero API cost)
+    intent = query_classifier.classify(question)
+    logger.info(f"🎯 Intent: {intent.intent} (conf={intent.confidence}) | {intent.metadata.get('reason', '')}")
 
-    analysis_result = await run_in_threadpool(
-        ai_service.analyze_question_with_schema, 
-        question, 
-        all_table_names, 
-        model
-    )
+    # Short-circuit: answer general knowledge directly without touching DB
+    if query_classifier.should_skip_db(intent):
+        follow_ups = ["Show my performance", "List available courses", "Top performers in my batch"]
+        return {
+            "answer": (
+                "That's a general knowledge question — I can answer it without the database.\n\n"
+                "Please re-ask me and I'll answer using my AI knowledge directly!"
+            ),
+            "follow_ups": follow_ups,
+            "confidence": 1.0,
+            "data_quality": "complete",
+            "row_count": 0,
+            "attempt_count": 0,
+        }
 
-    # Step C: Get Detailed Schema ONLY for recommended tables
-    recommended_tables = analysis_result.get("recommended_tables", [])
+    intent_hint = query_classifier.get_intent_hint_for_prompt(intent)
 
-    detailed_schema = schema_context.get_detailed_schema(recommended_tables)
+    # STEP 1.6: Deep Schema Analysis (only for complex queries)
+    if query_classifier.should_skip_schema_analysis(intent):
+        # Fast path: skip the DeepSeek schema analysis API call
+        logger.info(f"⚡ Skipping schema analysis for intent: {intent.intent}")
+        table_hint = intent.table_hint or ""
+        detailed_schema = schema_context.get_detailed_schema(
+            [t for t in schema_context.get_all_table_names() if table_hint in t]
+        ) if table_hint else ""
+        analysis_summary = f"Intent: {intent.intent} | Table hint: {table_hint}"
+    else:
+        # Full path: schema analysis via DeepSeek
+        all_table_names = schema_context.get_all_table_names()
+        analysis_result = await run_in_threadpool(
+            ai_service.analyze_question_with_schema,
+            question,
+            all_table_names,
+            model
+        )
+        recommended_tables = analysis_result.get("recommended_tables", [])
+        detailed_schema = schema_context.get_detailed_schema(recommended_tables)
+        analysis_summary = (
+            f"Query Type: {analysis_result.get('query_type')} | "
+            f"Tables: {recommended_tables} | "
+            f"Strategy: {analysis_result.get('suggested_sql_approach')}"
+        )
 
-    # 1.5 Role-Based Search Control
-    # (Existing role logic preserved)
-
-    # Construct Final Prompt with Detailed Schema
-    final_system_prompt = f"""{detailed_schema} # USE DETAILED SCHEMA FOR SQL GEN
+    # Construct Final Prompt
+    final_system_prompt = f"""{detailed_schema}
 
 {'='*20}
 {role_instruction}
 {'='*20}
 
-### EXPERT SCHEMA ANALYSIS
-The following analysis has been performed on the user's request:
-- **Query Type**: {analysis_result.get('query_type')}
-- **Can Answer**: {analysis_result.get('can_answer')}
-- **Recommended Tables**: {recommended_tables}
-- **Strategy Needed**: {analysis_result.get('suggested_sql_approach')}
-- **Reasoning**: {analysis_result.get('reasoning')}
+### QUERY ANALYSIS
+{analysis_summary}
 
-Use this analysis to guide your SQL generation.
+{intent_hint}
 
 ### USER TASK
 Generate SQL for: "{question}"
 """
     print('final_system_prompt', final_system_prompt)
     # STEP 2 & 3: Generate and Execute SQL (with Self-Correction Loop)
-    max_retries = 2
+    max_retries = 3
     generated_sql = ""
     execution_result = {}
     error_message = None
+    attempt_count = 0
 
     for attempt in range(max_retries):
         generated_sql = await run_in_threadpool(
@@ -303,6 +333,8 @@ Generate SQL for: "{question}"
             sql_executor.execute_query, generated_sql
         )
 
+        attempt_count += 1
+
         # If success, break loop
         if "error" not in execution_result:
             logger.info(f"✅ SQL execution succeeded on attempt {attempt + 1}")
@@ -327,20 +359,40 @@ Generate SQL for: "{question}"
         )
         debug_sql = generated_sql if current_role_id in [1, 2] else None
 
-        answer = (
-            "I couldn't retrieve that information. The data might not be recorded yet."
-        )
-        if "doesn't exist" in error_message.lower():
-            answer = "I couldn't find the specific table or data requested."
+        if current_role_id in [1, 2]:
+            # Admins get the actual error for debugging
+            answer = f"Query failed after {max_retries} attempts. Last error: {error_message}"
+        elif "doesn't exist" in (error_message or "").lower():
+            answer = "I couldn't find the specific data requested. The information may not be recorded yet."
+        else:
+            answer = "I couldn't retrieve that information right now. Try rephrasing your question or asking about a specific college or student."
 
         return {
             "answer": answer,
             "sql": debug_sql,
             "data": debug_data,
             "follow_ups": ["Show my performance"],
+            "confidence": 0.0,
+            "data_quality": "failed",
+            "row_count": 0,
+            "attempt_count": attempt_count,
         }
 
     data = execution_result["data"]
+    row_count = len(data) if isinstance(data, list) else 0
+
+    # Compute confidence based on attempts needed
+    confidence_map = {1: 1.0, 2: 0.8, 3: 0.6}
+    confidence = confidence_map.get(attempt_count, 0.5)
+
+    # Compute data quality
+    if row_count == 0:
+        data_quality = "empty"
+        confidence = round(confidence * 0.8, 2)  # penalise empty result
+    elif attempt_count > 1:
+        data_quality = "partial"   # succeeded but needed retries
+    else:
+        data_quality = "complete"
 
     # STEP 4: Synthesize Answer
     async def run_parallel_tasks():
@@ -394,6 +446,10 @@ Generate SQL for: "{question}"
         "answer": human_answer,
         "follow_ups": follow_ups,
         "job_id": job_id,
+        "confidence": round(confidence, 2),
+        "data_quality": data_quality,
+        "row_count": row_count,
+        "attempt_count": attempt_count,
     }
 
 
@@ -416,6 +472,7 @@ async def ask_database(request: AIQueryRequest, db: Session = Depends(get_db)):
 
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Internal Error: {str(e)}")
+
 
 
 @router.post("/ask/async")

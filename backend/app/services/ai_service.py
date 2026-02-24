@@ -313,7 +313,7 @@ RULES:
                     },
                     {"role": "user", "content": analysis_prompt},
                 ],
-                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),  # Fallback to 2000 if not set
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 3000),  # Fallback to 2000 if not set
                 temperature=0.1,
                 stream=False,
             )
@@ -323,7 +323,7 @@ RULES:
             # Log token usage
             if response.usage:
                 # Estimate breakdown
-                sys_tokens = self._estimate_tokens(analysis_prompt.split("USER QUESTION")[0])
+                sys_tokens = self._estimate_tokens(analysis_prompt.split("DATABASE SCHEMA:")[0])
                 q_tokens = self._estimate_tokens(user_question)
                 schema_tokens = self._estimate_tokens(schema_context)
                 
@@ -440,97 +440,140 @@ RULES:
 
         safe_system_prompt = f"""{system_prompt}{schema_hint}{correction_hint}
 
-### CONFIRMED TABLE FACTS (always follow — verified via DESCRIBE):
+### CONFIRMED TABLE FACTS (verified via DESCRIBE — follow exactly):
 
 -- tests table:
 --   testName          VARCHAR(50)   ← camelCase, NEVER test_name
---   status            TINYINT
+--   status            TINYINT       ← 1 = active
 --   created_at        TIMESTAMP
 
--- [college]_coding_result tables (e.g. srec_2025_2_coding_result):
+-- [college]_coding_result tables (e.g. srec_2026_1_coding_result):
 --   user_id           BIGINT        ← FK to users.id
---   topic_test_id     BIGINT        ← FK to tests.id  (NEVER test_id)
+--   topic_test_id     BIGINT        ← FK to tests.id (NEVER test_id)
 --   question_id       INT           ← FK to standard_qb_codings.id
---   topic_type        INT           ← 1 = coding questions
---   mark              FLOAT         ← student's score for this question
+--   topic_type        INT           ← 1 = coding assessment
+--   mark              FLOAT         ← student score
 --   total_mark        FLOAT         ← max possible mark
 --   solve_status      INT           ← 0=unsolved, 1=partial, 2=solved
---   main_solution     TEXT          ← student's submitted code
---   test_cases        JSON          ← test case results
+--   allocate_id       INT           ← FK to course_academic_maps.allocation_id
 
--- For assessment question queries:
---   Bridge table      → test_question_maps (test_id, question_id)
---   Question bank     → standard_qb_codings (id, title, question, solution, testcases)
---   Join order        → coding_result → tests → test_question_maps → standard_qb_codings
+-- user_course_enrollments table:
+--   course_allocation_id  BIGINT    ← FK to course_academic_maps.id (NOT courses.id!)
+--   user_id               BIGINT
+--   status                TINYINT
+--   ⚠️ NO course_id column — to get course: JOIN course_academic_maps cam ON uce.course_allocation_id = cam.id
 
--- EXACT college → test_data tables (ONLY these exist — never guess):
---   srec     → srec_2025_2_test_data,  srec_2026_1_test_data
---   skcet    → skcet_2026_1_test_data   (NO skcet_2025_2_test_data!)
---   mcet     → mcet_2025_2_test_data,  mcet_2026_1_test_data
---   niet     → niet_2026_1_test_data
---   ciet     → ciet_2026_1_test_data
---   kits     → kits_2026_1_test_data
---   kclas    → kclas_2026_1_test_data
---   mec      → mec_2026_1_test_data
---   nit      → nit_2026_1_test_data
---   skacas   → skacas_2025_2_test_data
---   skasc    → skasc_2026_1_test_data
---   skct     → skct_2025_2_test_data
---   demolab  → demolab_2025_2_test_data, demolab_2026_1_test_data
---   dotlab   → dotlab_2025_2_test_data,  dotlab_2026_1_test_data
---   tep      → tep_2026_1_test_data
---   uit      → uit_2026_1_test_data
---   jpc      → jpc_2026_1_test_data
---   admin    → admin_test_data
---   b2c      → b2c_test_data
---   link     → link_test_data
+-- course_academic_maps table:
+--   id                BIGINT        ← PK, = course_allocation_id in enrollments/results
+--   allocation_id     INT           ← internal allocation ref
+--   college_id        INT           ← FK to colleges.id
+--   course_id         INT           ← FK to courses.id
+--   department_id, batch_id, section_id, title_id, topic_id
+--   db                VARCHAR       ← result table prefix, e.g. 'srec_2026_1'
+--   status            TINYINT       ← 1 = active
 
--- ASSESSMENT COUNT PATTERN (count distinct tests conducted at a college):
---   For all colleges: UNION ALL the matching [college]_test_data tables.
---   Each test_data table has: user_id, test_id (FK to tests.id), college filter via users+user_academics.
---   Simple pattern:
---     SELECT COUNT(DISTINCT td.test_id) AS total_assessments
---     FROM skcet_2026_1_test_data td
---   Do NOT use ON clauses with subqueries.
+-- courses table:
+--   course_name, course_short_name, course_description
+--   language, category, type, status
+--   ⚠️ No college_id! Filter by college through: courses → course_academic_maps
 
--- For trainer queries:
---   Use users WHERE role = 5 + JOIN user_academics (college filter)
---   NEVER join course_staff_trainer_allocations → causes 1 row per course assignment
+-- user_login_activities table:
+--   user_id, ip_address, browser, os, device, location
+--   created_at        TIMESTAMP     ← last login time (NEVER login_time — column does not exist!)
 
-### CRITICAL SQL RULES (non-negotiable):
-1.  SELECT only — no INSERT, UPDATE, DELETE, DROP, ALTER
-2.  Return ONLY raw SQL — no explanation, no markdown fences, no comments
-3.  Every '(' must have a matching ')'
-4.  Every CASE must have a matching END
-5.  Only use columns confirmed in the schema above
-6.  solve_status goes in JOIN ON — not WHERE — to avoid losing LEFT JOIN rows:
-      ✅  LEFT JOIN result_table cr ON cr.user_id = u.id AND cr.solve_status = 2
-      ❌  WHERE cr.solve_status = 2
-7.  Always add LIMIT (default 100)
-8.  Use SELECT DISTINCT when joining allocation/map tables to prevent duplicates
-9.  Mentally count parentheses and CASE/END pairs before returning
-10. GROUP BY is MANDATORY when using SUM/COUNT/AVG: every non-aggregated column in SELECT MUST appear in GROUP BY.
-    ⚠️ MySQL ONLY_FULL_GROUP_BY: you CANNOT use aliases (cgpa, backlogs) in GROUP BY — repeat the FULL expression:
-      ✅ GROUP BY u.id, u.name, CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)), CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED)
-      ❌ GROUP BY u.id, u.name, cgpa, backlogs   ← aliases not allowed in GROUP BY
-11. PROGRAMMING LANGUAGE FILTER: use the `languages` table joined via standard_qb_codings.l_id.
-    Known language IDs: Java=1, C=2, C++=3, Python=4, HTML=5, React=6, Spring Boot=7, Others=8, Java(JDBC)=10
-    Example — top performers in C++:
-      JOIN standard_qb_codings sqc ON tqm.question_id = sqc.id AND sqc.l_id = 3  -- C++ l_id=3
-    The languages table: id, language_name, language_id (compiler id), l_id is on standard_qb_codings
-12. TOP PERFORMER QUERY PATTERN:
-    users → user_academics → colleges → [college]_coding_result (LEFT JOIN ON user_id AND solve_status=2)
-    → test_question_maps → standard_qb_codings (filter by l_id for language)
-    → GROUP BY u.id, u.name, d.department_name, b.batch_name, s.section_name,
-               CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)),
-               CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED)
-    → ORDER BY total_score DESC
-13. NEVER put a subquery inside a JOIN ON clause — MySQL rejects it with "ON condition doesn't support subqueries".
-    ✅  Allowed: JOIN colleges c ON c.id = ua.college_id
-    ✅  Allowed: JOIN skcet_2026_1_coding_result cr ON cr.user_id = u.id AND cr.solve_status = 2
-    ❌  Forbidden: JOIN foo ON foo.id = (SELECT id FROM bar WHERE ...)
-    ❌  Forbidden: JOIN foo ON foo.college_id IN (SELECT id FROM colleges WHERE ...)
-    Fix: move the subquery to WHERE clause or use a CTE / subquery in FROM."""
+-- course_wise_segregations table (pre-computed per-user per-course stats):
+--   user_id, college_id, department_id, batch_id, section_id
+--   course_id, course_allocation_id
+--   progress          INT           ← completion %
+--   score             FLOAT         ← total score
+--   rank, performance_rank          ← pre-computed ranks
+--   coding_question, mcq_question, project_question
+--   ⚠️ Use this for leaderboards/completion — much faster than aggregating result tables
+
+-- portal_feedback table:
+--   user_id, type, question_id, feedback, status
+--   JOIN feedback_questions ON portal_feedback.question_id = feedback_questions.id
+
+-- staff_trainer_feedback table:
+--   user_id, type, course_id, staff_trainer_id, question_id, feedback, status
+
+-- 2025_submission_tracks / 2026_submission_tracks:
+--   user_id, mode (1=MCQ, 2=coding), type, period
+--   attended_count_details  JSON    ← e.g. total count of attended sessions
+--   solved_count_details    JSON    ← e.g. total count of solved submissions
+--   To extract: JSON_UNQUOTE(JSON_EXTRACT(attended_count_details, '$.total'))
+--               JSON_UNQUOTE(JSON_EXTRACT(solved_count_details, '$.count'))
+
+-- standard_qb_codings table:
+--   l_id              BIGINT        ← FK to languages.id (NOT language_id!)
+--   languages.id: Java=1, C=2, C++=3, Python=4, HTML=5, React=6, Spring Boot=7, Others=8, Java(JDBC)=10
+
+-- EXACT college result tables (ONLY these exist):
+--   srec:    srec_2025_2_coding_result, srec_2026_1_coding_result
+--            srec_2025_2_mcq_result,   srec_2026_1_mcq_result
+--            srec_2025_2_test_data,    srec_2026_1_test_data
+--   skcet:   skcet_2026_1_coding_result, skcet_2026_1_mcq_result, skcet_2026_1_test_data (NO 2025_2!)
+--   mcet:    mcet_2025_2_*, mcet_2026_1_*
+--   niet:    niet_2026_1_*    ciet: ciet_2026_1_*    kits: kits_2026_1_*
+--   kclas:   kclas_2026_1_*   mec: mec_2026_1_*     nit: nit_2026_1_*
+--   skacas:  skacas_2025_2_*  skasc: skasc_2026_1_*  skct: skct_2025_2_*
+--   demolab: demolab_2025_2_*, demolab_2026_1_*
+--   dotlab:  dotlab_2025_2_*, dotlab_2026_1_*
+--   tep:     tep_2026_1_*     uit: uit_2026_1_*     jpc: jpc_2026_1_*
+--   admin/b2c/link: admin_coding_result, b2c_coding_result, link_coding_result
+
+-- LEADERBOARD / PERFORMER GUIDANCE:
+--   When ranking/top performers in a course/college: Check course_wise_segregations first
+--   Contains pre-computed rank and performance_rank columns (much faster than aggregating)
+--   Must JOIN: users (for names), colleges (for college filtering), courses (for course filtering)
+--   Always include WHERE status = 1 and ORDER BY rank/score DESC with LIMIT
+
+-- ASSESSMENT/COUNT GUIDANCE:
+--   For assessment counts per student: Use college-specific coding/mcq result tables or test_data tables
+--   Ensure no ON clause subqueries — move complex filters to WHERE instead
+--   When deduplicating: use COUNT(DISTINCT column_name), not subqueries in FROM
+
+-- COURSE ENROLLMENT GUIDANCE:
+--   Students enrolled in course: Must bridge through course_academic_maps via course_allocation_id
+--   Never assume course_id is directly in user_course_enrollments (it's not!)
+--   Path: user_course_enrollments → course_academic_maps → courses
+--   Always filter by status = 1 AND course_academic_maps.status = 1 for active records
+
+### SQL GENERATION PRINCIPLES (AI-driven, schema-aware):
+
+1.  **Primary constraint**: SELECT ONLY — no INSERT, UPDATE, DELETE, DROP, ALTER
+2.  **Output format**: Return ONLY raw SQL — no explanation, markdown, or comments
+3.  **Syntax validation**:
+    - Every '(' must match with ')' — COUNT them before output
+    - Every CASE must have matching END
+    - Start with SELECT, end with semicolon
+4.  **Schema-first**: ONLY use columns from confirmed schema tables above
+5.  **Filter placement reasoning**:
+    - Status/active filters: Put in JOIN ON (preserves LEFT JOIN rows)
+    - Search/comparison filters: Put in WHERE clause (reduces result set)
+    - Distinction matters: solve_status in ON gives all students; in WHERE gives only solved
+6.  **LIMIT clause**: Always include it
+    - Top-N queries (leaderboard, best): LIMIT 10-20
+    - Comprehensive lists: LIMIT 100-1000
+7.  **Join optimization**: Use SELECT DISTINCT when joining many-to-many mapping tables (prevents duplicates)
+8.  **GROUP BY rules** (MANDATORY with SUM/COUNT/AVG):
+    - NEVER use aliases in GROUP BY — MySQL ONLY_FULL_GROUP_BY rejects them
+    - All non-aggregated SELECT columns must appear in GROUP BY verbatim
+9.  **Subquery restrictions**: NEVER use subqueries in JOIN ON conditions — move to WHERE clause instead
+10. **JSON handling**: Use JSON_UNQUOTE(JSON_EXTRACT(column, '$.key')) for JSON columns
+11. **UNION ALL**: ORDER BY must reference aliases/columns present in ALL SELECT branches
+12. **Hierarchical traversal**: Always include bridge tables, NEVER skip relationships
+    - User → Courses path: users → user_course_enrollments (via course_allocation_id) → course_academic_maps → courses
+13. **Column name precision** (very important for accuracy):
+    - tests table: testName (camelCase, NOT test_name)
+    - coding result tables: topic_test_id (NOT test_id)
+    - standard_qb_codings: l_id (NOT language_id)
+    - user_login_activities: created_at (NOT login_time)
+14. **Performance optimization**:
+    - For rankings/scores/progress: prefer course_wise_segregations (pre-computed, faster)
+    - For assessment counts: use test_data tables (faster than result tables)
+    - For detailed analysis: use college result tables (coding_result, mcq_result)
+15. **Active record convention**: Always filter status = 1 for active enrollments/allocations unless querying inactive"""
 
         model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
 
@@ -544,7 +587,7 @@ RULES:
                     {"role": "system", "content": safe_system_prompt},
                     {"role": "user", "content": user_question},
                 ],
-                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),  # Fallback to 2000 if not set
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 3000),  # Fallback to 2000 if not set
                 temperature=0.0,
                 seed=42,
                 stream=False,
@@ -559,8 +602,8 @@ RULES:
                 # Estimate breakdown for SQL Gen
                 # prompt contains: detailed schema, role instruction, analysis result
                 # roughly:
-                schema_part = safe_system_prompt.split("===")[0] if "===" in safe_system_prompt else ""
-                sys_part = safe_system_prompt.split("===")[1] if "===" in safe_system_prompt else ""
+                schema_part = safe_system_prompt.split("CONFIRMED TABLE FACTS")[0] if "CONFIRMED TABLE FACTS" in safe_system_prompt else ""
+                sys_part = safe_system_prompt.split("CONFIRMED TABLE FACTS")[1] if "CONFIRMED TABLE FACTS" in safe_system_prompt else ""
                 
                 self._log_token_usage(
                     "SQL_GENERATION", 
@@ -608,7 +651,7 @@ RULES:
         safe_system_prompt: str,
     ) -> str:
         """
-        Attempt 2 — retries with a simplified prompt when attempt 1 was truncated.
+        Attempt 2 - retries with a simplified prompt when attempt 1 was truncated.
         Forces fewer JOINs, no correlated subqueries, simpler structure.
         """
         simplified = self._build_simplified_prompt(user_question)
@@ -727,11 +770,11 @@ RULES:
         """
         client = self._get_client(model)
         if not client:
-            return f"Data retrieved: {row_data}\n(AI unavailable — missing API key)"
+            return f"Data retrieved: {row_data}\n(AI unavailable - missing API key)"
 
         validation = self._validate_result_completeness(user_question, row_data)
 
-        # Early exit — empty result
+        # Early exit - empty result
         if validation["data_quality"] == "empty":
             return (
                 "❌ No data found. Possible reasons:\n"
@@ -752,14 +795,14 @@ RULES:
             guidance = """
 [ADMIN OUTPUT RULES]:
 1.  Present ALL data in structured Markdown (tables for 3+ rows, **bold** key metrics)
-2.  Eligibility queries  → label each student: Highly Eligible / Eligible / Review / Not Eligible
-3.  Course queries       → show: code, name, type, status
-4.  Performance queries  → show: rank, CGPA, coding score, problems solved
-5.  Trainer queries      → deduplicate by ID, show active/inactive clearly
-6.  Assessment queries   → show: question title, student solution, mark, solve_status
-7.  NEVER say "insufficient data" when rows were returned — always present what exists
+2.  Eligibility queries: label each student as Highly Eligible / Eligible / Review / Not Eligible
+3.  Course queries: show code, name, type, status
+4.  Performance queries: show rank, CGPA, coding score, problems solved
+5.  Trainer queries: deduplicate by ID, show active/inactive clearly
+6.  Assessment queries: show question title, student solution, mark, solve_status
+7.  NEVER say "insufficient data" when rows were returned - always present what exists
 8.  Flag anomalies: duplicates, conflicting status values, missing fields
-9.  End with 1–2 strategic recommendations or next-step suggestions
+9.  End with 1-2 strategic recommendations or next-step suggestions
 """
             result_prefix = (
                 f"\n>>> ⚠️ **PARTIAL RESULTS**: {validation['insights']}\n\n"
@@ -773,13 +816,24 @@ RULES:
             guidance = ""
             result_prefix = ""
 
+        # Smart row handling: pass up to 50 rows; note truncation if more
+        if isinstance(row_data, list) and len(row_data) > 50:
+            display_rows = row_data[:50]
+            truncation_note = f"\n[Note: showing first 50 of {len(row_data)} total rows - summarize and group the remaining data by category/type]"
+        else:
+            display_rows = row_data
+            truncation_note = ""
+
+        row_json = json.dumps(display_rows, indent=2, default=str)[:10000]
+        total_records = len(row_data) if isinstance(row_data, list) else 1
+
         prompt = f"""
 User Question: "{user_question}"
 Role ID: {role_id}
-Total Records: {len(row_data) if isinstance(row_data, list) else 1}
+Total Records: {total_records}
 
 Retrieved Data:
-{json.dumps(row_data, indent=2, default=str)[:3000]}
+{row_json}{truncation_note}
 
 Task: {persona}
 
@@ -788,8 +842,8 @@ Task: {persona}
 Output Guidelines:
 - Summarize ALL retrieved data comprehensively
 - Use Markdown formatting (tables, **bold**, bullet points)
-- Base ONLY on the retrieved data — no hallucination
-- If data is partial, label it ⚠️ Partial Results but still present it fully
+- Base ONLY on the retrieved data - no hallucination
+- If data is partial, label it [PARTIAL RESULTS] but still present it fully
 """
 
         try:
@@ -807,7 +861,7 @@ Output Guidelines:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 2000),
+                max_tokens=getattr(settings, "AI_MAX_OUTPUT_TOKENS", 3000),
                 temperature=0.2,
                 seed=42,
             )
@@ -832,6 +886,8 @@ Output Guidelines:
                 f"Retrieved data:\n"
                 f"```json\n{json.dumps(row_data, indent=2, default=str)}\n```"
             )
+
+
 
     # ────────────────────────────────────────────
     # Follow-up Generation
@@ -875,7 +931,7 @@ Output Guidelines:
         )
 
         admin_note = (
-            "[ADMIN]: Generate strategic institutional follow-ups — "
+            "[ADMIN]: Generate strategic institutional follow-ups - "
             "drill into subgroups, cross-reference metrics, suggest comparisons."
             if role_id in [1, 2]
             else ""
@@ -1006,6 +1062,37 @@ Generate exactly 3 follow-up questions. One per line. No numbering, no bullets, 
             if sql_upper.startswith(kw):
                 return True
         return False
+
+    def _build_result_table_schema_hint(self, result_table: str) -> str:
+        """
+        Build a dynamic schema hint for a specific college result table.
+        Injects verified column names so AI never guesses wrong column names.
+        """
+        standard_columns = f"""
+Confirmed columns in {result_table}:
+- id: BIGINT UNSIGNED (primary key)
+- user_id: BIGINT UNSIGNED (foreign key to users.id)
+- topic_test_id: BIGINT UNSIGNED (foreign key to tests.id) - NEVER use test_id!
+- question_id: INT UNSIGNED (foreign key to standard_qb_codings.id)
+- course_allocation_id: BIGINT UNSIGNED (foreign key to course_academic_maps.id)
+- allocate_id: INT UNSIGNED (internal allocation reference)
+- topic_type: INT UNSIGNED (1=coding, 2=mcq, etc.)
+- mark: FLOAT (student score)
+- total_mark: FLOAT (maximum possible mark)
+- solve_status: INT (0=unsolved, 1=partial, 2=solved)
+- status: TINYINT (1=active, 0=inactive)
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+
+CRITICAL RULES for this table:
+1. When filtering solved problems: Use solve_status = 2 in JOIN ON (not WHERE) to preserve LEFT JOINs
+2. To get user info: JOIN users ON {result_table}.user_id = users.id
+3. To get test info: JOIN tests ON {result_table}.topic_test_id = tests.id (use topic_test_id, NOT test_id!)
+4. To get course: JOIN course_academic_maps ON {result_table}.course_allocation_id = course_academic_maps.id
+5. Use SELECT DISTINCT to avoid duplicates when joining multiple tables
+"""
+        
+        return standard_columns
 
     def answer_general_question(
         self,

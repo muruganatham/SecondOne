@@ -60,3 +60,7 @@
 2026-02-23 13:02:04 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
 2026-02-23 14:36:59 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
 2026-02-23 14:36:59 | ai_service | ERROR | synthesize_answer:765 | Answer synthesis error: name 'data' is not defined
+2026-02-24 12:45:04 | ai_service | WARNING | generate_sql:633 | SQL truncated on attempt 1 — retrying with simplified prompt
+2026-02-24 12:45:04 | ai_service | WARNING | generate_sql:633 | SQL truncated on attempt 1 — retrying with simplified prompt
+2026-02-24 12:47:48 | ai_service | WARNING | generate_sql:633 | SQL truncated on attempt 1 — retrying with simplified prompt
+2026-02-24 12:47:48 | ai_service | WARNING | generate_sql:633 | SQL truncated on attempt 1 — retrying with simplified prompt

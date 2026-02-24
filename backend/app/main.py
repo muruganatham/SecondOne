@@ -40,7 +40,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://demolab.amypo.ai",
-        "http://demolab.amypo.ai",
         "http://localhost:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3000"
@@ -53,6 +52,9 @@ app.add_middleware(
 )
 
 
+from fastapi.responses import FileResponse as _FileResponse
+import os as _os
+
 @app.get("/")
 def read_root():
     logger.info("Root endpoint accessed")
@@ -61,6 +63,16 @@ def read_root():
         "version": settings.PROJECT_VERSION,
         "status": "running",
     }
+
+
+@app.get("/test")
+def stream_test_page():
+    """Serve the local AI stream tester page (dev only)."""
+    html_path = _os.path.join(_os.path.dirname(__file__), "..", "test_stream.html")
+    html_path = _os.path.abspath(html_path)
+    if _os.path.exists(html_path):
+        return _FileResponse(html_path, media_type="text/html")
+    return {"error": "test_stream.html not found"}
 
 
 @app.get("/health")

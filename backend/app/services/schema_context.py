@@ -39,11 +39,19 @@ class SchemaContext:
             print(f"✅ Schema Context: Found {len(self.available_tables)} tables")
 
             # 2. Load JSONs
-            with open(self.manual_mappings_path, "r", encoding="utf-8") as f:
-                self.mappings = json.load(f)
+            if os.path.exists(self.manual_mappings_path):
+                with open(self.manual_mappings_path, "r", encoding="utf-8") as f:
+                    self.mappings = json.load(f)
+            else:
+                print(f"⚠️ Warning: {self.manual_mappings_path} not found. Using empty mappings.")
+                self.mappings = {}
 
-            with open(self.complete_schema_path, "r", encoding="utf-8") as f:
-                self.schema_data = json.load(f)
+            if os.path.exists(self.complete_schema_path):
+                with open(self.complete_schema_path, "r", encoding="utf-8") as f:
+                    self.schema_data = json.load(f)
+            else:
+                print(f"⚠️ Warning: {self.complete_schema_path} not found. Schema context will be limited.")
+                self.schema_data = {"tables": {}}
 
             # 3. Base Rules Prompt (No Tables)
             self.context_string = self.build_rules_prompt()
