@@ -428,22 +428,22 @@ class SQLExecutor:
                 "user_id": user_id,
             }
 
-            # Step 5b: Detect GROUP BY issues before execution (MySQL ONLY_FULL_GROUP_BY)
-            group_check = self.detect_group_by_issues(clean_sql)
-            if group_check.get("has_issue"):
-                logger.warning(
-                    f"GROUP BY validation failed: {group_check.get('message')}"
-                )
-                return {
-                    "error": (
-                        "Query rejected due to GROUP BY / aggregation issues. "
-                        "The generated SQL mixes aggregates and non-aggregated columns inconsistently."
-                    ),
-                    "sql": clean_sql,
-                    "error_code": "GROUP_BY_ERROR",
-                    "details": group_check,
-                    "user_id": user_id,
-                }
+        # Step 5b: Detect GROUP BY issues before execution (MySQL ONLY_FULL_GROUP_BY)
+        group_check = self.detect_group_by_issues(clean_sql)
+        if group_check.get("has_issue"):
+            logger.warning(
+                f"GROUP BY validation failed: {group_check.get('message')}"
+            )
+            return {
+                "error": (
+                    "Query rejected due to GROUP BY / aggregation issues. "
+                    "The generated SQL mixes aggregates and non-aggregated columns inconsistently."
+                ),
+                "sql": clean_sql,
+                "error_code": "GROUP_BY_ERROR",
+                "details": group_check,
+                "user_id": user_id,
+            }
 
         # Step 6: Execute query
         db = SessionLocal()

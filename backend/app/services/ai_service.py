@@ -463,6 +463,36 @@ RULES:
 --   Question bank     → standard_qb_codings (id, title, question, solution, testcases)
 --   Join order        → coding_result → tests → test_question_maps → standard_qb_codings
 
+-- EXACT college → test_data tables (ONLY these exist — never guess):
+--   srec     → srec_2025_2_test_data,  srec_2026_1_test_data
+--   skcet    → skcet_2026_1_test_data   (NO skcet_2025_2_test_data!)
+--   mcet     → mcet_2025_2_test_data,  mcet_2026_1_test_data
+--   niet     → niet_2026_1_test_data
+--   ciet     → ciet_2026_1_test_data
+--   kits     → kits_2026_1_test_data
+--   kclas    → kclas_2026_1_test_data
+--   mec      → mec_2026_1_test_data
+--   nit      → nit_2026_1_test_data
+--   skacas   → skacas_2025_2_test_data
+--   skasc    → skasc_2026_1_test_data
+--   skct     → skct_2025_2_test_data
+--   demolab  → demolab_2025_2_test_data, demolab_2026_1_test_data
+--   dotlab   → dotlab_2025_2_test_data,  dotlab_2026_1_test_data
+--   tep      → tep_2026_1_test_data
+--   uit      → uit_2026_1_test_data
+--   jpc      → jpc_2026_1_test_data
+--   admin    → admin_test_data
+--   b2c      → b2c_test_data
+--   link     → link_test_data
+
+-- ASSESSMENT COUNT PATTERN (count distinct tests conducted at a college):
+--   For all colleges: UNION ALL the matching [college]_test_data tables.
+--   Each test_data table has: user_id, test_id (FK to tests.id), college filter via users+user_academics.
+--   Simple pattern:
+--     SELECT COUNT(DISTINCT td.test_id) AS total_assessments
+--     FROM skcet_2026_1_test_data td
+--   Do NOT use ON clauses with subqueries.
+
 -- For trainer queries:
 --   Use users WHERE role = 5 + JOIN user_academics (college filter)
 --   NEVER join course_staff_trainer_allocations → causes 1 row per course assignment
@@ -478,7 +508,29 @@ RULES:
       ❌  WHERE cr.solve_status = 2
 7.  Always add LIMIT (default 100)
 8.  Use SELECT DISTINCT when joining allocation/map tables to prevent duplicates
-9.  Mentally count parentheses and CASE/END pairs before returning"""
+9.  Mentally count parentheses and CASE/END pairs before returning
+10. GROUP BY is MANDATORY when using SUM/COUNT/AVG: every non-aggregated column in SELECT MUST appear in GROUP BY.
+    ⚠️ MySQL ONLY_FULL_GROUP_BY: you CANNOT use aliases (cgpa, backlogs) in GROUP BY — repeat the FULL expression:
+      ✅ GROUP BY u.id, u.name, CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)), CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED)
+      ❌ GROUP BY u.id, u.name, cgpa, backlogs   ← aliases not allowed in GROUP BY
+11. PROGRAMMING LANGUAGE FILTER: use the `languages` table joined via standard_qb_codings.l_id.
+    Known language IDs: Java=1, C=2, C++=3, Python=4, HTML=5, React=6, Spring Boot=7, Others=8, Java(JDBC)=10
+    Example — top performers in C++:
+      JOIN standard_qb_codings sqc ON tqm.question_id = sqc.id AND sqc.l_id = 3  -- C++ l_id=3
+    The languages table: id, language_name, language_id (compiler id), l_id is on standard_qb_codings
+12. TOP PERFORMER QUERY PATTERN:
+    users → user_academics → colleges → [college]_coding_result (LEFT JOIN ON user_id AND solve_status=2)
+    → test_question_maps → standard_qb_codings (filter by l_id for language)
+    → GROUP BY u.id, u.name, d.department_name, b.batch_name, s.section_name,
+               CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.ug')) AS DECIMAL(3,2)),
+               CAST(JSON_UNQUOTE(JSON_EXTRACT(ua.academic_info, '$.current_backlogs')) AS UNSIGNED)
+    → ORDER BY total_score DESC
+13. NEVER put a subquery inside a JOIN ON clause — MySQL rejects it with "ON condition doesn't support subqueries".
+    ✅  Allowed: JOIN colleges c ON c.id = ua.college_id
+    ✅  Allowed: JOIN skcet_2026_1_coding_result cr ON cr.user_id = u.id AND cr.solve_status = 2
+    ❌  Forbidden: JOIN foo ON foo.id = (SELECT id FROM bar WHERE ...)
+    ❌  Forbidden: JOIN foo ON foo.college_id IN (SELECT id FROM colleges WHERE ...)
+    Fix: move the subquery to WHERE clause or use a CTE / subquery in FROM."""
 
         model_name = "deepseek-chat" if "deepseek" in model else "gpt-4"
 
@@ -767,8 +819,8 @@ Output Guidelines:
                     user_question, 
                     model_name,
                     input_breakdown={
-                        "Data": self._estimate_tokens(json.dumps(data, default=str)),
-                        "SQL": self._estimate_tokens(sql_query),
+                        "Data": self._estimate_tokens(json.dumps(row_data, default=str)),
+                        "SQL": self._estimate_tokens(sql_result),
                         "System": 800  # Approx
                     }
                 )
